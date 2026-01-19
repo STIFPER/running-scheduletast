@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RUNNER_001 | Performance Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3b82f6; /* Blue */
+            --accent: #f59e0b; /* Amber */
+            --danger: #ef4444; /* Red */
+            --success: #10b981; /* Green */
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar Profile */
+        .profile-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid #334155;
+            position: sticky;
+            top: 20px;
+        }
+
+        .avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--primary), #60a5fa);
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            margin-bottom: 10px;
+            border: 1px solid var(--success);
+        }
+
+        .profile-stats {
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+            font-size: 14px;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #334155;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Philosophy Grid */
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .philo-item {
+            background: rgba(59, 130, 246, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* HR Zones Visual */
+        .zone-container {
+            display: flex;
+            height: 40px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .zone-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            transition: width 0.3s;
+        }
+
+        /* Gear Section */
+        .shoe-tracker {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .shoe-img {
+            font-size: 40px;
+            color: var(--text-sub);
+        }
+
+        .progress-bar-bg {
+            flex-grow: 1;
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent); /* Warning color */
+            width: 62%;
+        }
+
+        /* Weekly Schedule Table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th {
+            text-align: left;
+            padding: 12px;
+            background: #0f172a;
+            color: var(--text-sub);
+            font-size: 13px;
+        }
+
+        .schedule-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #334155;
+            vertical-align: top;
+        }
+
+        .date-col { width: 15%; font-weight: bold; color: var(--text-sub); }
+        .mission-col { width: 25%; }
+        .detail-col { width: 30%; }
+        .extra-col { width: 30%; font-size: 13px; color: var(--text-sub); }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .tag-rest { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+        .tag-run { background: rgba(59, 130, 246, 0.2); color: var(--primary); }
+        .tag-long { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+
+        .red-flag {
+            color: var(--danger);
+            font-weight: bold;
+            font-size: 12px;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Timeline */
+        .timeline {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            position: relative;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #334155;
+            z-index: 0;
+        }
+        .timeline-point {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 20%;
+        }
+        .dot {
+            width: 30px;
+            height: 30px;
+            background: var(--card-bg);
+            border: 2px solid var(--text-sub);
+            border-radius: 50%;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .dot.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 10px var(--primary);
+        }
+        .dot.completed {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .timeline-label {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- SIDEBAR: PROFILE SUMMARY -->
+    <aside>
+        <div class="profile-card">
+            <div class="avatar"><i class="fas fa-running"></i></div>
+            <h2>RUNNER_001</h2>
+            <div class="status-badge">PHASE 2: ACTIVE</div>
+            <p style="color: var(--text-sub); font-size: 14px; margin-top:5px;">Cognitive-Associative Learner</p>
+            
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <span>Age</span>
+                    <span style="color:white">32 Years</span>
+                </div>
+                <div class="stat-item">
+                    <span>Training Max HR</span>
+                    <span style="color: var(--danger)">168 bpm</span>
+                </div>
+                <div class="stat-item">
+                    <span>Current Easy Pace</span>
+                    <span style="color: var(--success)">7:10 - 7:40</span>
+                </div>
+                <div class="stat-item">
+                    <span>Long Run Cap</span>
+                    <span style="color: var(--accent)">100 Mins</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; text-align: left;">
+                <h4 style="color: var(--text-sub); font-size: 12px; text-transform: uppercase;">Next Goal</h4>
+                <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; margin-top: 5px;">
+                    <i class="fas fa-flag-checkered" style="color: var(--primary)"></i> Half Marathon < 2h
+                    <div style="font-size: 11px; color: var(--text-sub); margin-top: 3px;">End of 2026</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        
+        <!-- SECTION 1: IDENTITY & PHILOSOPHY -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-brain"></i> Core Philosophy</div>
+            </div>
+            <div class="philosophy-grid">
+                <div class="philo-item">
+                    <i class="fas fa-layer-group" style="font-size: 20px; margin-bottom: 5px;"></i><br>
+                    <strong>Base > Speed</strong>
+                </div>
+                <div class="philo-item">
+                    <i class="fas fa-heartbeat" style="font-size: 20px; margin-bottom: 5px;"></i><br>
+                    <strong>HR > Pace</strong>
+                </div>
+                <div class="philo-item">
+                    <i class="fas fa-feather-alt" style="font-size: 20px; margin-bottom: 5px;"></i><br>
+                    <strong>Feeling > Numbers</strong>
+                </div>
+                <div class="philo-item">
+                    <i class="fas fa-infinity" style="font-size: 20px; margin-bottom: 5px;"></i><br>
+                    <strong>Sustainability</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: ENGINE & ZONES -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-tachometer-alt"></i> Engine Status (Dynamic Zones)</div>
+            </div>
+            <p style="font-size: 13px; color: var(--text-sub);">*ใช้ค่า Max HR 168 bpm เป็นเกณฑ์ตั้งต้นเพื่อความปลอดภัย</p>
+            
+            <div class="zone-container">
+                <div class="zone-bar" style="width: 25%; background: #3b82f6;">Z1: Recov (≤135)</div>
+                <div class="zone-bar" style="width: 25%; background: #10b981;">Z2: Base (136-145)</div>
+                <div class="zone-bar" style="width: 20%; background: #f59e0b;">Z3: Ctrl (146-155)</div>
+                <div class="zone-bar" style="width: 15%; background: #f97316;">Z4: Thresh (156-165)</div>
+                <div class="zone-bar" style="width: 15%; background: #ef4444;">Z5: Danger (>165)</div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: MISSION CONTROL (THIS WEEK) -->
+        <div class="card" style="border: 1px solid var(--primary);">
+            <div class="card-header">
+                <div class="card-title">
+                    <i class="fas fa-calendar-alt"></i> MISSION: WEEK 1 (19 - 25 JAN 2026)
+                </div>
+                <div class="status-badge" style="background: rgba(59, 130, 246, 0.2); color: var(--primary); border-color: var(--primary);">
+                    Theme: Compressed Quality
+                </div>
+            </div>
+            
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th>DAY / CODE</th>
+                        <th>ACTIVITY & HR</th>
+                        <th>TECH FOCUS & ALERTS</th>
+                        <th>SUPPLEMENTARY</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- MON -->
+                    <tr>
+                        <td class="date-col">MON 19<br><span style="font-size:11px; font-weight:normal;">SYSTEM REBOOT</span></td>
+                        <td class="mission-col"><span class="tag tag-rest">REST</span><br>Full Recovery</td>
+                        <td class="detail-col">พักผ่อน 100%<br>นอนให้พอ</td>
+                        <td class="extra-col">🦶 Toe Yoga (2 min)<br>🧘 Stretch</td>
+                    </tr>
+                    <!-- TUE -->
+                    <tr>
+                        <td class="date-col">TUE 20<br><span style="font-size:11px; font-weight:normal;">HIP CALIBRATION</span></td>
+                        <td class="mission-col"><span class="tag tag-run">TECH RUN</span><br>50 Mins<br><span style="color:var(--primary)">HR 145-148</span></td>
+                        <td class="detail-col">Focus: <b>ดึงเท้าลงใต้สะโพก</b><br><span class="red-flag">⚠️ ถ้าน่องตึง = ลงน้ำหนักผิด</span></td>
+                        <td class="extra-col">🦶 Short Foot (10 reps)<br>🔄 Foam Roll (Calf)</td>
+                    </tr>
+                    <!-- WED -->
+                    <tr>
+                        <td class="date-col">WED 21<br><span style="font-size:11px; font-weight:normal;">NEURAL IGNITION</span></td>
+                        <td class="mission-col"><span class="tag tag-run">QUALITY</span><br>40 Mins + 6 Strides<br><span style="color:var(--accent)">HR ~150 (Peak)</span></td>
+                        <td class="detail-col">Focus: <b>ล็อกข้อเท้าแข็ง (Stiff)</b><br>กระตุ้นระบบประสาทก่อนหยุด</td>
+                        <td class="extra-col">🤸 Calf Stretch (2 min)<br>🥛 Hydrate</td>
+                    </tr>
+                    <!-- THU -->
+                    <tr>
+                        <td class="date-col">THU 22<br><span style="font-size:11px; font-weight:normal;">CORE MAINT.</span></td>
+                        <td class="mission-col"><span class="tag tag-rest">REST (BUSY)</span><br>ติดธุระ</td>
+                        <td class="detail-col">เน้นขยับตัวระหว่างวัน<br>ไม่ให้นั่งนานจนหลังยึด</td>
+                        <td class="extra-col">🏋️ Plank (3 sets)<br>🦶 Calf Raise (15 reps)</td>
+                    </tr>
+                    <!-- FRI -->
+                    <tr>
+                        <td class="date-col">FRI 23<br><span style="font-size:11px; font-weight:normal;">GLUTE WAKE-UP</span></td>
+                        <td class="mission-col"><span class="tag tag-rest">REST (BUSY)</span><br>เตรียมตัวก่อนนอน</td>
+                        <td class="detail-col"><b>MUST DO:</b> ปลุกก้นให้ตื่น!<br>เพราะนั่งมา 2 วัน</td>
+                        <td class="extra-col">🍑 <b>Clamshells</b><br>🍑 Side Leg Raises<br>(15 reps x 3 sets)</td>
+                    </tr>
+                    <!-- SAT -->
+                    <tr>
+                        <td class="date-col">SAT 24<br><span style="font-size:11px; font-weight:normal;">AEROBIC RESILIENCE</span></td>
+                        <td class="mission-col"><span class="tag tag-long">LONG RUN</span><br>95-100 Mins<br><span style="color:var(--success)">HR 142-145</span></td>
+                        <td class="detail-col">Focus: <b>ทิ้งไหล่ + กดนิ้วโป้ง</b><br><span class="red-flag">⚠️ HR เกิน 155 ให้เดินพัก</span></td>
+                        <td class="extra-col">⚡ Gel @ 40 & 80 min<br>💧 Water every 2km</td>
+                    </tr>
+                    <!-- SUN -->
+                    <tr>
+                        <td class="date-col">SUN 25<br><span style="font-size:11px; font-weight:normal;">REGEN FLUSH</span></td>
+                        <td class="mission-col"><span class="tag tag-run">RECOVERY</span><br>30-40 Mins<br><span style="color:#3b82f6">HR < 138</span></td>
+                        <td class="detail-col">Focus: <b>Silent Running</b><br>วิ่งให้เบา ไร้เสียง</td>
+                        <td class="extra-col">🧘 Full Stretch<br>🔄 Foam Roll All</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SECTION 4: HARDWARE & MAINTENANCE -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-shoe-prints"></i> Gear & Body Status</div>
+            </div>
+            
+            <div class="shoe-tracker">
+                <div class="shoe-img"><i class="fas fa-running"></i></div>
+                <div style="flex-grow:1">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                        <strong>Nike Vomero Plus</strong>
+                        <span style="color: var(--accent); font-weight:bold;">WARNING ZONE</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:5px; color:var(--text-sub);">
+                        <span>Used: 621.05 km</span>
+                        <span>Target: 1,000 km</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #334155;">
+                <strong style="color: var(--danger)">Injury Watchlist:</strong>
+                <ul style="margin-left: 20px; margin-top: 5px; color: var(--text-sub); font-size: 14px;">
+                    <li>🔴 <b>น่อง/ขาหนีบ:</b> เช็คอาการตึงหลังวันเสาร์ (Compensatory Pattern)</li>
+                    <li>🟠 <b>สะโพกซ้าย:</b> ต้องกระตุ้น (Activate) เสมอก่อนวิ่ง</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECTION 5: ROADMAP -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"><i class="fas fa-map-signs"></i> The Roadmap (Double Peak Strategy)</div>
+            </div>
+            <div class="timeline">
+                <div class="timeline-point">
+                    <div class="dot completed"><i class="fas fa-check"></i></div>
+                    <div class="timeline-label">Phase 0-1<br>Awakening & Base</div>
+                </div>
+                <div class="timeline-point">
+                    <div class="dot active"></div>
+                    <div class="timeline-label" style="color:var(--primary); font-weight:bold;">Phase 2<br>Neuro & Hip (Now)</div>
+                </div>
+                <div class="timeline-point">
+                    <div class="dot"></div>
+                    <div class="timeline-label">Phase 3<br>Aerobic Strength</div>
+                </div>
+                <div class="timeline-point">
+                    <div class="dot"></div>
+                    <div class="timeline-label">Phase 4-5<br>Prep & Peak 1</div>
+                </div>
+                <div class="timeline-point">
+                    <div class="dot"></div>
+                    <div class="timeline-label">End 2026<br>Half Marathon PB</div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>
