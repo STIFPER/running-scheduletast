@@ -428,7 +428,7 @@
             </div>
         </div>
 
-        <!-- VIEW 2: SCHEDULE (SAME) -->
+        <!-- VIEW 2: SCHEDULE -->
         <div id="schedule" class="section-view">
             <div class="header-section">
                 <div>
@@ -444,18 +444,17 @@
                 <button class="timeline-btn">FEB</button>
                 <button class="timeline-btn">MAR</button>
                 <div style="width:1px; background:#333; margin:0 5px;"></div>
-                <button class="timeline-btn" onclick="selectWeek(1)">Week 1<br><span style="font-size:8px;">1-4</span></button>
-                <button class="timeline-btn" onclick="selectWeek(2)">Week 2<br><span style="font-size:8px;">5-11</span></button>
-                <button class="timeline-btn" onclick="selectWeek(3)">Week 3<br><span style="font-size:8px;">12-18</span></button>
-                <button class="timeline-btn active" onclick="selectWeek(4)">Week 4<br><span style="font-size:8px;">19-25</span></button>
-                <button class="timeline-btn" onclick="selectWeek(5)">Week 5<br><span style="font-size:8px;">26-31</span></button>
+                <button class="timeline-btn" onclick="selectWeek(1)">Week 1<br><span style="font-size:8px;">5-11</span></button>
+                <button class="timeline-btn" onclick="selectWeek(2)">Week 2<br><span style="font-size:8px;">12-18</span></button>
+                <button class="timeline-btn active" onclick="selectWeek(3)">Week 3<br><span style="font-size:8px;">19-25</span></button>
+                <button class="timeline-btn" onclick="selectWeek(4)">Week 4<br><span style="font-size:8px;">26-31</span></button>
             </div>
 
             <div class="accordion-card open" style="border: 1px solid var(--border-color); cursor: default;">
                 <table class="schedule-table">
                     <thead>
                         <tr>
-                            <th width="15%">Day / Date</th>
+                            <th width="15%">Day</th>
                             <th width="35%">Detail + HR Zone</th>
                             <th width="25%">Focus & Technique</th>
                             <th width="25%">Supplements & Strength</th>
@@ -505,13 +504,13 @@
                         <div style="margin-bottom: 15px;">
                             <div class="text-uppercase" style="margin-bottom:10px; display:flex; justify-content:space-between;">
                                 <span>CURRENT SHOES</span>
-                                <span style="color:var(--text-sub); font-size:9px;">UPDATED: 25 JAN 2026 (WEEK 1 END)</span>
+                                <span style="color:var(--text-sub); font-size:9px;">UPDATED: 25 JAN 2026 (WEEK 3 END)</span>
                             </div>
                             <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
                                 <div>
                                     <span style="color: white; font-weight:bold; font-size:16px;">Nike Vomero Plus</span>
                                     <div style="font-size:10px; color:#666; margin-top:2px;">
-                                        Base: 621 km + <span style="color:var(--whoop-green);">Week 1 (~31 km)</span>
+                                        Base: 621 km + <span style="color:var(--whoop-green);">Week 3 (~31 km)</span>
                                     </div>
                                 </div>
                                 <span class="highlight-yellow" style="font-weight: bold; font-size: 20px;">652 <span style="font-size:12px; color:#888;">/ 1000 km</span></span>
@@ -734,22 +733,80 @@
     </div>
 
     <script>
-        // --- DATA & LOGIC FOR SCHEDULE ---
-        const scheduleWeek4 = `
-            <tr><td><strong style="color:white; font-size:16px;">MON 19</strong><br><span class="tag tag-rest">Rest</span></td><td><strong style="color:white;">System Reboot</strong><br>พัก 100% (Passive Rest)<br><span style="font-size:12px;">งดกิจกรรมหนัก ให้ร่างกายซ่อมแซม</span></td><td>ผ่อนคลายร่างกาย</td><td><div><i class="fas fa-socks"></i> Toe Yoga</div><div style="font-size:12px; margin-top:5px;">(บริหารนิ้วเท้า 5 นาที)</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">TUE 20</strong><br><span class="tag tag-run">Tech Run</span></td><td><strong style="color:white;">Hip Calibration</strong><br>วิ่ง 50 นาที (HR 145-148 bpm)<br><span style="font-size:12px; color:var(--whoop-green);">Zone 2-3 Stability</span></td><td><span class="highlight-green">Hip Drive Focus</span><br>ดึงเท้าลงใต้สะโพก<br><span class="highlight-red" style="font-size:12px;">*ถ้าน่องตึง = ลงผิด</span></td><td><div><i class="fas fa-dumbbell"></i> Short Foot Ex.</div><div><i class="fas fa-tint"></i> น้ำทุก 2 กม.</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">WED 21</strong><br><span class="tag tag-run">Quality</span></td><td><strong style="color:white;">Neural Ignition</strong><br>Easy 40 min + 6 Strides<br><span style="font-size:12px;">(Strides: เร่ง 20วิ / พัก 40วิ)</span></td><td><strong>Lock Ankle</strong><br>ล็อกข้อเท้าแข็งขณะดีดตัว</td><td><div class="highlight-red"><i class="fas fa-exclamation-circle"></i> ยืดน่องทันที 2 นาที</div><div style="font-size:12px;">(หลังวิ่งเสร็จห้ามขาด)</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">THU 22</strong><br><span class="tag tag-rest">Busy</span></td><td><strong style="color:white;">Rest (ธุระ)</strong><br>งดซ้อมวิ่ง</td><td><strong>Active Sitting</strong><br>พยายามลุกเดินทุก 1 ชม.</td><td><div><i class="fas fa-shield-alt"></i> Plank 3 sets</div><div style="font-size:12px;">(45 วินาที/เซ็ต)</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">FRI 23</strong><br><span class="tag tag-rest">Busy</span></td><td><strong style="color:white;">Rest (ธุระ)</strong><br>งดซ้อมวิ่ง</td><td><span class="highlight-red">Inactive Glute Alert</span><br>ระวังก้นหลับ</td><td><strong style="color:var(--whoop-yellow);">MUST DO:</strong><br>- Band Clamshells<br>- Side Leg Raises<br>(3 Sets x 15 Reps)</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">SAT 24</strong><br><span class="tag tag-long">Long Run</span></td><td><strong style="color:white;">Endurance Build</strong><br>95-100 นาที (HR 142-145)<br><span style="font-size:12px;">รักษาความนิ่ง ห้ามกระชาก</span></td><td><strong>Fatigue Mngt.</strong><br>เมื่อล้า: ทิ้งไหล่ + กดนิ้วโป้ง</td><td><div>⚡ <strong>Gel (100kcal):</strong> นาทีที่ 40 & 80</div><div>💧 น้ำทุก 2.5 กม.</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">SUN 25</strong><br><span class="tag tag-run">Recov</span></td><td><strong style="color:white;">Active Recovery</strong><br>Jog 30-40 นาที (HR < 138)<br><span style="font-size:12px;">วิ่งเบาที่สุดเท่าที่ทำได้</span></td><td><strong>Silent Running</strong><br>ลงเท้าให้เงียบที่สุด</td><td><div>🧘 Full Body Stretch</div><div>🔄 Foam Roll (All Legs)</div></td></tr>
+        // --- DATA & LOGIC FOR SCHEDULE (JAN 2026) ---
+        
+        // Week 1: Recovery/Reset (Jan 5-11) - OLD/PAST
+        const scheduleWeek1 = `
+            <tr><td><strong style="color:white; font-size:16px;">MON 5</strong><br><span class="tag tag-rest">REST</span></td><td><strong style="color:white;">Sick Day</strong><br>งดวิ่ง (ไข้หวัด)<br><span style="font-size:12px;">ฟื้นฟูภูมิคุ้มกัน</span></td><td>พักผ่อนเต็มที่</td><td><div><i class="fas fa-shield-alt"></i> นอนหลับ 8+ ชม.</div></td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">TUE 6</strong><br><span class="tag tag-run">RETURN</span></td><td><strong style="color:white;">Easy + Interval</strong><br>6 min x 4 sets<br><span style="font-size:12px;">Avg HR 148 (Peak 160)</span></td><td>กลับมาวิ่งวันแรก (75%)</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">WED 7</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Easy + Strides</strong><br>35 นาที + 5 Strides<br><span style="font-size:12px;">HR < 145</span></td><td>PM 2.5 สูง (ไม่ดัน)</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">THU 8</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Outdoor Run</strong><br>วิ่งตามความรู้สึก<br><span style="font-size:12px;">ขาเริ่มตอบสนองดีขึ้น</span></td><td>คุม HR เป็นหลัก</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">FRI 9</strong><br><span class="tag tag-run">RECOV</span></td><td><strong style="color:white;">Active Recovery</strong><br>จ๊อกเบามาก (เพิ่มความถี่)<br><span style="font-size:12px;">ไม่เพิ่มโหลดหนัก</span></td><td>เตรียมพร้อม Long Run</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">SAT 10</strong><br><span class="tag tag-long">LONG</span></td><td><strong style="color:white;">Base Continuity</strong><br>90 นาที (เริ่มติดหลัง 1 ชม.)<br><span style="font-size:12px;">HR < 150</span></td><td>ระบบประสาทฟื้นช้ากว่าหัวใจ</td><td><div><i class="fas fa-bolt"></i> Gel นาทีที่ 50</div></td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">SUN 11</strong><br><span class="tag tag-run">FOCUS</span></td><td><strong style="color:white;">Form Focus</strong><br>30-35 นาที + Strides<br><span style="font-size:12px;">แก้ Overstriding ช่วงท้าย</span></td><td>จังหวะลงขาสัมพันธ์กัน</td><td>-</td></tr>
+        `;
+
+        // Week 2: Nervous System Response (Jan 12-18) - OLD/PAST
+        const scheduleWeek2 = `
+            <tr><td><strong style="color:white; font-size:16px;">MON 12</strong><br><span class="tag tag-rest">REST</span></td><td><strong style="color:white;">Mobility</strong><br>ไม่วิ่ง<br><span style="font-size:12px;">ยืดสะโพก/น่อง/Adductor</span></td><td>Foam Roller</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">TUE 13</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Continuous Run</strong><br>45 นาที (~6km)<br><span style="font-size:12px;">Avg HR 148 (เครื่องติด กม.4)</span></td><td>Pace มาเองโดยไม่เร่ง</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">WED 14</strong><br><span class="tag tag-run">NEURAL</span></td><td><strong style="color:white;">Easy + Strides</strong><br>35 นาที + 5 Strides<br><span style="font-size:12px;">เน้นความรู้สึก (No Numbers)</span></td><td>กระตุ้นระบบประสาท</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">THU 15</strong><br><span class="tag tag-run">ADJUST</span></td><td><strong style="color:white;">Easy (PM 2.5)</strong><br>ปรับลดความเข้มข้น<br><span style="font-size:12px;">วิ่งตามความรู้สึก ไม่ฝืน</span></td><td>รักษาสุขภาพปอด</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">FRI 16</strong><br><span class="tag tag-run">TREADMILL</span></td><td><strong style="color:white;">Progression</strong><br>55 นาที (Speed 6.5->7.5)<br><span style="font-size:12px;">ทดลอง 12km/h ช่วงสั้น</span></td><td>เข้าใจ Cadence ที่รู้สึกดี</td><td>-</td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">SAT 17</strong><br><span class="tag tag-long">LONG</span></td><td><strong style="color:white;">Highlight Day</strong><br>95 นาที (~13km)<br><span style="font-size:12px;">Avg HR 150</span></td><td><span class="highlight-green">ปลดล็อกสะโพกซ้าย!</span></td><td><div><i class="fas fa-bolt"></i> Gel นาทีที่ 50</div></td></tr>
+            <tr><td><strong style="color:white; font-size:16px;">SUN 18</strong><br><span class="tag tag-run">CLOSING</span></td><td><strong style="color:white;">Easy + Short Strides</strong><br>30-35 นาที (Treadmill)<br><span style="font-size:12px;">HR < 145</span></td><td>รีเซ็ตระบบ ปิดสัปดาห์สวย</td><td>-</td></tr>
+        `;
+
+        // Week 3: Neuromuscular Awareness (Jan 19-25) - ACTIVE/NEW PLAN
+        const scheduleWeek3 = `
+            <tr>
+                <td><strong style="color:white; font-size:16px;">MON 19</strong><br><span class="tag tag-rest">REST</span></td>
+                <td><strong style="color:white;">SYSTEM REBOOT</strong><br>พักผ่อน 100% (No Run)<br><span style="font-size:12px;">ผ่อนคลายร่างกาย</span></td>
+                <td>Red Flag: ห้ามนอนดึก (Sleep 7-8h)</td>
+                <td><div><i class="fas fa-socks"></i> Toe Yoga (แยกนิ้ว)</div></td>
+            </tr>
+            <tr>
+                <td><strong style="color:white; font-size:16px;">TUE 20</strong><br><span class="tag tag-run">TECH</span></td>
+                <td><strong style="color:white;">HIP DRIVE CALIB</strong><br>Tech Run 50 min<br><span style="font-size:12px;">HR 145-148 (Max 153)</span></td>
+                <td><span class="highlight-green">Pull, Don't Reach</span><br>ดึงเท้าลงใต้สะโพก</td>
+                <td><div><i class="fas fa-dumbbell"></i> Short Foot x10</div><div><i class="fas fa-bolt"></i> Foam Roll (Calf)</div></td>
+            </tr>
+            <tr>
+                <td><strong style="color:white; font-size:16px;">WED 21</strong><br><span class="tag tag-run">QUALITY</span></td>
+                <td><strong style="color:white;">NEURAL IGNITION</strong><br>Easy 35m + 6 Strides<br><span style="font-size:12px;">(เร่ง 15s / พัก 45s)</span></td>
+                <td><strong>Stiff Ankle</strong><br>ล็อกข้อเท้าแข็ง เด้งสู้พื้น</td>
+                <td><div><i class="fas fa-exclamation-circle" style="color:var(--whoop-red)"></i> ยืดน่องหลังวิ่ง 2 นาที</div></td>
+            </tr>
+            <tr>
+                <td><strong style="color:white; font-size:16px;">THU 22</strong><br><span class="tag tag-rest">BUSY</span></td>
+                <td><strong style="color:white;">CORE MAINT.</strong><br>Rest (ติดธุระ)<br><span style="font-size:12px;">เน้นขยับตัวระหว่างวัน</span></td>
+                <td>พยุงแกนกลาง (ลดอาการนั่งนาน)</td>
+                <td><div><i class="fas fa-shield-alt"></i> Plank 3 sets (45s)</div><div><i class="fas fa-walking"></i> Calf Raise x15</div></td>
+            </tr>
+            <tr>
+                <td><strong style="color:white; font-size:16px;">FRI 23</strong><br><span class="tag tag-rest">BUSY</span></td>
+                <td><strong style="color:white;">GLUTE WAKE-UP</strong><br>Rest (ติดธุระ)<br><span style="font-size:12px;">เตรียมตัวก่อนนอน</span></td>
+                <td><span class="highlight-red">Wake up Glutes</span><br>อย่าให้ก้นหลับ (Amnesia)</td>
+                <td><strong style="color:var(--whoop-yellow);">MUST DO:</strong><br>Clamshells + Side Leg<br>(15 reps x 3 sets)</td>
+            </tr>
+            <tr>
+                <td><strong style="color:white; font-size:16px;">SAT 24</strong><br><span class="tag tag-long">LONG</span></td>
+                <td><strong style="color:white;">AEROBIC RESILIENCE</strong><br>95-100 min (Steady)<br><span style="font-size:12px;">HR 142-145 (Max 155)</span></td>
+                <td><strong>Fatigue Mngt.</strong><br>ทิ้งไหล่ + กดนิ้วโป้ง (เมื่อล้า 60m+)</td>
+                <td><div>⚡ <strong>Gel (100kcal):</strong> นาทีที่ 40 & 80</div><div>💧 น้ำทุก 2 กม.</div></td>
+            </tr>
+            <tr>
+                <td><strong style="color:white; font-size:16px;">SUN 25</strong><br><span class="tag tag-run">RECOV</span></td>
+                <td><strong style="color:white;">REGENERATIVE</strong><br>Recovery 30-40 min<br><span style="font-size:12px;">HR < 138 (เบาที่สุด)</span></td>
+                <td><strong>Silent Running</strong><br>ลงเท้านุ่มเหมือนนุ่น</td>
+                <td><div>🧘 Full Stretch ชุดใหญ่</div><div>🔄 Foam Roll (All Legs)</div></td>
+            </tr>
         `;
 
         function selectWeek(weekNum) {
             const tbody = document.getElementById('scheduleTableBody');
             const btns = document.querySelectorAll('.timeline-btn');
             
-            // Handle Active State
             btns.forEach(btn => {
                 if (btn.innerText.includes('Week')) {
                     btn.classList.remove('active');
@@ -757,24 +814,24 @@
                 }
             });
 
-            // Handle Content
-            if (weekNum === 4) {
-                tbody.innerHTML = scheduleWeek4;
-            } else {
+            if (weekNum === 1) tbody.innerHTML = scheduleWeek1;
+            else if (weekNum === 2) tbody.innerHTML = scheduleWeek2;
+            else if (weekNum === 3) tbody.innerHTML = scheduleWeek3;
+            else {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="4" style="text-align:center; padding:40px; color:#555;">
-                            <i class="fas fa-calendar-times" style="font-size:24px; margin-bottom:10px;"></i><br>
-                            NO TRAINING DATA FOR WEEK ${weekNum}<br>
-                            <span style="font-size:12px;">(Select Week 4 for Jan 19-25)</span>
+                            <i class="fas fa-calendar-alt" style="font-size:24px; margin-bottom:10px;"></i><br>
+                            NO DATA YET<br>
+                            <span style="font-size:12px;">(Coming soon...)</span>
                         </td>
                     </tr>
                 `;
             }
         }
 
-        // Initialize Schedule
-        selectWeek(4);
+        // Initialize Schedule with Current Week (Week 3)
+        selectWeek(3);
 
         // --- 1. NAVIGATION & UI ---
         function switchTab(tabId, element) {
