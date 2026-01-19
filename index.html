@@ -2,12 +2,12 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RUNNER_001 | Performance Hub</title>
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Prompt:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -28,7 +28,7 @@
             --border-color: #262626;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Prompt', sans-serif; font-weight: 300; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Prompt', sans-serif; font-weight: 300; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
         
         /* Utils */
@@ -43,7 +43,7 @@
         ::-webkit-scrollbar-track { background: var(--bg-body); }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
 
-        /* Sidebar Navigation */
+        /* Sidebar Navigation (Desktop Default) */
         .sidebar { 
             width: 90px; background-color: var(--bg-nav); border-right: 1px solid var(--border-color); 
             display: flex; flex-direction: column; align-items: center; padding: 30px 0; flex-shrink: 0; z-index: 100; 
@@ -60,16 +60,8 @@
 
         .brand-icon::after {
             content: "HOME";
-            position: absolute;
-            bottom: -18px;
-            left: 50%;
-            transform: translateX(-50%) scaleX(-1);
-            font-size: 8px;
-            color: var(--text-sub);
-            letter-spacing: 1px;
-            opacity: 0;
-            transition: 0.3s;
-            pointer-events: none;
+            position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%) scaleX(-1);
+            font-size: 8px; color: var(--text-sub); letter-spacing: 1px; opacity: 0; transition: 0.3s; pointer-events: none;
         }
         .brand-icon:hover::after { opacity: 1; bottom: -22px; }
 
@@ -91,7 +83,7 @@
         }
 
         /* Main Content Area */
-        .main-container { flex-grow: 1; padding: 40px 60px; overflow-y: auto; }
+        .main-container { flex-grow: 1; padding: 40px 60px; overflow-y: auto; padding-bottom: 100px; /* Space for mobile nav */ }
         .section-view { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
         .section-view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -176,54 +168,63 @@
         .timeline-btn:hover:not(.active):not(.month-active) { border-color: #666; color: #aaa; }
         .timeline-year { font-weight: bold; color: white; margin-right: 10px; display: flex; align-items: center; }
 
+        /* --- MOBILE RESPONSIVE (SMARTPHONE VIEW) --- */
         @media (max-width: 768px) {
-            .sidebar { width: 100%; height: 70px; flex-direction: row; padding: 0 25px; border-right: none; border-bottom: 1px solid var(--border-color); justify-content: space-between; }
-            .nav-menu { flex-direction: row; width: auto; gap: 20px; }
-            .nav-item:hover::after { display: none; }
-            .main-container { padding: 25px 20px; }
-            .schedule-table th, .schedule-table td { display: block; width: 100%; padding: 10px 0; }
+            body { flex-direction: column; height: 100vh; }
+            
+            /* Bottom Navigation Bar */
+            .sidebar { 
+                width: 100%; height: 70px; flex-direction: row; padding: 0 15px; 
+                border-right: none; border-top: 1px solid var(--border-color); 
+                justify-content: space-between; position: fixed; bottom: 0; left: 0; 
+                background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 999;
+            }
+            .brand-icon { display: none; } /* Hide brand icon on mobile nav to save space */
+            .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
+            .nav-item { width: auto; height: auto; border-radius: 0; padding: 10px; font-size: 24px; color: #666; background: none !important; box-shadow: none !important; }
+            .nav-item.active { color: var(--whoop-green); }
+            .nav-item:hover::after { display: none; } /* No tooltips on mobile */
+
+            /* Main Content Adjustments */
+            .main-container { padding: 20px 15px; padding-bottom: 90px; /* Space for bottom nav */ overflow-y: auto; height: 100%; }
+            
+            /* Responsive Grid */
+            .handbook-layout, .recovery-grid { grid-template-columns: 1fr; }
+            
+            /* Schedule Table Card View */
             .schedule-table th { display: none; }
-            .schedule-table tr { display: block; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
-            .hr-table { font-size: 12px; }
-            .handbook-layout { grid-template-columns: 1fr; }
-            .recovery-grid { grid-template-columns: 1fr; }
+            .schedule-table td { display: block; width: 100%; padding: 8px 0; border: none; }
+            .schedule-table tr { 
+                display: block; margin-bottom: 20px; padding: 20px; 
+                background: #111; border-radius: 12px; border: 1px solid #333;
+            }
+            .schedule-table td:first-child { 
+                border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; font-size: 18px; 
+            }
+            
+            /* Typography */
+            .page-title { font-size: 24px; }
+            .stat-item-label { font-size: 10px; }
+            .stat-item-value { font-size: 12px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVIGATION SIDEBAR -->
+    <!-- NAVIGATION SIDEBAR (Adapts to Bottom Bar on Mobile) -->
     <nav class="sidebar">
-        <!-- Brand Icon: Acts as Home Button (Flipped Left) -->
+        <!-- Brand Icon: Acts as Home Button (Hidden on Mobile) -->
         <div class="brand-icon" onclick="switchTab('dashboard')" title="Home">
             <i class="fas fa-running"></i>
         </div>
         
         <ul class="nav-menu">
-            <!-- 1. Evolution Log (Home) -->
-            <li class="nav-item active" onclick="switchTab('dashboard', this)" title="Evolution Log">
-                <i class="fas fa-stream"></i>
-            </li>
-            <!-- 2. Schedule -->
-            <li class="nav-item" onclick="switchTab('schedule', this)" title="Weekly Schedule">
-                <i class="fas fa-calendar-week"></i>
-            </li>
-            <!-- 3. Handbook -->
-            <li class="nav-item" onclick="switchTab('handbook', this)" title="Handbook & Gear">
-                <i class="fas fa-shoe-prints"></i>
-            </li>
-            <!-- 4. Recovery (Changed from Nutrition) -->
-            <li class="nav-item" onclick="switchTab('recovery', this)" title="Recovery Room">
-                <i class="fas fa-child-reaching"></i>
-            </li>
-            <!-- 5. Daily Log -->
-            <li class="nav-item" onclick="switchTab('dailylog', this)" title="Daily Log">
-                <i class="fas fa-pen-to-square"></i>
-            </li>
-            <!-- 6. AI Coach -->
-            <li class="nav-item" onclick="switchTab('ai-coach', this)" title="AI Coach">
-                <i class="fas fa-robot"></i>
-            </li>
+            <li class="nav-item active" onclick="switchTab('dashboard', this)" title="Evolution Log"><i class="fas fa-stream"></i></li>
+            <li class="nav-item" onclick="switchTab('schedule', this)" title="Weekly Schedule"><i class="fas fa-calendar-week"></i></li>
+            <li class="nav-item" onclick="switchTab('handbook', this)" title="Handbook & Gear"><i class="fas fa-shoe-prints"></i></li>
+            <li class="nav-item" onclick="switchTab('recovery', this)" title="Recovery Room"><i class="fas fa-child-reaching"></i></li>
+            <li class="nav-item" onclick="switchTab('dailylog', this)" title="Daily Log"><i class="fas fa-pen-to-square"></i></li>
+            <li class="nav-item" onclick="switchTab('ai-coach', this)" title="AI Coach"><i class="fas fa-robot"></i></li>
         </ul>
     </nav>
 
@@ -735,7 +736,7 @@
     <script>
         // --- DATA & LOGIC FOR SCHEDULE (JAN 2026) ---
         
-        // Week 1: Recovery/Reset (Jan 5-11) - OLD/PAST
+        // Week 1: Recovery/Reset (Jan 5-11)
         const scheduleWeek1 = `
             <tr><td><strong style="color:white; font-size:16px;">MON 5</strong><br><span class="tag tag-rest">REST</span></td><td><strong style="color:white;">Sick Day</strong><br>งดวิ่ง (ไข้หวัด)<br><span style="font-size:12px;">ฟื้นฟูภูมิคุ้มกัน</span></td><td>พักผ่อนเต็มที่</td><td><div><i class="fas fa-shield-alt"></i> นอนหลับ 8+ ชม.</div></td></tr>
             <tr><td><strong style="color:white; font-size:16px;">TUE 6</strong><br><span class="tag tag-run">RETURN</span></td><td><strong style="color:white;">Easy + Interval</strong><br>6 min x 4 sets<br><span style="font-size:12px;">Avg HR 148 (Peak 160)</span></td><td>กลับมาวิ่งวันแรก (75%)</td><td>-</td></tr>
@@ -746,7 +747,7 @@
             <tr><td><strong style="color:white; font-size:16px;">SUN 11</strong><br><span class="tag tag-run">FOCUS</span></td><td><strong style="color:white;">Form Focus</strong><br>30-35 นาที + Strides<br><span style="font-size:12px;">แก้ Overstriding ช่วงท้าย</span></td><td>จังหวะลงขาสัมพันธ์กัน</td><td>-</td></tr>
         `;
 
-        // Week 2: Nervous System Response (Jan 12-18) - OLD/PAST
+        // Week 2: Nervous System Response (Jan 12-18)
         const scheduleWeek2 = `
             <tr><td><strong style="color:white; font-size:16px;">MON 12</strong><br><span class="tag tag-rest">REST</span></td><td><strong style="color:white;">Mobility</strong><br>ไม่วิ่ง<br><span style="font-size:12px;">ยืดสะโพก/น่อง/Adductor</span></td><td>Foam Roller</td><td>-</td></tr>
             <tr><td><strong style="color:white; font-size:16px;">TUE 13</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Continuous Run</strong><br>45 นาที (~6km)<br><span style="font-size:12px;">Avg HR 148 (เครื่องติด กม.4)</span></td><td>Pace มาเองโดยไม่เร่ง</td><td>-</td></tr>
