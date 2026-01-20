@@ -4,1035 +4,824 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>RUNNER_001 | Performance Hub</title>
-    <!-- Font Awesome -->
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Prompt:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root {
-            /* --- COLOR PALETTE (WHOOP STYLE) --- */
+            /* --- COLOR PALETTE --- */
             --bg-body: #050505;
-            --bg-card: #121212;
-            --bg-nav: #000000;
-            --bg-input: #1A1A1A;
+            --bg-panel: #0F0F0F;
+            --bg-card: #141414;
+            --bg-hover: #1F1F1F;
+            --border-subtle: #262626;
             
-            --whoop-green: #34D399;
-            --whoop-red: #F87171;
-            --whoop-yellow: #FBBF24;
-            --whoop-blue: #60A5FA;
-            
-            --text-main: #E5E5E5;
-            --text-sub: #A3A3A3;
-            --border-color: #262626;
+            /* Status Colors */
+            --c-green: #10B981;
+            --c-green-dim: rgba(16, 185, 129, 0.1);
+            --c-yellow: #F59E0B;
+            --c-yellow-dim: rgba(245, 158, 11, 0.1);
+            --c-red: #EF4444;
+            --c-red-dim: rgba(239, 68, 68, 0.1);
+            --c-blue: #3B82F6;
+            --c-purple: #8B5CF6;
+            --c-text-main: #FFFFFF;
+            --c-text-sec: #A3A3A3;
+            --c-text-mute: #525252;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Prompt', sans-serif; font-weight: 300; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-body); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; }
-        
-        /* Utils */
-        .text-uppercase { text-transform: uppercase; letter-spacing: 1.5px; font-size: 10px; font-weight: 600; color: var(--text-sub); margin-bottom: 5px; }
-        .highlight-green { color: var(--whoop-green); }
-        .highlight-red { color: var(--whoop-red); }
-        .highlight-yellow { color: var(--whoop-yellow); }
-        .text-justify { text-align: justify; line-height: 1.8; }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-body); }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
-
-        /* Sidebar Navigation (Desktop Default) */
-        .sidebar { 
-            width: 90px; background-color: var(--bg-nav); border-right: 1px solid var(--border-color); 
-            display: flex; flex-direction: column; align-items: center; padding: 30px 0; flex-shrink: 0; z-index: 100; 
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--c-text-main); 
+            font-family: 'Inter', 'Prompt', sans-serif;
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
         }
-        .brand-icon { 
-            font-size: 28px; margin-bottom: 40px; cursor: pointer; transition: 0.3s;
-            background: linear-gradient(135deg, var(--whoop-green), var(--whoop-blue));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            position: relative;
-            transform: scaleX(-1); 
+
+        /* --- UI ELEMENTS --- */
+        .status-indicator {
             display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
         }
-        .brand-icon:hover { transform: scaleX(-1) scale(1.1); filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.4)); }
+        .status-indicator.active { box-shadow: 0 0 8px currentColor; }
+        .st-green { background-color: var(--c-green); color: var(--c-green); }
+        .st-yellow { background-color: var(--c-yellow); color: var(--c-yellow); }
+        .st-red { background-color: var(--c-red); color: var(--c-red); }
+        .st-blue { background-color: var(--c-blue); color: var(--c-blue); }
 
-        .brand-icon::after {
-            content: "HOME";
-            position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%) scaleX(-1);
-            font-size: 8px; color: var(--text-sub); letter-spacing: 1px; opacity: 0; transition: 0.3s; pointer-events: none;
+        /* --- LAYOUT --- */
+        .sidebar {
+            width: 80px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-subtle);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 30px 0; z-index: 100; flex-shrink: 0;
         }
-        .brand-icon:hover::after { opacity: 1; bottom: -22px; }
 
-        .nav-menu { list-style: none; display: flex; flex-direction: column; gap: 30px; width: 100%; align-items: center; }
-        .nav-item { 
-            width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; 
-            color: var(--text-sub); cursor: pointer; transition: 0.3s; font-size: 20px; position: relative;
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scroll-behavior: smooth;
         }
-        .nav-item:hover { color: white; background: #1a1a1a; transform: translateY(-2px); }
-        .nav-item.active { 
-            color: var(--whoop-green); background: rgba(52, 211, 153, 0.1); 
-            font-weight: 400; box-shadow: 0 0 15px rgba(52, 211, 153, 0.1); 
+
+        .section-view { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s ease; }
+        .section-view.active { display: block; opacity: 1; transform: translateY(0); }
+
+        /* --- NAVIGATION --- */
+        .brand-logo { 
+            font-size: 24px; color: var(--c-green); margin-bottom: 40px; 
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border-subtle); border-radius: 12px;
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        .brand-logo:hover { transform: scale(1.05); background: var(--bg-hover); }
+        
+        .nav-list { list-style: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .nav-item {
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--c-text-mute);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-item:hover { color: var(--c-text-main); background: var(--bg-hover); }
+        .nav-item.active { color: var(--c-green); background: var(--c-green-dim); border: 1px solid rgba(16,185,129,0.2); }
+        .nav-item i { font-size: 18px; }
+
+        /* --- HEADERS --- */
+        .header-group { margin-bottom: 30px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .page-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
+        .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--c-text-main); line-height: 1; }
+        .page-date { font-size: 12px; color: var(--c-text-sec); font-family: 'Prompt', sans-serif; }
+
+        /* --- CARDS & GRID --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .card-header {
+            padding: 18px 24px;
+            background: var(--bg-card);
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
+        }
+        .card-header:hover { background: var(--bg-hover); }
+        .card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+        .card-body { 
+            padding: 0 24px; max-height: 0; overflow: hidden; opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card.open .card-header { border-bottom: 1px solid var(--border-subtle); }
+        .card.open .card-body { padding: 24px; max-height: 2000px; opacity: 1; }
+        
+        /* Full Height Content helper */
+        .full-h { height: 100%; display: flex; flex-direction: column; }
+
+        /* --- SCHEDULE TOOLBAR --- */
+        .schedule-toolbar {
+            display: flex; flex-direction: column; gap: 10px;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 12px; padding: 6px; margin-bottom: 20px;
+        }
+        .toolbar-row { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Month Selector Style */
+        .month-group { display: flex; gap: 4px; background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle); }
+        .month-pill {
+            padding: 6px 16px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--c-text-mute);
+            cursor: pointer; transition: all 0.2s; border: 1px solid transparent; letter-spacing: 0.5px;
+        }
+        .month-pill:hover { color: var(--c-text-main); }
+        .month-pill.active { 
+            background: var(--c-green); color: #000; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25); border-color: var(--c-green);
+        }
+
+        /* Week Selector Style */
+        .week-group { 
+            display: flex; flex-grow: 1; margin-left: 10px; gap: 2px;
+            background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle);
+        }
+        .week-pill {
+            flex: 1; text-align: center; padding: 8px 0; border-radius: 6px; 
+            font-size: 11px; font-weight: 600; color: var(--c-text-sec);
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .week-pill:hover { background: var(--bg-hover); color: white; }
+        .week-pill.active { 
+            background: var(--bg-hover); color: var(--c-green); 
+            border: 1px solid rgba(16,185,129,0.1);
+        }
+        .week-pill.active::after {
+            content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px; background: var(--c-green); border-radius: 50%;
         }
         
-        .nav-item:hover::after {
-            content: attr(title); position: absolute; left: 60px; background: #222; padding: 6px 12px; 
-            border-radius: 6px; font-size: 12px; white-space: nowrap; z-index: 200; border: 1px solid #444; color: white;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5); pointer-events: none;
-        }
-
-        /* Main Content Area */
-        .main-container { flex-grow: 1; padding: 40px 60px; overflow-y: auto; padding-bottom: 100px; /* Space for mobile nav */ }
-        .section-view { display: none; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-        .section-view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Components */
-        .header-section { margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 20px; }
-        .page-title { font-size: 28px; color: white; font-weight: 500; letter-spacing: -0.5px; }
-        .subtitle { color: var(--text-sub); margin-top: 5px; font-size: 14px; }
-        
-        .accordion-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 20px; overflow: hidden; transition: 0.2s; }
-        .accordion-header { padding: 25px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); border-bottom: 1px solid transparent; }
-        .accordion-header:hover { background: #181818; }
-        .accordion-card.open { border-color: var(--whoop-green); }
-        .accordion-card.open .accordion-header { border-bottom: 1px solid var(--border-color); background: #151515; }
-        .accordion-card.open .accordion-icon { transform: rotate(180deg); }
-        .accordion-body { display: none; padding: 25px 30px; background: #0a0a0a; }
-
-        /* Stats Grid for Evolution */
-        .stats-grid-row {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; 
-            margin-bottom: 15px; background: #111; padding: 15px; border-radius: 8px; border: 1px solid #333;
-        }
-        .stat-item-label { font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 4px; }
-        .stat-item-value { font-size: 14px; color: white; font-weight: 600; }
-
-        /* Schedule Table */
-        .schedule-table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        .schedule-table th { padding: 15px; text-align: left; color: var(--text-sub); border-bottom: 1px solid var(--border-color); text-transform: uppercase; font-size: 11px; letter-spacing: 1px; }
-        .schedule-table td { padding: 20px 15px; border-bottom: 1px solid #222; vertical-align: top; color: var(--text-sub); line-height: 1.6; }
-        .schedule-table tr:hover td { background: rgba(255,255,255,0.02); color: var(--text-main); }
-
-        .tag { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 600; text-transform: uppercase; display: inline-block; margin-bottom: 5px; }
-        .tag-run { background: rgba(52, 211, 153, 0.15); color: var(--whoop-green); border: 1px solid rgba(52, 211, 153, 0.2); }
-        .tag-rest { background: rgba(255, 255, 255, 0.05); color: var(--text-sub); border: 1px solid #333; }
-        .tag-long { background: rgba(245, 158, 11, 0.15); color: var(--whoop-yellow); border: 1px solid rgba(245, 158, 11, 0.2); }
-
-        /* --- HANDBOOK LAYOUT --- */
-        .handbook-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        .handbook-full-width { grid-column: 1 / -1; }
-        .info-box { padding: 20px; background: rgba(255,255,255,0.03); border-radius: 8px; border-left: 3px solid var(--whoop-blue); height: 100%; }
-
-        /* --- RECOVERY GRID --- */
-        .recovery-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
-        .recovery-card { background: #161616; padding: 20px; border-radius: 10px; border: 1px solid #222; }
-        .recovery-title { color: white; font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .recovery-list { list-style: none; padding: 0; margin: 0; }
-        .recovery-list li { margin-bottom: 10px; font-size: 13px; color: var(--text-sub); display: flex; align-items: flex-start; gap: 8px; }
-        .recovery-list li i { color: var(--whoop-green); margin-top: 3px; font-size: 10px; }
-
-        /* HR Zone Table */
-        .hr-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        .hr-table th { text-align: left; padding: 12px; background: #1a1a1a; color: var(--text-sub); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;}
-        .hr-table td { padding: 15px 12px; border-bottom: 1px solid #222; vertical-align: middle; }
-        .hr-zone-tag { font-weight: bold; display: block; margin-bottom: 4px; font-size: 14px; }
-        
-        /* Log Form */
-        .log-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .form-input { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); color: white; padding: 12px; border-radius: 8px; outline: none; }
-        .form-input:focus { border-color: var(--whoop-green); }
-        .btn-save { background: var(--whoop-green); color: black; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s; }
-        .btn-save:hover { opacity: 0.9; transform: translateY(-1px); }
-        
-        /* New Button Style for AI Features */
-        .btn-sparkle { 
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6); 
-            color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-sparkle:hover { filter: brightness(1.2); transform: translateY(-1px); }
-
-        /* Log History */
-        .log-history-item { background: #161616; padding: 20px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid var(--text-sub); display: flex; justify-content: space-between; align-items: center; }
-
-        /* Timeline Navigation */
-        .timeline-nav { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 5px; }
-        .timeline-btn { 
-            background: #111; border: 1px solid #333; color: #666; padding: 8px 16px; border-radius: 20px; 
-            font-size: 12px; cursor: pointer; white-space: nowrap; transition: 0.2s; 
-        }
-        .timeline-btn.active { background: var(--whoop-green); color: black; border-color: var(--whoop-green); font-weight: 600; }
-        .timeline-btn.month-active { background: var(--whoop-green); color: black; border-color: var(--whoop-green); font-weight: 800; box-shadow: 0 0 10px rgba(52, 211, 153, 0.2); }
-        .timeline-btn:hover:not(.active):not(.month-active) { border-color: #666; color: #aaa; }
-        .timeline-year { font-weight: bold; color: white; margin-right: 10px; display: flex; align-items: center; }
-
-        /* --- MOBILE RESPONSIVE (SMARTPHONE VIEW) --- */
         @media (max-width: 768px) {
-            body { flex-direction: column; height: 100vh; }
-            
-            /* Bottom Navigation Bar */
-            .sidebar { 
-                width: 100%; height: 70px; flex-direction: row; padding: 0 15px; 
-                border-right: none; border-top: 1px solid var(--border-color); 
-                justify-content: space-between; position: fixed; bottom: 0; left: 0; 
-                background: rgba(0,0,0,0.95); backdrop-filter: blur(10px); z-index: 999;
-            }
-            .brand-icon { display: none; } /* Hide brand icon on mobile nav to save space */
-            .nav-menu { flex-direction: row; width: 100%; justify-content: space-around; gap: 0; }
-            .nav-item { width: auto; height: auto; border-radius: 0; padding: 10px; font-size: 24px; color: #666; background: none !important; box-shadow: none !important; }
-            .nav-item.active { color: var(--whoop-green); }
-            .nav-item:hover::after { display: none; } /* No tooltips on mobile */
+            .schedule-toolbar { gap: 8px; }
+            .month-group { width: 100%; justify-content: center; }
+            .week-group { width: 100%; margin: 0; }
+        }
 
-            /* Main Content Adjustments */
-            .main-container { padding: 20px 15px; padding-bottom: 90px; /* Space for bottom nav */ overflow-y: auto; height: 100%; }
-            
-            /* Responsive Grid */
-            .handbook-layout, .recovery-grid { grid-template-columns: 1fr; }
-            
-            /* Schedule Table Card View */
-            .schedule-table th { display: none; }
-            .schedule-table td { display: block; width: 100%; padding: 8px 0; border: none; }
-            .schedule-table tr { 
-                display: block; margin-bottom: 20px; padding: 20px; 
-                background: #111; border-radius: 12px; border: 1px solid #333;
+        /* --- TABLE STYLE --- */
+        .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .schedule-table th { 
+            text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-mute);
+            padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-panel);
+        }
+        .schedule-table td { 
+            padding: 18px 16px; vertical-align: top; border-bottom: 1px solid var(--border-subtle);
+            color: var(--c-text-sec); font-size: 13px; line-height: 1.5;
+        }
+        .schedule-table tr:last-child td { border-bottom: none; }
+        .schedule-table tr:hover td { background: var(--bg-hover); }
+
+        /* Tags */
+        .tag { 
+            display: inline-block; padding: 3px 8px; border-radius: 4px; 
+            font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .tag-run { color: var(--c-green); border: 1px solid var(--c-green-dim); background: rgba(16,185,129,0.05); }
+        .tag-rest { color: var(--c-text-mute); border: 1px solid #333; background: #111; }
+        .tag-long { color: var(--c-yellow); border: 1px solid var(--c-yellow-dim); background: rgba(245,158,11,0.05); }
+
+        /* --- STATS & CALENDAR --- */
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--border-subtle); gap: 1px; border: 1px solid var(--border-subtle); border-radius: 6px; overflow: hidden; }
+        .stat-item { background: var(--bg-card); padding: 15px; text-align: center; }
+        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; }
+        .stat-value { font-size: 15px; font-weight: 600; color: var(--c-text-main); font-family: 'Inter', sans-serif; }
+        .stat-highlight { color: var(--c-green); }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 20px; }
+        .cal-day-header { text-align: center; font-size: 10px; color: var(--c-text-mute); padding-bottom: 10px; }
+        .cal-day { 
+            background: var(--bg-hover); border-radius: 4px; aspect-ratio: 1/1; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--c-text-mute); border: 1px solid transparent; position: relative;
+            cursor: default; transition: 0.2s;
+        }
+        .cal-day.active { background: var(--bg-card); color: var(--c-text-main); border-color: var(--border-subtle); }
+        .cal-day.today { border-color: var(--c-green); color: var(--c-green); background: var(--c-green-dim); }
+        
+        /* New Shoe Icon Style (Strava-like) */
+        .shoe-svg { 
+            width: 14px; height: 14px; margin-top: 4px; 
+            fill: var(--c-text-mute); opacity: 0.3; transition: 0.2s; 
+        }
+        .cal-day.active .shoe-svg { fill: var(--c-green); opacity: 1; }
+        .cal-day.active .shoe-svg.long { fill: var(--c-yellow); }
+        
+        /* --- MOBILE ADAPTATION --- */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { 
+                width: 100%; height: 60px; flex-direction: row; padding: 0 20px; 
+                position: fixed; bottom: 0; top: auto; border-right: none; border-top: 1px solid var(--border-subtle);
+                background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
+                justify-content: space-around;
             }
-            .schedule-table td:first-child { 
-                border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px; font-size: 18px; 
-            }
+            .brand-logo { display: none; }
+            .nav-list { flex-direction: row; justify-content: space-between; width: 100%; gap: 0; }
+            .nav-item { width: auto; height: 40px; padding: 0 10px; background: transparent !important; border: none !important; }
+            .nav-item.active { color: var(--c-green); }
             
-            /* Typography */
-            .page-title { font-size: 24px; }
-            .stat-item-label { font-size: 10px; }
-            .stat-item-value { font-size: 12px; }
+            .main-content { padding: 20px 20px 80px 20px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            
+            /* Table to Cards for Mobile */
+            .schedule-table thead { display: none; }
+            .schedule-table, .schedule-table tbody, .schedule-table tr, .schedule-table td { display: block; width: 100%; }
+            .schedule-table tr { margin-bottom: 15px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-card); overflow: hidden; }
+            .schedule-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .schedule-table td:last-child { border-bottom: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- NAVIGATION SIDEBAR (Adapts to Bottom Bar on Mobile) -->
+    <!-- SIDEBAR -->
     <nav class="sidebar">
-        <!-- Brand Icon: Acts as Home Button (Hidden on Mobile) -->
-        <div class="brand-icon" onclick="switchTab('dashboard')" title="Home">
-            <i class="fas fa-running"></i>
+        <!-- New Icon: Running Figure Facing Left -->
+        <div class="brand-logo" onclick="nav('dashboard', document.querySelector('.nav-item'))" title="Home">
+            <i class="fas fa-running" style="transform: scaleX(-1);"></i>
         </div>
-        
-        <ul class="nav-menu">
-            <li class="nav-item active" onclick="switchTab('dashboard', this)" title="Evolution Log"><i class="fas fa-stream"></i></li>
-            <li class="nav-item" onclick="switchTab('schedule', this)" title="Weekly Schedule"><i class="fas fa-calendar-week"></i></li>
-            <li class="nav-item" onclick="switchTab('handbook', this)" title="Handbook & Gear"><i class="fas fa-shoe-prints"></i></li>
-            <li class="nav-item" onclick="switchTab('recovery', this)" title="Recovery Room"><i class="fas fa-child-reaching"></i></li>
-            <li class="nav-item" onclick="switchTab('dailylog', this)" title="Daily Log"><i class="fas fa-pen-to-square"></i></li>
-            <li class="nav-item" onclick="switchTab('ai-coach', this)" title="AI Coach"><i class="fas fa-robot"></i></li>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="nav('dashboard', this)" title="Evolution Log"><i class="fas fa-stream"></i></li>
+            <li class="nav-item" onclick="nav('schedule', this)" title="Schedule"><i class="far fa-calendar-alt"></i></li>
+            <li class="nav-item" onclick="nav('handbook', this)" title="Handbook"><i class="fas fa-book"></i></li>
+            <li class="nav-item" onclick="nav('recovery', this)" title="Recovery"><i class="fas fa-heartbeat"></i></li>
+            <li class="nav-item" onclick="nav('stats', this)" title="Stats"><i class="fas fa-chart-pie"></i></li>
         </ul>
     </nav>
 
     <!-- MAIN CONTENT -->
-    <div class="main-container">
+    <main class="main-content">
 
-        <!-- VIEW 1: DASHBOARD & EVOLUTION LOG -->
+        <!-- 1. DASHBOARD: EVOLUTION LOG -->
         <div id="dashboard" class="section-view active">
-            <div class="header-section">
+            <div class="header-group">
                 <div>
-                    <div class="text-uppercase">PERFORMANCE HUB</div>
-                    <h1 class="page-title" style="font-size: 24px;">📜 EVOLUTION LOG: HISTORY OF PERFORMANCE</h1>
-                    <div class="subtitle" style="line-height: 1.5;">
-                        บันทึกพัฒนาการรายเฟส (Data-Driven Timeline)<br>
-                        <span style="color: var(--whoop-green); font-size: 12px;">(ข้อมูลอัปเดตล่าสุด: 19 ม.ค. 2026)</span>
-                    </div>
+                    <div class="page-label">PERFORMANCE HUB</div>
+                    <div class="page-title">EVOLUTION LOG</div>
                 </div>
+                <div class="page-date"><i class="far fa-clock"></i> Updated: 20 Jan 2026</div>
             </div>
 
-            <!-- WEEKLY FOCUS (Pinned) -->
-            <div class="accordion-card open" style="border-color: var(--whoop-yellow);">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <div>
-                        <div class="text-uppercase" style="color: var(--whoop-yellow);">WEEKLY FOCUS (19-25 JAN)</div>
-                        <h3 style="color: white; font-weight: 500;">Compressed Quality Strategy</h3>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon"></i>
+            <!-- Phase 3 (Current) -->
+            <div class="card open" style="border-left: 3px solid var(--c-green);">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title"><span class="status-indicator st-green active"></span> PHASE 3: NEUROMUSCULAR (CURRENT)</div>
+                    <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
                 </div>
-                <div class="accordion-body" style="display: block;">
-                    <p style="color: var(--text-sub); margin-bottom: 15px;">
-                        สัปดาห์นี้มีข้อจำกัดเรื่องเวลา (ติดธุระ พฤหัส-ศุกร์) แผนจึงปรับเป็น <strong>"อัดคุณภาพต้นสัปดาห์ + รักษาความสดปลายสัปดาห์"</strong> เพื่อให้ร่างกายพร้อมสำหรับ Long Run วันเสาร์
+                <div class="card-body">
+                    <div class="stat-grid" style="margin-bottom:15px;">
+                        <div class="stat-item"><div class="stat-label">Pace</div><div class="stat-value stat-highlight">7:05</div></div>
+                        <div class="stat-item"><div class="stat-label">HR Avg</div><div class="stat-value">145</div></div>
+                        <div class="stat-item"><div class="stat-label">SPM</div><div class="stat-value">170</div></div>
+                        <div class="stat-item"><div class="stat-label">GCT</div><div class="stat-value">275ms</div></div>
+                    </div>
+                    <p style="font-size:13px; color:var(--c-text-sec);">
+                        <i class="fas fa-info-circle" style="color:var(--c-blue);"></i> Unlock efficiency through nervous system awareness. Speed is a byproduct of form, not effort.
                     </p>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; font-size: 13px;">
-                        <div class="info-box" style="border-left-color: var(--whoop-yellow);">
-                            <strong style="color: white;">🎯 Main Goal</strong><br>
-                            Hip Drive Awareness (จดจำความรู้สึกสะโพกส่งแรง แทนการใช้เพียงน่อง)
-                        </div>
-                        <div class="info-box" style="border-left-color: var(--whoop-red);">
-                            <strong style="color: white;">⚠️ Action Items</strong><br>
-                            1. กินเจล (100kcal) นาทีที่ 40 & 80 ใน Long Run<br>
-                            2. ทำ Clamshells ในวันหยุดห้ามขาด (กันก้นหลับ)
-                        </div>
+                </div>
+            </div>
+
+            <!-- Phase 2 (Completed) -->
+            <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> &nbsp; PHASE 2: AEROBIC BASE</div>
+                    <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+                </div>
+                <div class="card-body">
+                    <div class="page-label" style="color:var(--c-text-mute);">NOV - DEC 2025</div>
+                    <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px;">
+                        Built the "Engine". Focus was purely on increasing aerobic capacity without injury.
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><div class="stat-label">Avg Pace</div><div class="stat-value">7:40</div></div>
+                        <div class="stat-item"><div class="stat-label">HR Avg</div><div class="stat-value">148</div></div>
+                        <div class="stat-item"><div class="stat-label">SPM</div><div class="stat-value">160</div></div>
+                        <div class="stat-item"><div class="stat-label">Weekly Vol</div><div class="stat-value">25km</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- PHASE 3: CURRENT -->
-            <div class="accordion-card open">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <div>
-                        <div class="text-uppercase" style="color: var(--whoop-green);">🌕 PHASE 3: CURRENT (DEC 25 - PRESENT)</div>
-                        <h3 style="color: white;">Neuromuscular Awareness</h3>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon"></i>
+            <!-- Phase 1 (Completed) -->
+            <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> &nbsp; PHASE 1: FAMILIARIZATION</div>
+                    <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
                 </div>
-                <div class="accordion-body" style="display: block;">
-                    <p class="text-justify" style="color: var(--text-sub); margin-bottom: 15px;">
-                        <strong>สถานะ:</strong> "Efficiency Unlock" (ประสิทธิภาพสูงสุด ณ ตอนนี้)<br>
-                        โฟกัสการสั่งงานระบบประสาทและการเชื่อมต่อกล้ามเนื้อ (Mind-Muscle Connection) ปลดล็อกสะโพกเพื่อลดภาระช่วงล่าง
-                    </p>
-                    
-                    <!-- Stats Grid -->
-                    <div class="stats-grid-row">
-                        <div>
-                            <div class="stat-item-label">Easy Pace</div>
-                            <div class="stat-item-value highlight-green">7:05 - 7:20 /km</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Avg HR</div>
-                            <div class="stat-item-value">140 - 150 bpm</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Cadence</div>
-                            <div class="stat-item-value">165 - 172 spm</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">GCT</div>
-                            <div class="stat-item-value">270 - 280 ms</div>
-                        </div>
+                <div class="card-body">
+                    <div class="page-label" style="color:var(--c-text-mute);">SEP - OCT 2025</div>
+                    <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px;">
+                        Transition from sedentary/injury to moving. HR was high, pace was slow.
                     </div>
-
-                    <div class="info-box" style="border-left-color: var(--whoop-green);">
-                        <strong style="color: white;">💡 Key Learning</strong><br>
-                        "ความเร็วมาเอง" ไม่ต้องเค้น, ปลดล็อกสะโพกซ้าย, เริ่มวิ่งด้วยความเข้าใจระบบประสาท
+                    <div class="stat-grid">
+                        <div class="stat-item"><div class="stat-label">Avg Pace</div><div class="stat-value">8:30</div></div>
+                        <div class="stat-item"><div class="stat-label">HR Avg</div><div class="stat-value" style="color:var(--c-red);">155</div></div>
+                        <div class="stat-item"><div class="stat-label">Consistency</div><div class="stat-value">60%</div></div>
                     </div>
                 </div>
             </div>
 
-            <!-- PHASE 2: COMPLETED -->
-            <div class="accordion-card">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <div>
-                        <div class="text-uppercase">🌗 PHASE 2: COMPLETED (NOV - DEC 2025)</div>
-                        <h3 style="color: white;">Aerobic Base Formation</h3>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon"></i>
+             <!-- Phase 0 (Completed) -->
+             <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> &nbsp; PHASE 0: PRE-CONDITIONING</div>
+                    <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
                 </div>
-                <div class="accordion-body">
-                    <p class="text-justify" style="color: var(--text-sub); margin-bottom: 15px;">
-                        <strong>สถานะ:</strong> ระบบแอโรบิกเริ่มทำงานจริง (Base เริ่มมีเนื้อ)<br>
-                        ช่วงสร้างฐานที่เข้มข้นขึ้น ร่างกายเริ่มรับระยะได้มากขึ้น แต่ยังขาดประสิทธิภาพในการใช้พลังงาน
-                    </p>
-                    
-                    <div class="stats-grid-row">
-                        <div>
-                            <div class="stat-item-label">Easy Pace</div>
-                            <div class="stat-item-value">7:40 - 7:50 /km</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Avg HR</div>
-                            <div class="stat-item-value">140 - 150 bpm</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Cadence</div>
-                            <div class="stat-item-value">155 → 162 spm</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">GCT</div>
-                            <div class="stat-item-value">280 - 300 ms</div>
-                        </div>
-                    </div>
-
-                    <div class="info-box" style="border-left-color: var(--whoop-yellow);">
-                        <strong style="color: white;">💡 Key Learning</strong><br>
-                        วิ่งได้นาน 75-100 นาที แต่พลังงานหมดไว (Body Battery Drop เร็ว), เท้ายังแช่พื้นนาน
+                <div class="card-body">
+                    <div class="page-label" style="color:var(--c-text-mute);">PRE - AUG 2025</div>
+                    <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px;">
+                        <strong>Problem:</strong> Severe Shin Splints & Overstriding.<br>
+                        <strong>Solution:</strong> Rest, Ice, and learning to run with shorter strides.
                     </div>
                 </div>
             </div>
 
-            <!-- PHASE 1: COMPLETED -->
-            <div class="accordion-card">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <div>
-                        <div class="text-uppercase">🌘 PHASE 1: COMPLETED (SEP - OCT 2025)</div>
-                        <h3 style="color: white;">Aerobic Familiarization</h3>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon"></i>
-                </div>
-                <div class="accordion-body">
-                    <p class="text-justify" style="color: var(--text-sub); margin-bottom: 15px;">
-                        <strong>สถานะ:</strong> เริ่มมีโครงสร้าง แต่ระบบยังไม่นิ่ง<br>
-                        ช่วงสร้างวินัยและการทำความคุ้นเคยกับตารางฝึกซ้อม
-                    </p>
-                    
-                    <div class="stats-grid-row">
-                        <div>
-                            <div class="stat-item-label">Easy Pace</div>
-                            <div class="stat-item-value">8:30 - 9:00 /km</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Avg HR</div>
-                            <div class="stat-item-value highlight-red">145 - 155 bpm</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Cadence</div>
-                            <div class="stat-item-value">150 - 155 spm</div>
-                        </div>
-                    </div>
-
-                    <div class="info-box" style="border-left-color: var(--whoop-blue);">
-                        <strong style="color: white;">💡 Key Learning</strong><br>
-                        เริ่มวิ่งต่อเนื่อง 40-60 นาทีได้โดยไม่บาดเจ็บหนัก, เรียนรู้การคุม HR เบื้องต้น
-                    </div>
-                </div>
-            </div>
-
-            <!-- PHASE 0: COMPLETED -->
-            <div class="accordion-card">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <div>
-                        <div class="text-uppercase">🌑 PHASE 0: COMPLETED (BEFORE AUG 2025)</div>
-                        <h3 style="color: white;">Pre-Base (The Instinct Era)</h3>
-                    </div>
-                    <i class="fas fa-chevron-down accordion-icon"></i>
-                </div>
-                <div class="accordion-body">
-                    <p class="text-justify" style="color: var(--text-sub); margin-bottom: 15px;">
-                        <strong>สถานะ:</strong> วิ่งตามสัญชาตญาณ (ยังไม่นับเป็น Training)<br>
-                        ช่วงลองผิดลองถูก วิ่งเร็วเกินไป และบาดเจ็บง่าย
-                    </p>
-                    
-                    <div class="stats-grid-row">
-                        <div>
-                            <div class="stat-item-label">Distance</div>
-                            <div class="stat-item-value">3-5 km (< 40m)</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">HR Zone</div>
-                            <div class="stat-item-value highlight-red">Zone 3-4 (Spike)</div>
-                        </div>
-                        <div>
-                            <div class="stat-item-label">Cadence</div>
-                            <div class="stat-item-value">N/A</div>
-                        </div>
-                    </div>
-
-                    <div class="info-box" style="border-left-color: #333;">
-                        <strong style="color: white;">💡 Key Learning</strong><br>
-                        Shin Splints (เจ็บหน้าแข้ง) จากการก้าวยาว, ยังไม่เข้าใจเรื่อง Zone หัวใจ
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- VIEW 2: SCHEDULE -->
+        <!-- 2. SCHEDULE -->
         <div id="schedule" class="section-view">
-            <div class="header-section">
+            <div class="header-group">
                 <div>
-                    <div class="text-uppercase">TRAINING PLAN</div>
-                    <h1 class="page-title">Weekly Schedule</h1>
-                    <div class="subtitle">Timeline Planning</div>
+                    <div class="page-label">TRAINING PLAN</div>
+                    <div class="page-title">WEEKLY SCHEDULE</div>
                 </div>
             </div>
 
-            <div class="timeline-nav">
-                <div class="timeline-year">2026</div>
-                <button class="timeline-btn month-active">JAN</button>
-                <button class="timeline-btn">FEB</button>
-                <button class="timeline-btn">MAR</button>
-                <div style="width:1px; background:#333; margin:0 5px;"></div>
-                <button class="timeline-btn" onclick="selectWeek(1)">Week 1<br><span style="font-size:8px;">5-11</span></button>
-                <button class="timeline-btn" onclick="selectWeek(2)">Week 2<br><span style="font-size:8px;">12-18</span></button>
-                <button class="timeline-btn active" onclick="selectWeek(3)">Week 3<br><span style="font-size:8px;">19-25</span></button>
-                <button class="timeline-btn" onclick="selectWeek(4)">Week 4<br><span style="font-size:8px;">26-31</span></button>
+            <!-- Integrated Control Bar -->
+            <div class="schedule-toolbar">
+                <div class="toolbar-row" style="display:flex; flex-wrap:wrap; gap:10px;">
+                    <!-- Month Side -->
+                    <div class="month-group">
+                        <div class="month-pill active">JAN 2026</div>
+                        <div class="month-pill" style="opacity:0.5; cursor:not-allowed;">FEB 2026</div>
+                    </div>
+                    
+                    <!-- Week Side -->
+                    <div class="week-group">
+                        <div class="week-pill" onclick="renderWeek(1, this)">WEEK 01</div>
+                        <div class="week-pill" onclick="renderWeek(2, this)">WEEK 02</div>
+                        <div class="week-pill active" onclick="renderWeek(3, this)">WEEK 03</div>
+                        <div class="week-pill" onclick="renderWeek(4, this)">WEEK 04</div>
+                    </div>
+                </div>
+                <!-- Status Bar -->
+                <div style="padding: 0 10px 5px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec);">
+                    <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 3: Neuromuscular</span>
+                    <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Hip Drive</span>
+                </div>
             </div>
 
-            <div class="accordion-card open" style="border: 1px solid var(--border-color); cursor: default;">
+            <div class="card open" style="border-top: none;">
                 <table class="schedule-table">
                     <thead>
                         <tr>
-                            <th width="15%">Day</th>
-                            <th width="35%">Detail + HR Zone</th>
-                            <th width="25%">Focus & Technique</th>
-                            <th width="25%">Supplements & Strength</th>
+                            <th width="15%">DAY</th>
+                            <th width="35%">PROGRAM & HR</th>
+                            <th width="25%">FOCUS & SUPPLEMENTS</th>
+                            <th width="25%">NUTRITION & STRENGTH</th>
                         </tr>
                     </thead>
-                    <tbody id="scheduleTableBody"></tbody>
+                    <tbody id="schedule-body">
+                        <!-- Content injected by JS -->
+                    </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- VIEW 3: HANDBOOK (SAME) -->
+        <!-- 3. HANDBOOK & GEAR -->
         <div id="handbook" class="section-view">
-            <div class="header-section">
+             <div class="header-group">
                 <div>
-                    <div class="text-uppercase">KNOWLEDGE BASE</div>
-                    <h1 class="page-title">Handbook & Gear</h1>
-                    <div class="subtitle">ข้อมูลพื้นฐาน และวิเคราะห์โซนหัวใจ</div>
+                    <div class="page-label">KNOWLEDGE BASE</div>
+                    <div class="page-title">HANDBOOK & GEAR</div>
                 </div>
             </div>
 
-            <div class="handbook-layout">
-                <div class="accordion-card open" style="height: fit-content; margin-bottom:0;">
-                    <div class="accordion-header" style="border-bottom: 1px solid var(--border-color);">
-                        <h3 style="margin:0;">1. Identity & Philosophy</h3>
+            <div class="grid-2" style="align-items: stretch;">
+                <!-- Identity -->
+                <div class="card open full-h" style="border-top: 3px solid var(--c-blue);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-fingerprint"></i> RUNNER IDENTITY</div>
                     </div>
-                    <div style="padding: 20px;">
-                        <p style="color: var(--text-main); font-weight: 500;">Type: Cognitive-Associative Learner</p>
-                        <p style="font-size: 13px; color: var(--text-sub); margin-bottom: 15px;">
-                            นักวิ่งสาย "ความเข้าใจ" แยกแยะ Pain vs Fatigue ได้ดี
-                        </p>
-                        <div style="background: #1A1A1A; padding: 15px; border-radius: 8px;">
-                            <strong style="color: var(--whoop-blue);">Core Rules:</strong>
-                            <ul style="font-size: 13px; color: var(--text-sub); margin-top: 5px; list-style: inside;">
-                                <li>Base > Speed (ฐานต้องแน่นก่อน)</li>
-                                <li>HR > Pace (หัวใจนำทาง)</li>
-                                <li>Feeling > Numbers (ความรู้สึกสำคัญกว่า)</li>
+                    <div class="card-body full-h">
+                        <div style="margin-bottom:20px;">
+                            <div class="page-label">TYPE</div>
+                            <div style="font-size:16px; font-weight:600; color:white; margin-bottom:5px;">Cognitive-Associative Learner</div>
+                            <div style="font-size:13px; color:var(--c-text-sec); line-height:1.4;">
+                                "Requires understanding the 'Why' before the 'How'. Needs data to validate feeling."
+                            </div>
+                        </div>
+                        
+                        <!-- Visual Skill Graph -->
+                        <div style="margin-bottom:20px;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:5px; font-size:10px; color:var(--c-text-mute); text-transform:uppercase;">
+                                <span>Cognitive</span>
+                                <span>Associative</span>
+                                <span>Autonomous</span>
+                            </div>
+                            <div style="height:6px; background:var(--bg-hover); border-radius:3px; position:relative;">
+                                <div style="width:55%; height:100%; background:var(--c-blue); border-radius:3px;"></div>
+                                <div style="width:2px; height:10px; background:white; position:absolute; left:55%; top:-2px;"></div>
+                            </div>
+                            <div style="text-align:center; font-size:10px; color:var(--c-blue); margin-top:4px;">Current Stage</div>
+                        </div>
+
+                        <div style="background:var(--bg-hover); padding:15px; border-radius:6px; margin-top:auto;">
+                            <div class="page-label" style="color:var(--c-blue);">CORE RULES</div>
+                            <ul style="font-size:13px; color:var(--c-text-sec); list-style:none; line-height:1.8;">
+                                <li><i class="fas fa-check" style="color:var(--c-blue); margin-right:5px;"></i> Base > Speed</li>
+                                <li><i class="fas fa-check" style="color:var(--c-blue); margin-right:5px;"></i> HR > Pace</li>
+                                <li><i class="fas fa-check" style="color:var(--c-blue); margin-right:5px;"></i> Feeling > Numbers</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
-                <div class="accordion-card open" style="height: fit-content; margin-bottom:0;">
-                    <div class="accordion-header" style="border-bottom: 1px solid var(--border-color);">
-                        <h3 style="margin:0;">2. Gear & Maintenance</h3>
+                <!-- Gear -->
+                <div class="card open full-h" style="border-top: 3px solid var(--c-yellow);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-shoe-prints"></i> GEAR TRACKER</div>
                     </div>
-                    <div style="padding: 20px;">
-                        <div style="margin-bottom: 15px;">
-                            <div class="text-uppercase" style="margin-bottom:10px; display:flex; justify-content:space-between;">
-                                <span>CURRENT SHOES</span>
-                                <span style="color:var(--text-sub); font-size:9px;">UPDATED: 25 JAN 2026 (WEEK 3 END)</span>
+                    <div class="card-body full-h">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                            <div>
+                                <div class="page-label">PRIMARY</div>
+                                <div style="font-size:15px; font-weight:600;">Nike Vomero Plus</div>
                             </div>
-                            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 5px;">
-                                <div>
-                                    <span style="color: white; font-weight:bold; font-size:16px;">Nike Vomero Plus</span>
-                                    <div style="font-size:10px; color:#666; margin-top:2px;">
-                                        Base: 621 km + <span style="color:var(--whoop-green);">Week 3 (~31 km)</span>
-                                    </div>
-                                </div>
-                                <span class="highlight-yellow" style="font-weight: bold; font-size: 20px;">652 <span style="font-size:12px; color:#888;">/ 1000 km</span></span>
-                            </div>
-                            <div style="margin-top: 10px;">
-                                <div style="display: flex; justify-content: space-between; font-size: 11px; color: #888; margin-bottom: 5px;">
-                                    <span>0 km</span>
-                                    <span>Limit: 1000 km</span>
-                                </div>
-                                <div style="width: 100%; height: 12px; background: #222; border-radius: 6px; overflow: hidden; border: 1px solid #333; position: relative;">
-                                    <div style="position: absolute; left: 0; width: 50%; height: 100%; background: rgba(52, 211, 153, 0.15);"></div>
-                                    <div style="position: absolute; left: 50%; width: 30%; height: 100%; background: rgba(251, 191, 36, 0.15);"></div>
-                                    <div style="position: absolute; left: 80%; width: 20%; height: 100%; background: rgba(248, 113, 113, 0.15);"></div>
-                                    
-                                    <!-- Progress Bar calculated at 65.2% -->
-                                    <div style="width: 65.2%; height: 100%; background: var(--whoop-yellow); position: relative; border-radius: 6px 0 0 6px;">
-                                        <div style="position: absolute; right: 0; top: 0; bottom: 0; width: 2px; background: white; box-shadow: 0 0 5px white;"></div>
-                                    </div>
-                                </div>
-                                <div style="text-align: right; font-size: 11px; color: var(--whoop-yellow); margin-top: 5px;">
-                                    Status: Warning Zone (65%) - พื้นเริ่มแข็ง
-                                </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:18px; font-weight:700; color:var(--c-yellow);">653</div>
+                                <div style="font-size:10px; color:var(--c-text-mute);">/ 1000 km</div>
                             </div>
                         </div>
-                        <hr style="border-color: #333; margin: 15px 0;">
-                        <div>
-                            <div class="text-uppercase">WEAK LINKS</div>
-                            <ul style="font-size: 13px; color: var(--text-sub); list-style: none;">
-                                <li>⚠️ <strong>น่อง/ขาหนีบ:</strong> รับภาระแทนก้น</li>
-                                <li>⚠️ <strong>สะโพกซ้าย:</strong> Inactive History</li>
+                        <div style="height:4px; background:var(--bg-hover); border-radius:2px; overflow:hidden; margin-bottom:15px;">
+                            <div style="width:65.3%; height:100%; background:var(--c-yellow);"></div>
+                        </div>
+                        
+                        <!-- System Note -->
+                        <div style="margin-bottom:20px; font-size:11px; color:var(--c-text-sec);">
+                            <i class="fas fa-sync-alt" style="color:var(--c-green); margin-right:5px;"></i>
+                            Auto-calculated weekly based on <strong>Training Volume & Avg Cadence (170spm)</strong>.
+                            <div style="margin-top:4px; color:var(--c-text-mute);">Last Updated: 20 Jan 2026</div>
+                        </div>
+
+                        <div style="background:var(--bg-hover); padding:15px; border-radius:6px; margin-top:auto;">
+                            <div class="page-label" style="color:var(--c-yellow);">MAINTENANCE</div>
+                            <ul style="font-size:13px; color:var(--c-text-sec); list-style:none; line-height:1.6;">
+                                <li><i class="fas fa-wrench" style="color:var(--c-text-mute); font-size:10px; margin-right:5px;"></i> Foam Roll Calves (Daily)</li>
+                                <li><i class="fas fa-search" style="color:var(--c-text-mute); font-size:10px; margin-right:5px;"></i> Scout new pair at 800km</li>
                             </ul>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="accordion-card open handbook-full-width" style="margin-bottom:0;">
-                    <div class="accordion-header" style="border-bottom: 1px solid var(--border-color);">
-                        <h3 style="margin:0;">3. Dynamic HR Zones (Max: 168)</h3>
+            <!-- HR Zones Chart -->
+            <div class="card open" style="margin-top:20px;">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-chart-bar"></i> DYNAMIC HR ZONES (MAX 168)</div>
+                </div>
+                <div class="card-body">
+                    <div style="height:200px; margin-bottom:20px;">
+                        <canvas id="zoneChart"></canvas>
                     </div>
-                    <div style="padding: 20px;">
-                        <div style="background: #0f0f0f; padding: 15px; border-radius: 12px; border: 1px solid #222; margin-bottom: 25px;">
-                            <canvas id="zoneChart" style="max-height: 120px;"></canvas>
+                    <!-- Detailed HR Info below chart -->
+                    <div style="border-top:1px solid var(--border-subtle); padding-top:15px; display:flex; justify-content:space-around;">
+                        <div style="text-align:center;">
+                            <div style="font-size:10px; color:var(--c-text-mute); text-transform:uppercase;">MAX HEART RATE</div>
+                            <div style="font-size:18px; font-weight:700; color:var(--c-red);">168 <span style="font-size:10px;">bpm</span></div>
+                            <div style="font-size:10px; color:var(--c-text-sec);">Calculated from recent Threshold Test</div>
                         </div>
-                        <table class="hr-table">
-                            <thead>
-                                <tr><th>โซน (Zone)</th><th>เกณฑ์ทฤษฎี</th><th>ความรู้สึกจริง (Real Feel)</th><th>โซนฝึกจริง (Final)</th></tr>
-                            </thead>
-                            <tbody>
-                                <tr><td style="color:#60A5FA;"><span class="hr-zone-tag">Z1: Recovery</span>(ฟื้นฟู/วอร์ม)</td><td>115 - 130 bpm</td><td>วิ่งเหมือนเดิน เร็วไปนิดเดียวก็หลุด</td><td><span class="highlight-green">< 138 bpm</span><br><span style="font-size:10px; color:#666;">(ใช้วันอาทิตย์)</span></td></tr>
-                                <tr><td style="color:#34D399;"><span class="hr-zone-tag">Z2: Aerobic Base</span>(สร้างฐาน/เผาไขมัน)</td><td>131 - 150 bpm</td><td><strong>Sweet Spot!</strong><br>145-148 ไหลลื่น ไม่เหนื่อยหอบ</td><td><span class="highlight-green">138 - 152 bpm</span><br><span style="font-size:10px; color:#666;">(ใช้วันอังคาร/เสาร์)</span></td></tr>
-                                <tr><td style="color:#FBBF24;"><span class="hr-zone-tag">Z3: Aerobic Power</span>(ความทนทาน)</td><td>151 - 169 bpm</td><td>เริ่มตึงขา หายใจแรงแต่คุมได้</td><td><span class="highlight-yellow">153 - 160 bpm</span><br><span style="font-size:10px; color:#666;">(ใช้ช่วงสั้นๆ ใน Strides)</span></td></tr>
-                                <tr><td style="color:#F87171;"><span class="hr-zone-tag">Z4-Z5: Threshold</span>(ขีดจำกัด)</td><td>> 170 bpm</td><td><strong>Red Zone</strong><br>ฟอร์มเสีย ขาเริ่มลาก</td><td><span class="highlight-red">> 165 bpm</span><br><span style="font-size:10px; color:#666;">(ห้ามแช่เกิน 1 นาที)</span></td></tr>
-                            </tbody>
-                        </table>
+                        <div style="text-align:center;">
+                            <div style="font-size:10px; color:var(--c-text-mute); text-transform:uppercase;">RESTING HR</div>
+                            <div style="font-size:18px; font-weight:700; color:var(--c-blue);">58 <span style="font-size:10px;">bpm</span></div>
+                            <div style="font-size:10px; color:var(--c-text-sec);">Last updated: Jan 15</div>
+                        </div>
+                        <div style="text-align:center;">
+                            <div style="font-size:10px; color:var(--c-text-mute); text-transform:uppercase;">STATUS TO COACH</div>
+                            <div style="font-size:14px; font-weight:600; color:var(--c-green); margin-top:2px;">CONFIRMED</div>
+                            <div style="font-size:10px; color:var(--c-text-sec);">Zones are up to date</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- VIEW 4: RECOVERY ROOM (SAME) -->
+        <!-- 4. RECOVERY ROOM -->
         <div id="recovery" class="section-view">
-             <div class="header-section">
+             <div class="header-group">
                 <div>
-                    <div class="text-uppercase">MAINTENANCE</div>
-                    <h1 class="page-title">Recovery Room</h1>
-                    <div class="subtitle">แผนบริหารร่างกายและการใช้อุปกรณ์</div>
+                    <div class="page-label">MAINTENANCE</div>
+                    <div class="page-title">RECOVERY ROOM</div>
                 </div>
             </div>
 
-            <!-- Essential Tools -->
-            <div class="accordion-card open">
-                <div class="accordion-header">
-                    <h3 style="margin:0;">🛠️ Essential Tools</h3>
-                </div>
-                <div style="padding: 20px;">
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                        <div style="flex: 1; min-width: 200px; background: #1a1a1a; padding: 15px; border-radius: 8px;">
-                            <strong style="color: white; display: block; margin-bottom: 5px;">1. Foam Roller</strong>
-                            <p style="font-size: 13px; color: var(--text-sub);">
-                                สำหรับกล้ามเนื้อมัดใหญ่ (หน้าขา, น่อง, IT Band) เน้นคลายความตึงเครียดของกล้ามเนื้อหลังซ้อม
-                            </p>
-                        </div>
-                        <div style="flex: 1; min-width: 200px; background: #1a1a1a; padding: 15px; border-radius: 8px;">
-                            <strong style="color: white; display: block; margin-bottom: 5px;">2. Massage Ball</strong>
-                            <p style="font-size: 13px; color: var(--text-sub);">
-                                สำหรับจุดที่ลึก (Deep Tissue) เช่น ก้น (Glutes), ฝ่าเท้า (Plantar), และสะบัก
-                            </p>
-                        </div>
+            <div class="grid-2">
+                <!-- Sleep -->
+                <div class="card open" style="border-top:3px solid var(--c-purple);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-bed" style="color:var(--c-purple);"></i> SLEEP PROTOCOL</div>
+                    </div>
+                    <div class="card-body">
+                        <ul style="font-size:13px; color:var(--c-text-sec); line-height:1.8; padding-left:20px;">
+                            <li><strong>Timing:</strong> 22:30 - 06:00 (7.5 hrs target)</li>
+                            <li><strong>Environment:</strong> Blackout curtains, 25°C</li>
+                            <li><strong>Tools:</strong> Earplugs + Eye Mask (Mandatory)</li>
+                            <li><strong>Pre-Sleep:</strong> No screens 30 mins before bed.</li>
+                        </ul>
                     </div>
                 </div>
-            </div>
 
-            <!-- Routine Plans -->
-            <div class="recovery-grid">
-                <!-- Pre-Run -->
-                <div class="recovery-card">
-                    <div class="recovery-title"><i class="fas fa-play-circle" style="color: #60A5FA;"></i> Pre-Run Activation</div>
-                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">ปลุกกล้ามเนื้อก่อนวิ่ง (ห้ามยืดค้าง)</div>
-                    <ul class="recovery-list">
-                        <li><i class="fas fa-check"></i> <strong>Leg Swings:</strong> แกว่งขาหน้า-หลัง 15 ครั้ง/ข้าง</li>
-                        <li><i class="fas fa-check"></i> <strong>Toe Yoga:</strong> ยกนิ้วโป้งสลับนิ้วก้อย (ปลุกเท้า)</li>
-                        <li><i class="fas fa-check"></i> <strong>Glute Bridges:</strong> ดันสะโพกขึ้น 15 ครั้ง (ปลุกก้น)</li>
-                        <li><i class="fas fa-check"></i> <strong>Walking Lunges:</strong> เดินย่อเข่า 10 ก้าว</li>
-                    </ul>
+                <!-- Tools -->
+                <div class="card open" style="border-top:3px solid var(--c-blue);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-toolbox" style="color:var(--c-blue);"></i> RECOVERY TOOLS</div>
+                    </div>
+                    <div class="card-body">
+                        <ul style="font-size:13px; color:var(--c-text-sec); line-height:1.8; padding-left:20px;">
+                            <li><strong>Foam Roller:</strong> Calves & IT Band (Daily)</li>
+                            <li><strong>Massage Ball:</strong> Plantar Fascia (Morning)</li>
+                            <li><strong>Resistance Bands:</strong> Clamshells (Rest Days)</li>
+                            <li><strong>Cold Pack:</strong> Shins (If inflamed)</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Post-Run -->
-                <div class="recovery-card">
-                    <div class="recovery-title"><i class="fas fa-stop-circle" style="color: #34D399;"></i> Post-Run Reset</div>
-                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">คลายกล้ามเนื้อทันทีหลังวิ่ง</div>
-                    <ul class="recovery-list">
-                        <li><i class="fas fa-check"></i> <strong>Calf Stretch:</strong> ดันกำแพงยืดน่อง ค้าง 45 วิ</li>
-                        <li><i class="fas fa-check"></i> <strong>Hamstring Stretch:</strong> พับตัวแตะปลายเท้า ค้าง 30 วิ</li>
-                        <li><i class="fas fa-check"></i> <strong>Foam Roll Calves:</strong> กลิ้งน่องเบาๆ (หาจุดตึง)</li>
-                        <li><i class="fas fa-check"></i> <strong>Quads Roll:</strong> กลิ้งหน้าขา</li>
-                    </ul>
+                <!-- Pre-Workout -->
+                <div class="card open" style="border-top:3px solid var(--c-green);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-play" style="color:var(--c-green);"></i> PRE-WORKOUT</div>
+                    </div>
+                    <div class="card-body">
+                        <ul style="font-size:13px; color:var(--c-text-sec); line-height:1.8; padding-left:20px;">
+                            <li><strong>Dynamic:</strong> Leg Swings (Front/Side) x 10</li>
+                            <li><strong>Activation:</strong> Glute Bridges x 15</li>
+                            <li><strong>Mobility:</strong> Ankle rotations</li>
+                            <li><strong>Drills:</strong> A-Skip, B-Skip (Lightly)</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <!-- Deep Recovery -->
-                <div class="recovery-card">
-                    <div class="recovery-title"><i class="fas fa-bed" style="color: #F87171;"></i> Deep Recovery (Rest Day)</div>
-                    <div style="font-size: 12px; color: #888; margin-bottom: 10px;">จัดการจุดตึงสะสม</div>
-                    <ul class="recovery-list">
-                        <li><i class="fas fa-check"></i> <strong>Ball Smash Glutes:</strong> นั่งทับบอลตรงแก้มก้น (จุดที่เจ็บ)</li>
-                        <li><i class="fas fa-check"></i> <strong>Foot Roll:</strong> เหยียบบอลกลิ้งใต้ฝ่าเท้า</li>
-                        <li><i class="fas fa-check"></i> <strong>Pigeon Pose:</strong> ท่านกพิราบ (ยืดสะโพกลึก)</li>
-                        <li><i class="fas fa-check"></i> <strong>Legs Up Wall:</strong> ยกขาพาดกำแพง 10 นาที</li>
-                    </ul>
+                <!-- Post-Workout -->
+                <div class="card open" style="border-top:3px solid var(--c-green);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-flag-checkered" style="color:var(--c-green);"></i> POST-WORKOUT</div>
+                    </div>
+                    <div class="card-body">
+                        <ul style="font-size:13px; color:var(--c-text-sec); line-height:1.8; padding-left:20px;">
+                            <li><strong>Static Stretch:</strong> Calves, Hamstrings (30s hold)</li>
+                            <li><strong>Nutrition:</strong> Whey Protein within 30 mins</li>
+                            <li><strong>Myofascial:</strong> Foam Roll tight spots immediately</li>
+                            <li><strong>Hydration:</strong> +500ml water + Electrolytes</li>
+                        </ul>
+                    </div>
                 </div>
-            </div>
-
-            <!-- AI Physio -->
-            <div class="accordion-card" style="padding: 25px; margin-top: 30px;">
-                <div style="margin-bottom: 20px;">
-                    <span class="text-uppercase" style="color: var(--whoop-green);"><i class="fas fa-user-md" style="font-size:12px;"></i> AI Physio Partner</span>
-                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 5px;">
-                        มีอาการตึงเฉพาะจุด? ปรึกษาวิธีบริหารเพิ่มเติมได้ที่นี่
-                    </p>
-                </div>
-                <textarea id="physioInput" class="form-input" rows="3" placeholder="Ex: รู้สึกตึงเอ็นร้อยหวายมาก ต้องทำท่าไหน?"></textarea>
-                <button class="btn-sparkle" onclick="askPhysioAI()" style="margin-top: 10px; width: auto; padding: 10px 30px;">
-                    <i class="fas fa-comment-medical"></i> Consult
-                </button>
-                <div id="physioResult" style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px; display: none; line-height: 1.6; color: var(--text-main);"></div>
             </div>
         </div>
 
-        <!-- VIEW 5: DAILY LOG (SAME) -->
-        <div id="dailylog" class="section-view">
-            <div class="header-section">
+        <!-- 5. STATS -->
+        <div id="stats" class="section-view">
+            <div class="header-group">
                 <div>
-                    <div class="text-uppercase">TRACKING</div>
-                    <h1 class="page-title">Daily Log</h1>
-                    <div class="subtitle">บันทึกผลการฝึกซ้อม (เก็บในอุปกรณ์ของคุณ)</div>
+                    <div class="page-label">OVERVIEW</div>
+                    <div class="page-title">STATS & CALENDAR</div>
                 </div>
             </div>
 
-            <div class="accordion-card" style="padding: 25px; overflow: visible;">
-                <div class="log-form-grid">
-                    <div>
-                        <label style="font-size:11px; color:#666; display:block; margin-bottom:5px;">DATE</label>
-                        <input type="date" id="logDate" class="form-input">
-                    </div>
-                    <div>
-                        <label style="font-size:11px; color:#666; display:block; margin-bottom:5px;">TYPE</label>
-                        <select id="logType" class="form-input" style="background:#1A1A1A; color:white; border:1px solid #333;">
-                            <option value="Run">Running</option>
-                            <option value="Strength">Strength/Gym</option>
-                            <option value="Rest">Rest Day</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="font-size:11px; color:#666; display:block; margin-bottom:5px;">DIST (KM)</label>
-                        <input type="number" id="logDist" class="form-input" placeholder="0.0">
-                    </div>
-                    <div>
-                        <label style="font-size:11px; color:#666; display:block; margin-bottom:5px;">TIME (MIN)</label>
-                        <input type="number" id="logTime" class="form-input" placeholder="0">
-                    </div>
-                </div>
-                <div style="margin-bottom: 15px;">
-                    <label style="font-size:11px; color:#666; display:block; margin-bottom:5px;">NOTES / FEELING</label>
-                    <textarea id="logNote" class="form-input" rows="2" placeholder="Ex: รู้สึกดี ขาหนีบตึงเล็กน้อยช่วงท้าย..."></textarea>
-                </div>
-                <button onclick="saveLog()" class="btn-save">SAVE LOG</button>
+            <div class="stat-grid" style="margin-bottom:20px; border-color:var(--border-subtle);">
+                <div class="stat-item"><div class="stat-label">Jan Dist.</div><div class="stat-value">62.0 km</div></div>
+                <div class="stat-item"><div class="stat-label">Total Time</div><div class="stat-value">6h 15m</div></div>
+                <div class="stat-item"><div class="stat-label">Sessions</div><div class="stat-value" style="color:var(--c-green);">14</div></div>
+                <div class="stat-item"><div class="stat-label">Focus</div><div class="stat-value" style="color:var(--c-yellow);">Base</div></div>
             </div>
 
-            <div style="margin-top: 30px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span class="text-uppercase">RECENT HISTORY</span>
-                    <span style="font-size:10px; color:var(--whoop-red); cursor:pointer;" onclick="clearLogs()">CLEAR ALL</span>
+            <!-- Extra Chart: Weekly Volume -->
+            <div class="card open">
+                <div class="card-header">
+                     <div class="card-title"><i class="fas fa-chart-line"></i> WEEKLY VOLUME (JAN)</div>
                 </div>
-                <div id="logHistoryContainer"></div>
+                <div class="card-body">
+                    <div style="height:150px;">
+                         <canvas id="volumeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card open">
+                <div class="card-header" style="justify-content: space-between;">
+                    <div class="card-title">JANUARY 2026</div>
+                    <div style="font-size:12px; color:var(--c-text-mute); display:flex; gap:10px;">
+                        <i class="fas fa-chevron-left" style="cursor:pointer; opacity:0.5;" title="Previous"></i>
+                        <span id="cal-current-month">JAN</span>
+                        <i class="fas fa-chevron-right" style="cursor:pointer; opacity:0.5;" title="Next"></i>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="calendar-grid" id="calendar-grid">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- VIEW 6: AI COACH (SAME) -->
-        <div id="ai-coach" class="section-view">
-            <div class="header-section">
-                <div>
-                    <div class="text-uppercase">INTELLIGENCE</div>
-                    <h1 class="page-title">AI Coach</h1>
-                </div>
-            </div>
-            <div class="accordion-card" style="padding: 25px;">
-                <div style="margin-bottom: 20px;">
-                    <span class="text-uppercase" style="color: var(--whoop-green);"><i class="fas fa-circle" style="font-size:8px;"></i> SYSTEM ACTIVE</span>
-                    <p style="font-size: 13px; color: var(--text-sub); margin-top: 5px;">
-                        ระบบพร้อมวิเคราะห์ข้อมูลจาก Daily Log และบริบทปัจจุบัน (Phase 2)
-                    </p>
-                </div>
-                <textarea id="ai-input" class="form-input" rows="4" placeholder="ถามเกี่ยวกับอาการ, การปรับตาราง หรือวิเคราะห์ Log..."></textarea>
-                <div style="text-align: right; margin-top: 15px;">
-                    <button onclick="askGemini()" id="ai-btn" class="btn-save" style="width: auto; padding: 10px 30px;">ANALYZE</button>
-                </div>
-                <div id="ai-result" style="margin-top: 25px; border-top: 1px solid var(--border-color); padding-top: 20px; display: none; line-height: 1.6; color: var(--text-main);"></div>
-            </div>
-        </div>
-
-    </div>
+    </main>
 
     <script>
-        // --- DATA & LOGIC FOR SCHEDULE (JAN 2026) ---
-        
-        // Week 1: Recovery/Reset (Jan 5-11)
-        const scheduleWeek1 = `
-            <tr><td><strong style="color:white; font-size:16px;">MON 5</strong><br><span class="tag tag-rest">REST</span></td><td><strong style="color:white;">Sick Day</strong><br>งดวิ่ง (ไข้หวัด)<br><span style="font-size:12px;">ฟื้นฟูภูมิคุ้มกัน</span></td><td>พักผ่อนเต็มที่</td><td><div><i class="fas fa-shield-alt"></i> นอนหลับ 8+ ชม.</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">TUE 6</strong><br><span class="tag tag-run">RETURN</span></td><td><strong style="color:white;">Easy + Interval</strong><br>6 min x 4 sets<br><span style="font-size:12px;">Avg HR 148 (Peak 160)</span></td><td>กลับมาวิ่งวันแรก (75%)</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">WED 7</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Easy + Strides</strong><br>35 นาที + 5 Strides<br><span style="font-size:12px;">HR < 145</span></td><td>PM 2.5 สูง (ไม่ดัน)</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">THU 8</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Outdoor Run</strong><br>วิ่งตามความรู้สึก<br><span style="font-size:12px;">ขาเริ่มตอบสนองดีขึ้น</span></td><td>คุม HR เป็นหลัก</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">FRI 9</strong><br><span class="tag tag-run">RECOV</span></td><td><strong style="color:white;">Active Recovery</strong><br>จ๊อกเบามาก (เพิ่มความถี่)<br><span style="font-size:12px;">ไม่เพิ่มโหลดหนัก</span></td><td>เตรียมพร้อม Long Run</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">SAT 10</strong><br><span class="tag tag-long">LONG</span></td><td><strong style="color:white;">Base Continuity</strong><br>90 นาที (เริ่มติดหลัง 1 ชม.)<br><span style="font-size:12px;">HR < 150</span></td><td>ระบบประสาทฟื้นช้ากว่าหัวใจ</td><td><div><i class="fas fa-bolt"></i> Gel นาทีที่ 50</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">SUN 11</strong><br><span class="tag tag-run">FOCUS</span></td><td><strong style="color:white;">Form Focus</strong><br>30-35 นาที + Strides<br><span style="font-size:12px;">แก้ Overstriding ช่วงท้าย</span></td><td>จังหวะลงขาสัมพันธ์กัน</td><td>-</td></tr>
-        `;
+        // --- CONSTANTS ---
+        // UPDATED ICON: Clear Running Shoe / Sneaker (Side Profile)
+        const SVG_SHOE = `<svg class="shoe-svg" viewBox="0 0 512 512"><path d="M496 384H428.6c-8.7-34.9-41.3-76.5-97.2-87.9-19-3.9-43.4-8.1-43.4-8.1-17.6-35.2-43.4-56.7-84.8-70.5-1.1-.4-2.2-.7-3.4-1.1-35.8-11.2-52.6-46.7-54.9-51.8a32 32 0 0 0-58.5 26.2c3.8 8.3 17.5 36.6 45.7 46.5l1.8.7C171.5 250.5 192 267.4 206.6 296.6c-42.5 14.7-74.1 28.8-118 65.4C42 399.8 16 400 16 400a16 16 0 0 0-16 16v64a16 16 0 0 0 16 16h480a16 16 0 0 0 16-16v-80a16 16 0 0 0-16-16zM64 432c13.7 0 45.3-1.5 83.8-32 32.7-25.9 67.7-40.5 112.6-54.3 7.2 14.1 19.3 31 43.1 47.1-23.9 16.1 5.3 23.2 40.7 23.2H400v32H48v-16.4l14.6-3.7A11.2 11.2 0 0 0 64 432z"/></svg>`;
 
-        // Week 2: Nervous System Response (Jan 12-18)
-        const scheduleWeek2 = `
-            <tr><td><strong style="color:white; font-size:16px;">MON 12</strong><br><span class="tag tag-rest">REST</span></td><td><strong style="color:white;">Mobility</strong><br>ไม่วิ่ง<br><span style="font-size:12px;">ยืดสะโพก/น่อง/Adductor</span></td><td>Foam Roller</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">TUE 13</strong><br><span class="tag tag-run">EASY</span></td><td><strong style="color:white;">Continuous Run</strong><br>45 นาที (~6km)<br><span style="font-size:12px;">Avg HR 148 (เครื่องติด กม.4)</span></td><td>Pace มาเองโดยไม่เร่ง</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">WED 14</strong><br><span class="tag tag-run">NEURAL</span></td><td><strong style="color:white;">Easy + Strides</strong><br>35 นาที + 5 Strides<br><span style="font-size:12px;">เน้นความรู้สึก (No Numbers)</span></td><td>กระตุ้นระบบประสาท</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">THU 15</strong><br><span class="tag tag-run">ADJUST</span></td><td><strong style="color:white;">Easy (PM 2.5)</strong><br>ปรับลดความเข้มข้น<br><span style="font-size:12px;">วิ่งตามความรู้สึก ไม่ฝืน</span></td><td>รักษาสุขภาพปอด</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">FRI 16</strong><br><span class="tag tag-run">TREADMILL</span></td><td><strong style="color:white;">Progression</strong><br>55 นาที (Speed 6.5->7.5)<br><span style="font-size:12px;">ทดลอง 12km/h ช่วงสั้น</span></td><td>เข้าใจ Cadence ที่รู้สึกดี</td><td>-</td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">SAT 17</strong><br><span class="tag tag-long">LONG</span></td><td><strong style="color:white;">Highlight Day</strong><br>95 นาที (~13km)<br><span style="font-size:12px;">Avg HR 150</span></td><td><span class="highlight-green">ปลดล็อกสะโพกซ้าย!</span></td><td><div><i class="fas fa-bolt"></i> Gel นาทีที่ 50</div></td></tr>
-            <tr><td><strong style="color:white; font-size:16px;">SUN 18</strong><br><span class="tag tag-run">CLOSING</span></td><td><strong style="color:white;">Easy + Short Strides</strong><br>30-35 นาที (Treadmill)<br><span style="font-size:12px;">HR < 145</span></td><td>รีเซ็ตระบบ ปิดสัปดาห์สวย</td><td>-</td></tr>
-        `;
-
-        // Week 3: Neuromuscular Awareness (Jan 19-25) - ACTIVE/NEW PLAN
-        const scheduleWeek3 = `
-            <tr>
-                <td><strong style="color:white; font-size:16px;">MON 19</strong><br><span class="tag tag-rest">REST</span></td>
-                <td><strong style="color:white;">SYSTEM REBOOT</strong><br>พักผ่อน 100% (No Run)<br><span style="font-size:12px;">ผ่อนคลายร่างกาย</span></td>
-                <td>Red Flag: ห้ามนอนดึก (Sleep 7-8h)</td>
-                <td><div><i class="fas fa-socks"></i> Toe Yoga (แยกนิ้ว)</div></td>
-            </tr>
-            <tr>
-                <td><strong style="color:white; font-size:16px;">TUE 20</strong><br><span class="tag tag-run">TECH</span></td>
-                <td><strong style="color:white;">HIP DRIVE CALIB</strong><br>Tech Run 50 min<br><span style="font-size:12px;">HR 145-148 (Max 153)</span></td>
-                <td><span class="highlight-green">Pull, Don't Reach</span><br>ดึงเท้าลงใต้สะโพก</td>
-                <td><div><i class="fas fa-dumbbell"></i> Short Foot x10</div><div><i class="fas fa-bolt"></i> Foam Roll (Calf)</div></td>
-            </tr>
-            <tr>
-                <td><strong style="color:white; font-size:16px;">WED 21</strong><br><span class="tag tag-run">QUALITY</span></td>
-                <td><strong style="color:white;">NEURAL IGNITION</strong><br>Easy 35m + 6 Strides<br><span style="font-size:12px;">(เร่ง 15s / พัก 45s)</span></td>
-                <td><strong>Stiff Ankle</strong><br>ล็อกข้อเท้าแข็ง เด้งสู้พื้น</td>
-                <td><div><i class="fas fa-exclamation-circle" style="color:var(--whoop-red)"></i> ยืดน่องหลังวิ่ง 2 นาที</div></td>
-            </tr>
-            <tr>
-                <td><strong style="color:white; font-size:16px;">THU 22</strong><br><span class="tag tag-rest">BUSY</span></td>
-                <td><strong style="color:white;">CORE MAINT.</strong><br>Rest (ติดธุระ)<br><span style="font-size:12px;">เน้นขยับตัวระหว่างวัน</span></td>
-                <td>พยุงแกนกลาง (ลดอาการนั่งนาน)</td>
-                <td><div><i class="fas fa-shield-alt"></i> Plank 3 sets (45s)</div><div><i class="fas fa-walking"></i> Calf Raise x15</div></td>
-            </tr>
-            <tr>
-                <td><strong style="color:white; font-size:16px;">FRI 23</strong><br><span class="tag tag-rest">BUSY</span></td>
-                <td><strong style="color:white;">GLUTE WAKE-UP</strong><br>Rest (ติดธุระ)<br><span style="font-size:12px;">เตรียมตัวก่อนนอน</span></td>
-                <td><span class="highlight-red">Wake up Glutes</span><br>อย่าให้ก้นหลับ (Amnesia)</td>
-                <td><strong style="color:var(--whoop-yellow);">MUST DO:</strong><br>Clamshells + Side Leg<br>(15 reps x 3 sets)</td>
-            </tr>
-            <tr>
-                <td><strong style="color:white; font-size:16px;">SAT 24</strong><br><span class="tag tag-long">LONG</span></td>
-                <td><strong style="color:white;">AEROBIC RESILIENCE</strong><br>95-100 min (Steady)<br><span style="font-size:12px;">HR 142-145 (Max 155)</span></td>
-                <td><strong>Fatigue Mngt.</strong><br>ทิ้งไหล่ + กดนิ้วโป้ง (เมื่อล้า 60m+)</td>
-                <td><div>⚡ <strong>Gel (100kcal):</strong> นาทีที่ 40 & 80</div><div>💧 น้ำทุก 2 กม.</div></td>
-            </tr>
-            <tr>
-                <td><strong style="color:white; font-size:16px;">SUN 25</strong><br><span class="tag tag-run">RECOV</span></td>
-                <td><strong style="color:white;">REGENERATIVE</strong><br>Recovery 30-40 min<br><span style="font-size:12px;">HR < 138 (เบาที่สุด)</span></td>
-                <td><strong>Silent Running</strong><br>ลงเท้านุ่มเหมือนนุ่น</td>
-                <td><div>🧘 Full Stretch ชุดใหญ่</div><div>🔄 Foam Roll (All Legs)</div></td>
-            </tr>
-        `;
-
-        function selectWeek(weekNum) {
-            const tbody = document.getElementById('scheduleTableBody');
-            const btns = document.querySelectorAll('.timeline-btn');
+        // --- DATA: SCHEDULE ---
+        const scheduleData = {
+            1: `<tr><td><span class="tag tag-rest">MON 05</span></td><td><strong>SICK DAY</strong><br>Rest (Flu Recovery)<br><span style="font-size:11px;color:#666;">System Reboot</span></td><td>Full Rest<br>Sleep 8h+</td><td>Vit C, Zinc<br>Water 3L</td></tr>
+                <tr><td><span class="tag tag-run">TUE 06</span></td><td><strong>RETURN RUN</strong><br>Easy 6x4min<br><span style="font-size:11px;color:#10B981;">HR 145 (Safe Zone)</span></td><td>Check Lungs<br>Easy Breath</td><td>-<br>Warmup 15m</td></tr>
+                <tr><td><span class="tag tag-run">WED 07</span></td><td><strong>EASY + STRIDES</strong><br>35 min<br><span style="font-size:11px;color:#10B981;">HR 145</span></td><td>Form Focus<br>No Slouching</td><td>-<br>Calf Stretch</td></tr>
+                <tr><td><span class="tag tag-run">THU 08</span></td><td><strong>OUTDOOR</strong><br>Free Run<br><span style="font-size:11px;color:#10B981;">Feel Good</span></td><td>Enjoyment<br>Head up</td><td>-<br>Plank 2 set</td></tr>
+                <tr><td><span class="tag tag-rest">FRI 09</span></td><td><strong>ACTIVE RECOV</strong><br>Walk/Jog<br><span style="font-size:11px;color:#666;">Z1 Recovery</span></td><td>Shakeout<br>Loose legs</td><td>-<br>Foam Roll</td></tr>
+                <tr><td><span class="tag tag-long">SAT 10</span></td><td><strong>LONG RUN</strong><br>90 min<br><span style="font-size:11px;color:#F59E0B;">Endurance Base</span></td><td>Pace Control<br>Don't surge</td><td>Gel 100kcal @ 50m<br>-</td></tr>
+                <tr><td><span class="tag tag-run">SUN 11</span></td><td><strong>RECOVERY</strong><br>30 min<br><span style="font-size:11px;color:#3B82F6;">Z1 (<138)</span></td><td>Flow<br>Relax</td><td>-<br>Yoga/Stretch</td></tr>`,
             
-            btns.forEach(btn => {
-                if (btn.innerText.includes('Week')) {
-                    btn.classList.remove('active');
-                    if (btn.innerText.includes('Week ' + weekNum)) btn.classList.add('active');
-                }
+            2: `<tr><td><span class="tag tag-rest">MON 12</span></td><td><strong>MOBILITY</strong><br>Rest<br><span style="font-size:11px;color:#666;">Reset Day</span></td><td>Hips/Ankles<br>Range of Motion</td><td>-<br>Full Stretching</td></tr>
+                <tr><td><span class="tag tag-run">TUE 13</span></td><td><strong>CONTINUOUS</strong><br>45 min (6km)<br><span style="font-size:11px;color:#10B981;">Avg 148</span></td><td>Rhythm<br>Metronome 170</td><td>-<br>-</td></tr>
+                <tr><td><span class="tag tag-run">WED 14</span></td><td><strong>NEURAL</strong><br>35m + Strides<br><span style="font-size:11px;color:#10B981;">Cadence 175+</span></td><td>Fast feet<br>Not hard push</td><td>-<br>-</td></tr>
+                <tr><td><span class="tag tag-rest">THU 15</span></td><td><strong>ADJUST (PM2.5)</strong><br>Treadmill/Rest<br><span style="font-size:11px;color:#666;">Lung Safety</span></td><td>Indoor Core<br>Avoid Dust</td><td>-<br>Core 15m</td></tr>
+                <tr><td><span class="tag tag-run">FRI 16</span></td><td><strong>PROGRESSION</strong><br>55 min<br><span style="font-size:11px;color:#F59E0B;">Build up</span></td><td>Finish Strong<br>Last 10m fast</td><td>-<br>Clamshells (Pre-Hab)</td></tr>
+                <tr><td><span class="tag tag-long">SAT 17</span></td><td><strong>HIGHLIGHT</strong><br>95 min (13km)<br><span style="font-size:11px;color:#F59E0B;">Hip Unlock!</span></td><td><strong>Hip Drive</strong><br>Key Learning</td><td>Gel 100kcal @ 50m<br>-</td></tr>
+                <tr><td><span class="tag tag-run">SUN 18</span></td><td><strong>CLOSE</strong><br>35 min Easy<br><span style="font-size:11px;color:#3B82F6;">Z1 Recovery</span></td><td>Flush legs<br>Reset System</td><td>-<br>Massage</td></tr>`,
+
+            3: `<tr><td><span class="tag tag-rest">MON 19</span></td><td><strong>SYSTEM REBOOT</strong><br>Rest Day (100%)<br><span style="font-size:11px; color:#666;">Recovery Mode</span></td><td><i class="fas fa-exclamation-triangle" style="color:#EF4444;"></i> No Late Sleep<br>Mental disconnect</td><td>Water: 3.0L<br>Toe Yoga</td></tr>
+                <tr><td><span class="tag tag-run">TUE 20</span></td><td><strong>HIP DRIVE CALIB</strong><br>Tech Run 50 min<br><span style="font-size:11px; color:#10B981;">HR Zone 2</span></td><td><i class="fas fa-bullseye" style="color:#F59E0B;"></i> Pull, Don't Reach<br>Short Foot Activation</td><td>No Gel<br>Post: Whey</td></tr>
+                <tr><td><span class="tag tag-run">WED 21</span></td><td><strong>NEURAL IGNITION</strong><br>Easy 35m + 6 Strides<br><span style="font-size:11px; color:#10B981;">HR < 145 / SPM 175+</span></td><td><i class="fas fa-lock" style="color:#3B82F6;"></i> Stiff Ankle<br>Lock on contact</td><td>-<br>Stretch Calves</td></tr>
+                <tr><td><span class="tag tag-rest">THU 22</span></td><td><strong>CORE MAINT.</strong><br>Rest (Busy)<br><span style="font-size:11px; color:#666;">Manage Fatigue</span></td><td>Core Stability<br>Sit posture</td><td>-<br>Plank 3 sets</td></tr>
+                <tr><td><span class="tag tag-rest">FRI 23</span></td><td><strong>GLUTE WAKE-UP</strong><br>Rest (Pre-Long)<br><span style="font-size:11px; color:#666;">Prep for Sat</span></td><td><i class="fas fa-power-off" style="color:#EF4444;"></i> Wake Up Glutes<br>Crucial for tomorrow</td><td>-<br><strong>Clamshells (Required)</strong></td></tr>
+                <tr><td><span class="tag tag-long">SAT 24</span></td><td><strong>AEROBIC RESILIENCE</strong><br>95-100 min<br><span style="font-size:11px; color:#10B981;">Steady (HR 142-145)</span></td><td><i class="fas fa-battery-half" style="color:#F59E0B;"></i> Fatigue Mngt.<br>Drop shoulders</td><td><strong>Gel @ 40, 80m</strong><br>(100kcal ea)</td></tr>
+                <tr><td><span class="tag tag-run">SUN 25</span></td><td><strong>REGENERATIVE</strong><br>Recovery 30-40 min<br><span style="font-size:11px; color:#3B82F6;">Z1 (<138)</span></td><td><i class="fas fa-volume-mute" style="color:#3B82F6;"></i> Silent Running<br>Soft impact</td><td>-<br>Full Stretch / Foam Roll</td></tr>`,
+            
+            4: `<tr><td colspan="4" style="text-align:center; padding:40px; color:#555;">
+                <i class="fas fa-lock" style="font-size:24px; margin-bottom:10px;"></i><br>
+                <strong>WEEK 4: DELOAD</strong><br>
+                <span style="font-size:12px;">Data unlocks on Jan 26</span>
+                </td></tr>`
+        };
+
+        // --- CALENDAR DATA MAPPING ---
+        // Simplified map of active days in Jan 2026 based on schedule
+        // 0: Rest/Other, 1: Run, 2: Long Run
+        const janActivities = {
+            6: 1, 7: 1, 8: 1, 10: 2, 11: 1,  // Week 1
+            13: 1, 14: 1, 16: 1, 17: 2, 18: 1, // Week 2
+            20: 1, 21: 1, 24: 2, 25: 1        // Week 3
+        };
+
+        function renderWeek(weekNum, btn) {
+            document.querySelectorAll('.week-pill').forEach(b => b.classList.remove('active'));
+            if(btn) btn.classList.add('active');
+            const tbody = document.getElementById('schedule-body');
+            tbody.innerHTML = scheduleData[weekNum] || scheduleData[4];
+        }
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+            
+            const daysInMonth = 31; 
+            const startOffset = 3; // Jan 1 2026 is Thursday (Mon=0, Tue=1, Wed=2, Thu=3)
+
+            // Headers
+            ['MON','TUE','WED','THU','FRI','SAT','SUN'].forEach(d => {
+                grid.innerHTML += `<div class="cal-day-header">${d}</div>`;
             });
 
-            if (weekNum === 1) tbody.innerHTML = scheduleWeek1;
-            else if (weekNum === 2) tbody.innerHTML = scheduleWeek2;
-            else if (weekNum === 3) tbody.innerHTML = scheduleWeek3;
-            else {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="4" style="text-align:center; padding:40px; color:#555;">
-                            <i class="fas fa-calendar-alt" style="font-size:24px; margin-bottom:10px;"></i><br>
-                            NO DATA YET<br>
-                            <span style="font-size:12px;">(Coming soon...)</span>
-                        </td>
-                    </tr>
-                `;
+            // Empty slots
+            for(let i=0; i<startOffset; i++) {
+                grid.innerHTML += `<div class="cal-day" style="opacity:0"></div>`;
             }
-        }
 
-        // Initialize Schedule with Current Week (Week 3)
-        selectWeek(3);
-
-        // --- 1. NAVIGATION & UI ---
-        function switchTab(tabId, element) {
-            document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            if(element) {
-                element.classList.add('active');
-            } else {
-                if(tabId === 'dashboard') {
-                    document.querySelector('.nav-item[onclick*="dashboard"]').classList.add('active');
+            // Days
+            const today = 20;
+            for(let day=1; day<=daysInMonth; day++) {
+                const type = janActivities[day];
+                let content = `<div class="day-num">${day}</div>`;
+                let classes = 'cal-day';
+                
+                if (day === today) classes += ' today';
+                
+                if (type) {
+                    classes += ' active';
+                    const isLong = type === 2;
+                    // Inject SVG Shoe Icon
+                    const iconClass = isLong ? 'shoe-svg long' : 'shoe-svg';
+                    // We reuse the SVG constant but inject the class
+                    const svg = SVG_SHOE.replace('class="shoe-svg"', `class="${iconClass}"`);
+                    content += svg;
                 }
+
+                grid.innerHTML += `<div class="${classes}">${content}</div>`;
             }
-
-            if(tabId === 'handbook') { setTimeout(renderChart, 100); }
         }
 
-        function toggleAccordion(element) {
-            element.parentElement.classList.toggle('open');
-            const body = element.parentElement.querySelector('.accordion-body');
-            body.style.display = element.parentElement.classList.contains('open') ? 'block' : 'none';
+        function nav(id, el) {
+            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            if(id === 'handbook') renderChart();
+            if(id === 'stats') {
+                renderVolumeChart();
+                renderCalendar(); // Render cal when tab opens
+            }
         }
 
-        // --- 2. CHART.JS (HANDBOOK) ---
-        let zoneChartInstance = null;
+        function toggleCard(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        let chartInstance = null;
         function renderChart() {
-            const ctx = document.getElementById('zoneChart').getContext('2d');
-            if (zoneChartInstance) return;
-            zoneChartInstance = new Chart(ctx, {
+            const ctx = document.getElementById('zoneChart');
+            if (!ctx || chartInstance) return;
+
+            Chart.defaults.color = '#525252';
+            Chart.defaults.font.family = 'Inter';
+
+            chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: ['Z1 (Recov)', 'Z2 (Base)', 'Z3 (Power)', 'Z4-Z5 (Max)'],
+                    labels: ['Z1', 'Z2', 'Z3', 'Z4', 'Z5'],
                     datasets: [{
-                        label: 'Heart Rate Range (BPM)',
-                        data: [
-                            [115, 130], // Z1
-                            [131, 150], // Z2
-                            [151, 169], // Z3
-                            [170, 188]  // Z4-Z5
-                        ],
-                        backgroundColor: [
-                            'rgba(96, 165, 250, 0.7)', // Blue Z1
-                            'rgba(52, 211, 153, 0.7)', // Green Z2
-                            'rgba(251, 191, 36, 0.7)', // Yellow Z3
-                            'rgba(248, 113, 113, 0.7)' // Red Z4-Z5
-                        ],
-                        borderColor: [
-                            '#60A5FA', '#34D399', '#FBBF24', '#F87171'
-                        ],
-                        borderWidth: 1,
-                        borderRadius: 6,
-                        barPercentage: 0.6
+                        label: 'HR Range',
+                        data: [[115, 138], [138, 152], [153, 160], [161, 166], [167, 168]],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+                        borderRadius: 4, barPercentage: 0.6
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    indexAxis: 'y', // Horizontal bars
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    plugins: { legend: { display: false } },
                     scales: {
-                        x: { 
-                            min: 100, 
-                            max: 190, 
-                            grid: { color: '#333' },
-                            ticks: { color: '#888' }
-                        },
-                        y: { 
-                            ticks: { color: '#E5E5E5', font: {size: 11} }, 
-                            grid: { display: false } 
-                        }
-                    },
-                    plugins: { 
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Range: ${context.raw[0]} - ${context.raw[1]} bpm`;
-                                }
-                            }
-                        }
+                        x: { min: 100, max: 180, grid: { display: false } },
+                        y: { grid: { display: false }, ticks: { color: '#A3A3A3' } }
                     }
                 }
             });
         }
 
-        // --- 3. LOCAL STORAGE ---
-        const STORAGE_KEY = 'runner_001_logs_v2';
-        document.getElementById('logDate').valueAsDate = new Date();
+        let volChartInstance = null;
+        function renderVolumeChart() {
+            const ctx = document.getElementById('volumeChart');
+            if (!ctx || volChartInstance) return;
 
-        function getLogs() { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
-        
-        function saveLog() {
-            const date = document.getElementById('logDate').value;
-            const type = document.getElementById('logType').value;
-            const dist = document.getElementById('logDist').value;
-            const time = document.getElementById('logTime').value;
-            const note = document.getElementById('logNote').value;
-
-            if (!date) return alert("Please select date");
-
-            const logs = getLogs();
-            logs.unshift({ id: Date.now(), date, type, dist, time, note });
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-            
-            document.getElementById('logDist').value = '';
-            document.getElementById('logTime').value = '';
-            document.getElementById('logNote').value = '';
-            renderLogs();
+            volChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['W1', 'W2', 'W3 (Cur)', 'W4 (Est)'],
+                    datasets: [{
+                        label: 'Distance (km)',
+                        data: [22, 28, 32, 20],
+                        backgroundColor: ['#333', '#333', '#10B981', '#333'],
+                        borderRadius: 4, barPercentage: 0.5
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#262626' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
         }
 
-        function deleteLog(id) {
-            if(!confirm("Delete?")) return;
-            const logs = getLogs().filter(l => l.id !== id);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
-            renderLogs();
-        }
-
-        function clearLogs() {
-            if(confirm("Clear ALL logs?")) { localStorage.removeItem(STORAGE_KEY); renderLogs(); }
-        }
-
-        function renderLogs() {
-            const logs = getLogs();
-            const container = document.getElementById('logHistoryContainer');
-            if (logs.length === 0) { container.innerHTML = '<div style="text-align:center; color:#555; padding:20px;">No logs yet.</div>'; return; }
-            
-            container.innerHTML = logs.map(log => `
-                <div class="log-history-item" style="border-left-color: ${log.type === 'Run' ? '#34D399' : (log.type === 'Strength' ? '#FBBF24' : '#555')}">
-                    <div style="flex-grow:1;">
-                        <div style="font-size:12px; color:#888; margin-bottom:5px;">${log.date} | <span style="color:#fff; font-weight:600;">${log.type}</span></div>
-                        <div style="color:white; font-size:15px;">${log.dist ? log.dist + ' km' : ''} ${log.time ? ' • ' + log.time + ' min' : ''}</div>
-                        ${log.note ? `<div style="font-size:13px; color:#aaa; margin-top:5px; font-style:italic;">"${log.note}"</div>` : ''}
-                    </div>
-                    <button onclick="deleteLog(${log.id})" style="background:none; border:none; color:#444; cursor:pointer;"><i class="fas fa-trash"></i></button>
-                </div>
-            `).join('');
-        }
-        renderLogs();
-
-        // --- 4. GENERAL AI ---
-        const apiKey = ""; // API Key injected by environment
-
-        async function askGemini() {
-            const input = document.getElementById('ai-input').value;
-            const resultDiv = document.getElementById('ai-result');
-            const btn = document.getElementById('ai-btn');
-            
-            if (!input.trim()) return;
-
-            btn.innerText = 'PROCESSING...'; btn.disabled = true;
-            resultDiv.style.display = 'block'; resultDiv.innerHTML = '<span style="color:#666">Analyzing...</span>';
-
-            const logs = getLogs().slice(0, 5);
-            const context = `
-                Role: Coach for RUNNER_001. Phase 2 (Neuro Awareness). Max HR 168.
-                History: Shin splints (Phase 0), Flu (Phase 1).
-                Current: Hip Drive focus. Injury: Calf/Groin. Shoes: 621km (Old).
-                Recent Logs: ${JSON.stringify(logs)}
-                Task: Answer in Thai.
-            `;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: input }] }], systemInstruction: { parts: [{ text: context }] } })
-                });
-                const data = await response.json();
-                resultDiv.innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong style="color:white">$1</strong>');
-            } catch (e) { resultDiv.innerHTML = "Error connecting to AI."; } 
-            finally { btn.innerText = 'ANALYZE'; btn.disabled = false; }
-        }
-
-        // --- 5. AI PHYSIO (NEW) ---
-        async function askPhysioAI() {
-            const input = document.getElementById('physioInput').value;
-            const resultDiv = document.getElementById('physioResult');
-            
-            if (!input.trim()) return;
-
-            resultDiv.style.display = 'block'; resultDiv.innerHTML = '<span style="color:#666">Consulting Physio AI...</span>';
-
-            const prompt = `
-                Act as a Sports Physical Therapist. 
-                Provide specific stretches, foam rolling techniques, or exercises for the user's issue.
-                User Issue: "${input}"
-                Context: Runner, tight calves/hips history.
-                Format: Bullet points, Thai language. Concise instructions.
-            `;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                const data = await response.json();
-                resultDiv.innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong style="color:#34D399">$1</strong>');
-            } catch (e) { resultDiv.innerHTML = "Error connecting to AI."; }
-        }
+        // Init Schedule
+        renderWeek(3, document.querySelector('.week-pill.active'));
     </script>
 </body>
 </html>
