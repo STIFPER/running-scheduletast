@@ -20,10 +20,13 @@
 
       --c-green: #10B981;
       --c-green-dim: rgba(16, 185, 129, 0.10);
+
       --c-yellow: #F59E0B;
       --c-yellow-dim: rgba(245, 158, 11, 0.10);
+
       --c-red: #EF4444;
       --c-red-dim: rgba(239, 68, 68, 0.10);
+
       --c-blue: #3B82F6;
       --c-purple: #8B5CF6;
 
@@ -59,7 +62,7 @@
     .section-view { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s ease; }
     .section-view.active { display: block; opacity: 1; transform: translateY(0); }
 
-    /* Nav */
+    /* Nav (desktop) */
     .brand-logo {
       font-size: 24px; color: var(--c-green); margin-bottom: 40px;
       width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
@@ -68,7 +71,14 @@
       box-shadow: 0 0 15px rgba(16, 185, 129, 0.10);
     }
     .brand-logo:hover { transform: scale(1.05); background: var(--bg-hover); }
-    .nav-list { list-style: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+
+    .nav-shell { width: 100%; }
+    .nav-list {
+      list-style: none;
+      width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 15px;
+    }
     .nav-item {
       width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
@@ -76,10 +86,13 @@
       border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s;
+      position: relative;
+      user-select: none;
     }
     .nav-item:hover { color: var(--c-text-main); background: var(--bg-hover); }
     .nav-item.active { color: var(--c-green); background: var(--c-green-dim); border: 1px solid rgba(16,185,129,0.2); }
     .nav-item i { font-size: 18px; }
+    .nav-label { display:none; }
 
     /* Headers */
     .header-group {
@@ -91,15 +104,15 @@
       align-items: flex-end;
       gap: 16px;
     }
-    .page-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
-    .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--c-text-main); line-height: 1; }
+    .page-label { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
+    .page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-text-main); line-height: 1; }
     .page-date { font-size: 12px; color: var(--c-text-sec); font-family: 'Prompt', sans-serif; display:flex; align-items:center; gap:8px; }
 
     /* Cards */
     .card {
       background: var(--bg-card);
       border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
       margin-bottom: 18px;
       position: relative;
@@ -111,41 +124,24 @@
       cursor: pointer; user-select: none;
     }
     .card-header:hover { background: var(--bg-hover); }
-    .card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+    .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
     .card-body {
       padding: 0 20px; max-height: 0; overflow: hidden; opacity: 0;
       transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .card.open .card-header { border-bottom: 1px solid var(--border-subtle); }
-    .card.open .card-body { padding: 18px 20px 20px; max-height: 5000px; opacity: 1; }
+    .card.open .card-body { padding: 18px 20px 20px; max-height: 8000px; opacity: 1; }
 
-    /* Stat grid (used inside Phase cards) */
-    .stat-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: var(--border-subtle);
-      gap: 1px;
-      border: 1px solid var(--border-subtle);
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 16px;
-    }
-    .stat-item { background: var(--bg-card); padding: 14px 10px; text-align: center; }
-    .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; letter-spacing: 0.8px; }
-    .stat-value { font-size: 15px; font-weight: 700; color: var(--c-text-main); }
-    .stat-highlight { color: var(--c-green); }
-
-    /* Dashboard hero */
-    .dash-hero {
-      background: linear-gradient(180deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 50%, rgba(20,20,20,1) 100%);
-      border: 1px solid rgba(16,185,129,0.15);
+    /* Reusable hero (CURRENT PHASE style) */
+    .hero {
+      background: linear-gradient(180deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 55%, rgba(20,20,20,1) 100%);
+      border: 1px solid rgba(16,185,129,0.14);
       border-radius: 14px;
       padding: 18px;
-      margin-bottom: 18px;
       position: relative;
       overflow: hidden;
     }
-    .dash-hero::after{
+    .hero::after{
       content:'';
       position:absolute;
       right:-120px; top:-120px;
@@ -153,7 +149,7 @@
       background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.00) 60%);
       transform: rotate(15deg);
     }
-    .dash-hero-top {
+    .hero-top {
       display:flex;
       align-items:flex-start;
       justify-content:space-between;
@@ -161,34 +157,34 @@
       position:relative;
       z-index:1;
     }
-    .hero-left .hero-kicker{
+    .hero-kicker{
       font-size: 10px;
       letter-spacing: 1.6px;
       text-transform: uppercase;
       color: rgba(255,255,255,0.55);
-      font-weight: 800;
+      font-weight: 900;
       margin-bottom: 8px;
     }
-    .hero-left .hero-title{
+    .hero-title{
       font-size: 18px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: -0.3px;
       line-height: 1.15;
       margin-bottom: 8px;
     }
-    .hero-left .hero-sub{
+    .hero-sub{
       font-size: 12px;
       color: var(--c-text-sec);
-      line-height: 1.7;
+      line-height: 1.75;
       font-family: 'Prompt', sans-serif;
-      max-width: 520px;
+      max-width: 560px;
     }
     .hero-right {
       display:flex;
       flex-direction:column;
       align-items:flex-end;
       gap:8px;
-      min-width: 180px;
+      min-width: 190px;
       position:relative;
       z-index:1;
     }
@@ -205,19 +201,38 @@
       backdrop-filter: blur(10px);
       white-space: nowrap;
     }
-    .pill b { color: #fff; font-weight: 800; }
+    .pill b { color: #fff; font-weight: 900; }
     .dot {
       width: 8px; height: 8px; border-radius: 99px;
       background: var(--c-green);
       box-shadow: 0 0 10px rgba(16,185,129,0.35);
     }
 
+    /* Hero variants (for past phases) */
+    .hero.blue {
+      background: linear-gradient(180deg, rgba(59,130,246,0.10) 0%, rgba(59,130,246,0.03) 55%, rgba(20,20,20,1) 100%);
+      border-color: rgba(59,130,246,0.14);
+    }
+    .hero.blue::after { background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.00) 60%); }
+
+    .hero.yellow {
+      background: linear-gradient(180deg, rgba(245,158,11,0.10) 0%, rgba(245,158,11,0.03) 55%, rgba(20,20,20,1) 100%);
+      border-color: rgba(245,158,11,0.14);
+    }
+    .hero.yellow::after { background: radial-gradient(circle, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.00) 60%); }
+
+    .hero.red {
+      background: linear-gradient(180deg, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0.03) 55%, rgba(20,20,20,1) 100%);
+      border-color: rgba(239,68,68,0.14);
+    }
+    .hero.red::after { background: radial-gradient(circle, rgba(239,68,68,0.18) 0%, rgba(239,68,68,0.00) 60%); }
+
     /* Tiles */
     .tile-grid {
       display:grid;
       grid-template-columns: repeat(12, 1fr);
       gap: 12px;
-      margin-bottom: 18px;
+      margin: 12px 0 18px;
     }
     .tile {
       background: var(--bg-card);
@@ -234,7 +249,7 @@
       margin-bottom: 10px;
     }
     .t-label {
-      font-size: 10px; font-weight: 800;
+      font-size: 10px; font-weight: 900;
       letter-spacing: 1.4px;
       text-transform: uppercase;
       color: var(--c-text-mute);
@@ -249,24 +264,36 @@
     }
     .t-value {
       font-size: 18px;
-      font-weight: 800;
+      font-weight: 900;
       letter-spacing: -0.2px;
       margin-bottom: 6px;
     }
     .t-sub {
       font-size: 12px;
       color: var(--c-text-sec);
-      line-height: 1.6;
+      line-height: 1.65;
       font-family: 'Prompt', sans-serif;
     }
-    .accent-green { border-color: rgba(16,185,129,0.18); }
-    .accent-yellow { border-color: rgba(245,158,11,0.18); }
-    .accent-blue { border-color: rgba(59,130,246,0.18); }
-    .accent-red { border-color: rgba(239,68,68,0.18); }
 
     .span-12 { grid-column: span 12; }
     .span-6 { grid-column: span 6; }
     .span-4 { grid-column: span 4; }
+
+    /* Stat grid (inside Phase 4 card) */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--border-subtle);
+      gap: 1px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 14px 0 16px;
+    }
+    .stat-item { background: var(--bg-card); padding: 14px 10px; text-align: center; }
+    .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; letter-spacing: 0.8px; font-weight: 900; }
+    .stat-value { font-size: 15px; font-weight: 900; color: var(--c-text-main); }
+    .stat-highlight { color: var(--c-green); }
 
     /* Schedule UI */
     .schedule-toolbar {
@@ -274,9 +301,9 @@
       background: var(--bg-card); border: 1px solid var(--border-subtle);
       border-radius: 12px; padding: 6px; margin-bottom: 20px;
     }
-    .month-group { display: flex; gap: 4px; background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle); }
+    .month-group { display: flex; gap: 4px; background: var(--bg-body); padding: 4px; border-radius: 10px; border: 1px solid var(--border-subtle); }
     .month-pill {
-      padding: 6px 16px; border-radius: 6px; font-size: 11px; font-weight: 800; color: var(--c-text-mute);
+      padding: 6px 16px; border-radius: 8px; font-size: 11px; font-weight: 900; color: var(--c-text-mute);
       cursor: pointer; transition: all 0.2s; border: 1px solid transparent; letter-spacing: 0.5px;
       user-select: none;
     }
@@ -289,11 +316,11 @@
 
     .week-group {
       display: flex; flex-grow: 1; margin-left: 10px; gap: 2px;
-      background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle);
+      background: var(--bg-body); padding: 4px; border-radius: 10px; border: 1px solid var(--border-subtle);
     }
     .week-pill {
-      flex: 1; text-align: center; padding: 8px 0; border-radius: 6px;
-      font-size: 11px; font-weight: 700; color: var(--c-text-sec);
+      flex: 1; text-align: center; padding: 8px 0; border-radius: 8px;
+      font-size: 11px; font-weight: 800; color: var(--c-text-sec);
       cursor: pointer; transition: all 0.2s; position: relative;
       user-select: none;
     }
@@ -312,44 +339,96 @@
     .schedule-table th {
       text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-mute);
       padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-panel);
+      font-weight: 900;
     }
     .schedule-table td {
       padding: 18px 16px; vertical-align: top; border-bottom: 1px solid var(--border-subtle);
-      color: var(--c-text-sec); font-size: 13px; line-height: 1.5;
+      color: var(--c-text-sec); font-size: 13px; line-height: 1.55;
+      font-family: 'Prompt', sans-serif;
     }
     .schedule-table tr:last-child td { border-bottom: none; }
     .schedule-table tr:hover td { background: var(--bg-hover); }
 
     .tag {
-      display: inline-block; padding: 3px 8px; border-radius: 4px;
-      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+      display: inline-block; padding: 3px 8px; border-radius: 6px;
+      font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.6px;
       margin-bottom: 6px;
+      font-family: 'Inter', sans-serif;
     }
     .tag-run { color: var(--c-green); border: 1px solid var(--c-green-dim); background: rgba(16,185,129,0.05); }
     .tag-rest { color: var(--c-text-mute); border: 1px solid #333; background: #111; }
     .tag-long { color: var(--c-yellow); border: 1px solid var(--c-yellow-dim); background: rgba(245,158,11,0.05); }
 
+    /* Mobile */
     @media (max-width: 768px) {
       body { flex-direction: column; }
 
+      /* Bottom nav redesign (centered, standard) */
       .sidebar {
-        width: 100%; height: 62px; flex-direction: row; padding: 0 16px;
-        position: fixed; bottom: 0; top: auto; border-right: none; border-top: 1px solid var(--border-subtle);
-        background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
-        justify-content: space-around;
+        width: 100%;
+        height: calc(76px + env(safe-area-inset-bottom));
+        padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+        position: fixed;
+        bottom: 0; top: auto;
+        border-right: none;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        background: rgba(15, 15, 15, 0.90);
+        backdrop-filter: blur(14px);
+        justify-content: center;
+        align-items: center;
       }
       .brand-logo { display: none; }
-      .nav-list { flex-direction: row; justify-content: space-between; width: 100%; gap: 0; }
-      .nav-item { width: auto; height: 42px; padding: 0 12px; background: transparent !important; border: none !important; }
-      .nav-item.active { color: var(--c-green); }
 
-      .main-content { padding: 18px 16px 88px 16px; }
+      .nav-shell{
+        width: 100%;
+        max-width: 520px;
+        margin: 0 auto;
+        background: rgba(20,20,20,0.70);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 18px;
+        padding: 8px;
+        box-shadow: 0 10px 24px rgba(0,0,0,0.35);
+      }
+      .nav-list{
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .nav-item{
+        flex: 1;
+        height: 46px;
+        width: auto;
+        border-radius: 14px;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 10px;
+        border: 1px solid rgba(255,255,255,0.00);
+        background: transparent;
+      }
+      .nav-item:hover { background: transparent; }
+      .nav-item.active{
+        background: rgba(16,185,129,0.12);
+        border-color: rgba(16,185,129,0.18);
+      }
+      .nav-item i { font-size: 16px; }
+      .nav-label{
+        display:inline;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        color: rgba(255,255,255,0.70);
+      }
+      .nav-item.active .nav-label { color: var(--c-green); }
+
+      .main-content { padding: 18px 16px calc(100px + env(safe-area-inset-bottom)) 16px; }
 
       .header-group { align-items: flex-start; flex-direction: column; }
       .page-title { font-size: 24px; }
 
-      .dash-hero { padding: 16px; border-radius: 16px; }
-      .dash-hero-top { flex-direction: column; align-items:flex-start; }
+      .hero { padding: 16px; border-radius: 16px; }
+      .hero-top { flex-direction: column; align-items:flex-start; }
       .hero-right { align-items:flex-start; min-width: unset; }
 
       .tile-grid { gap: 10px; }
@@ -359,7 +438,7 @@
 
       .schedule-table thead { display: none; }
       .schedule-table, .schedule-table tbody, .schedule-table tr, .schedule-table td { display: block; width: 100%; }
-      .schedule-table tr { margin-bottom: 15px; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--bg-card); overflow: hidden; }
+      .schedule-table tr { margin-bottom: 15px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-card); overflow: hidden; }
       .schedule-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
       .schedule-table td:last-child { border-bottom: none; }
 
@@ -375,10 +454,17 @@
     <div class="brand-logo" onclick="nav('dashboard', document.querySelector('.nav-item'))" title="Home">
       <i class="fas fa-running" style="transform: scaleX(-1);"></i>
     </div>
-    <ul class="nav-list">
-      <li class="nav-item active" onclick="nav('dashboard', this)" title="Evolution Log"><i class="fas fa-stream"></i></li>
-      <li class="nav-item" onclick="nav('schedule', this)" title="Schedule"><i class="far fa-calendar-alt"></i></li>
-    </ul>
+
+    <div class="nav-shell">
+      <ul class="nav-list">
+        <li class="nav-item active" onclick="nav('dashboard', this)" title="Evolution Log">
+          <i class="fas fa-stream"></i><span class="nav-label">Log</span>
+        </li>
+        <li class="nav-item" onclick="nav('schedule', this)" title="Schedule">
+          <i class="far fa-calendar-alt"></i><span class="nav-label">Plan</span>
+        </li>
+      </ul>
+    </div>
   </nav>
 
   <main class="main-content">
@@ -394,10 +480,10 @@
         <div class="page-date"><i class="far fa-clock"></i> Updated: 02 Feb 2026</div>
       </div>
 
-      <!-- Hero -->
-      <div class="dash-hero">
-        <div class="dash-hero-top">
-          <div class="hero-left">
+      <!-- CURRENT PHASE HERO -->
+      <div class="hero">
+        <div class="hero-top">
+          <div>
             <div class="hero-kicker">CURRENT PHASE</div>
             <div class="hero-title">Phase 4: Threshold &amp; Strength Endurance</div>
             <div class="hero-sub">
@@ -411,18 +497,18 @@
         </div>
       </div>
 
-      <!-- Tiles -->
+      <!-- Dash tiles -->
       <div class="tile-grid">
-        <div class="tile span-6 accent-green">
+        <div class="tile span-6" style="border-color: rgba(16,185,129,0.18);">
           <div class="t-top">
             <div class="t-label">Key Metrics</div>
             <div class="t-icon"><i class="fas fa-tachometer-alt"></i></div>
           </div>
-          <div class="t-value" style="color:var(--c-green);">7:40 <span style="font-size:12px; font-weight:800; color:rgba(255,255,255,0.65)">/km</span></div>
+          <div class="t-value" style="color:var(--c-green);">7:40 <span style="font-size:12px; font-weight:900; color:rgba(255,255,255,0.65)">/km</span></div>
           <div class="t-sub">Reference: Long Run 31 Jan • Avg HR 148 • SPM 168 • GCT 282ms</div>
         </div>
 
-        <div class="tile span-6 accent-blue">
+        <div class="tile span-6" style="border-color: rgba(59,130,246,0.18);">
           <div class="t-top">
             <div class="t-label">Neural Focus</div>
             <div class="t-icon"><i class="fas fa-bullseye"></i></div>
@@ -431,7 +517,7 @@
           <div class="t-sub">Objective: keep the cue stable during intervals and tempo</div>
         </div>
 
-        <div class="tile span-4 accent-yellow">
+        <div class="tile span-4" style="border-color: rgba(245,158,11,0.18);">
           <div class="t-top">
             <div class="t-label">Protocol Change</div>
             <div class="t-icon"><i class="fas fa-sliders-h"></i></div>
@@ -440,7 +526,7 @@
           <div class="t-sub">Pre-run: bread only • Remove banana • SaltStick + coffee</div>
         </div>
 
-        <div class="tile span-4 accent-red">
+        <div class="tile span-4" style="border-color: rgba(239,68,68,0.18);">
           <div class="t-top">
             <div class="t-label">Correction</div>
             <div class="t-icon"><i class="fas fa-shoe-prints"></i></div>
@@ -449,7 +535,7 @@
           <div class="t-sub">Heel lock, loosen forefoot to handle swelling and numbness risk</div>
         </div>
 
-        <div class="tile span-4 accent-green">
+        <div class="tile span-4" style="border-color: rgba(16,185,129,0.18);">
           <div class="t-top">
             <div class="t-label">Phase 3 Result</div>
             <div class="t-icon"><i class="fas fa-check-circle"></i></div>
@@ -503,7 +589,7 @@
             </div>
           </div>
 
-          <div style="background: var(--bg-hover); padding: 16px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+          <div style="background: var(--bg-hover); padding: 16px; border-radius: 12px; border: 1px solid var(--border-subtle);">
             <div class="page-label" style="color: var(--c-green); margin-bottom: 10px;">PHASE MECHANISM</div>
             <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
               <div style="margin-bottom:12px;">
@@ -540,7 +626,7 @@
         </div>
       </div>
 
-      <!-- PHASE 3 (Completed + Graduation Summary) -->
+      <!-- PHASE 3 (Completed) -->
       <div class="card open" style="border-left: 3px solid var(--c-green);">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title">
@@ -554,96 +640,169 @@
         </div>
         <div class="card-body">
 
-          <div style="background: var(--bg-hover); padding: 16px; border-radius: 10px; border: 1px solid var(--border-subtle);">
-            <div class="page-label" style="color: var(--c-green); margin-bottom: 10px;">GRADUATION SUMMARY</div>
-
-            <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
-              <ul style="padding-left:18px; line-height:1.9;">
-                <li>Graduated Phase 3: completed Long Run 100 mins (13.06 km) without injury</li>
-                <li>Discovery: glute activation by opening knees and slightly toeing out reduced knee collapse and stabilized late-run pace</li>
-                <li>Protocol change: transition to Phase 4 threshold focus and update pre-run nutrition to bread only</li>
-              </ul>
+          <!-- Phase hero (same CURRENT PHASE style, but completed) -->
+          <div class="hero yellow">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">COMPLETED PHASE</div>
+                <div class="hero-title">Phase 3: Neuromuscular</div>
+                <div class="hero-sub">
+                  Consolidation of mechanics under fatigue with emphasis on cadence stability, hip drive, and late-run form retention
+                </div>
+              </div>
+              <div class="hero-right">
+                <div class="pill"><span class="dot" style="background:var(--c-yellow); box-shadow:0 0 10px rgba(245,158,11,0.35)"></span><b>Status</b>&nbsp;Graduated</div>
+                <div class="pill"><i class="fas fa-route" style="color:rgba(255,255,255,0.75)"></i><b>Key Test</b>&nbsp;Long Run 100 mins</div>
+              </div>
             </div>
           </div>
 
-          <div style="margin-top:12px; font-size:12px; color:var(--c-text-sec); font-family:'Prompt',sans-serif; line-height:1.8;">
-            <div><strong style="color:#fff;">Reference session:</strong> Long Run 100 mins (31 Jan 2026)</div>
+          <div style="margin-top:14px; background: var(--bg-hover); padding: 16px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+            <div class="page-label" style="color: var(--c-yellow); margin-bottom: 10px;">GRADUATION SUMMARY</div>
+            <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
+              <ul style="padding-left:18px;">
+                <li>Completed Long Run 100 mins (13.06 km) without injury</li>
+                <li>Discovered glute activation cue (knees open, slight toe out) reducing knee collapse and stabilizing late-run pace</li>
+                <li>Transitioned to Phase 4 with threshold focus and updated pre-run nutrition to bread only</li>
+              </ul>
+              <div style="margin-top:10px;">
+                <strong style="color:#fff;">Reference session:</strong> Long Run 100 mins (31 Jan 2026)
+              </div>
+            </div>
           </div>
+
         </div>
       </div>
 
-      <!-- PHASE 2 (Completed) - restored -->
+      <!-- PHASE 2 (Completed) -->
       <div class="card">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 2: AEROBIC BASE</div>
           <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
         </div>
         <div class="card-body">
-          <div class="page-label" style="color: var(--c-text-mute);">NOV - DEC 2025</div>
-          <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px; line-height:1.9; font-family:'Prompt',sans-serif;">
+
+          <div class="hero">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">COMPLETED PHASE</div>
+                <div class="hero-title">Phase 2: Aerobic Base</div>
+                <div class="hero-sub">
+                  Built the engine through steady volume and HR control to improve aerobic stability while staying injury-free
+                </div>
+              </div>
+              <div class="hero-right">
+                <div class="pill"><span class="dot"></span><b>Status</b>&nbsp;Completed</div>
+                <div class="pill"><i class="fas fa-heart" style="color:rgba(255,255,255,0.75)"></i><b>Priority</b>&nbsp;HR Stability</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif;">
+            <div class="page-label" style="color: var(--c-text-mute);">NOV - DEC 2025</div>
             Built the engine. Focus was increasing aerobic capacity without injury, prioritizing HR stability and easy-run discipline.
           </div>
+
         </div>
       </div>
 
-      <!-- PHASE 1 (Completed) - restored -->
+      <!-- PHASE 1 (Completed) -->
       <div class="card">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 1: FAMILIARIZATION</div>
           <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
         </div>
         <div class="card-body">
-          <div class="page-label" style="color: var(--c-text-mute);">SEP - OCT 2025</div>
-          <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px; line-height:1.9; font-family:'Prompt',sans-serif;">
+
+          <div class="hero blue">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">COMPLETED PHASE</div>
+                <div class="hero-title">Phase 1: Familiarization</div>
+                <div class="hero-sub">
+                  Transitioned into consistency, learning pacing feel, and building routine tolerance with basic movement quality
+                </div>
+              </div>
+              <div class="hero-right">
+                <div class="pill"><span class="dot" style="background:var(--c-blue); box-shadow:0 0 10px rgba(59,130,246,0.35)"></span><b>Status</b>&nbsp;Completed</div>
+                <div class="pill"><i class="fas fa-clock" style="color:rgba(255,255,255,0.75)"></i><b>Focus</b>&nbsp;Routine</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:14px; font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif;">
+            <div class="page-label" style="color: var(--c-text-mute);">SEP - OCT 2025</div>
             Transition to consistent running. Learning pacing feel, building routine tolerance, and improving basic movement quality.
           </div>
+
         </div>
       </div>
 
-      <!-- PHASE 0 (Completed) - restored (full detail like original) -->
+      <!-- PHASE 0 (Completed) -->
       <div class="card">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 0: PRE-CONDITIONING</div>
           <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
         </div>
         <div class="card-body">
-          <div class="page-label" style="color: var(--c-text-mute); margin-bottom: 14px;">PRE - AUG 2025</div>
 
-          <div style="margin-bottom: 16px;">
-            <div style="font-size: 11px; font-weight: 800; color: var(--c-text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
-              Initial State
+          <div class="hero red">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">COMPLETED PHASE</div>
+                <div class="hero-title">Phase 0: Pre-Conditioning</div>
+                <div class="hero-sub">
+                  Established the starting baseline by learning effort control and reducing inefficiency before structured training
+                </div>
+              </div>
+              <div class="hero-right">
+                <div class="pill"><span class="dot" style="background:var(--c-red); box-shadow:0 0 10px rgba(239,68,68,0.35)"></span><b>Status</b>&nbsp;Completed</div>
+                <div class="pill"><i class="fas fa-shield-alt" style="color:rgba(255,255,255,0.75)"></i><b>Goal</b>&nbsp;Reduce Risk</div>
+              </div>
             </div>
-            <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 18px; font-family:'Prompt',sans-serif;">
-              <li>เริ่มวิ่งจริงจังครั้งแรก หลังจากได้รองเท้าใหม่</li>
-              <li>ยังไม่มีโครงสร้างการฝึก</li>
-              <li>วิ่งตามความรู้สึกเป็นหลัก</li>
-              <li>Pace และ Heart Rate แปรผันสูง ไม่เสถียร</li>
-              <li>แยกแยะความรู้สึกง่ายกับหนักไม่ชัดเจน</li>
-            </ul>
           </div>
 
-          <div style="margin-bottom: 16px; background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 8px; border-left: 2px solid var(--c-red);">
-            <div style="font-size: 11px; font-weight: 800; color: var(--c-red); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
-              Issues
+          <!-- Full detail retained -->
+          <div style="margin-top:14px;">
+            <div class="page-label" style="color: var(--c-text-mute); margin-bottom: 12px;">PRE - AUG 2025</div>
+
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 11px; font-weight: 900; color: var(--c-text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
+                Initial State
+              </div>
+              <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 18px; font-family:'Prompt',sans-serif;">
+                <li>เริ่มวิ่งจริงจังครั้งแรก หลังจากได้รองเท้าใหม่</li>
+                <li>ยังไม่มีโครงสร้างการฝึก</li>
+                <li>วิ่งตามความรู้สึกเป็นหลัก</li>
+                <li>Pace และ Heart Rate แปรผันสูง ไม่เสถียร</li>
+                <li>แยกแยะความรู้สึกง่ายกับหนักไม่ชัดเจน</li>
+              </ul>
             </div>
-            <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
-              <li style="margin-bottom:4px;">• <strong>HR Spike:</strong> หัวใจขึ้นเร็วแม้เพซไม่เร็ว</li>
-              <li style="margin-bottom:4px;">• <strong>Pace Control:</strong> เผลอเร่งโดยไม่รู้ตัว รู้สึกยากที่จะวิ่งช้า</li>
-              <li style="margin-bottom:4px;">• <strong>Weakness:</strong> กล้ามเนื้อยังไม่ทนต่อการวิ่งยาว</li>
-              <li>• <strong>Inefficiency:</strong> ระบบประสาทไม่สัมพันธ์กัน เคลื่อนไหวเปลืองแรง</li>
-            </ul>
+
+            <div style="margin-bottom: 16px; background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 12px; border-left: 2px solid var(--c-red);">
+              <div style="font-size: 11px; font-weight: 900; color: var(--c-red); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
+                Issues
+              </div>
+              <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
+                <li style="margin-bottom:4px;">• <strong>HR Spike:</strong> หัวใจขึ้นเร็วแม้เพซไม่เร็ว</li>
+                <li style="margin-bottom:4px;">• <strong>Pace Control:</strong> เผลอเร่งโดยไม่รู้ตัว รู้สึกยากที่จะวิ่งช้า</li>
+                <li style="margin-bottom:4px;">• <strong>Weakness:</strong> กล้ามเนื้อยังไม่ทนต่อการวิ่งยาว</li>
+                <li>• <strong>Inefficiency:</strong> ระบบประสาทไม่สัมพันธ์กัน เคลื่อนไหวเปลืองแรง</li>
+              </ul>
+            </div>
+
+            <div style="background: rgba(16, 185, 129, 0.05); padding: 12px; border-radius: 12px; border-left: 2px solid var(--c-green);">
+              <div style="font-size: 11px; font-weight: 900; color: var(--c-green); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
+                Adaptation
+              </div>
+              <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
+                <li style="margin-bottom:4px;">• ร่างกายเริ่มทนแรงกระแทกได้ดีขึ้น</li>
+                <li style="margin-bottom:4px;">• ความกังวลลดลง เริ่มเข้าใจฟอร์มตัวเอง</li>
+                <li>• แยกแยะความรู้สึกฝืนกับสบายได้ชัดเจนขึ้น</li>
+              </ul>
+            </div>
           </div>
 
-          <div style="background: rgba(16, 185, 129, 0.05); padding: 12px; border-radius: 8px; border-left: 2px solid var(--c-green);">
-            <div style="font-size: 11px; font-weight: 800; color: var(--c-green); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
-              Adaptation
-            </div>
-            <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
-              <li style="margin-bottom:4px;">• ร่างกายเริ่มทนแรงกระแทกได้ดีขึ้น</li>
-              <li style="margin-bottom:4px;">• ความกังวลลดลง เริ่มเข้าใจฟอร์มตัวเอง</li>
-              <li>• แยกแยะความรู้สึกฝืนกับสบายได้ชัดเจนขึ้น</li>
-            </ul>
-          </div>
         </div>
       </div>
 
@@ -742,37 +901,37 @@
 
       FEB: {
         1: `<tr><td><span class="tag tag-rest">MON 02</span></td>
-              <td><strong>REST DAY</strong><br>-<br><span style="font-size:11px;color:#666;">Hydration Focus</span></td>
+              <td><strong>REST DAY</strong><br>-<br><span style="font-size:11px;color:#666; font-family:Inter,sans-serif;">Hydration Focus</span></td>
               <td>Glute Stretch<br>Light Mobility</td>
               <td>-</td></tr>
 
             <tr><td><span class="tag tag-run">TUE 03</span></td>
-              <td><strong>INTERVALS</strong><br>5 × 3 min<br><span style="font-size:11px;color:#EF4444;">Zone 4 (162–172 bpm)</span></td>
+              <td><strong>INTERVALS</strong><br>5 × 3 min<br><span style="font-size:11px;color:#EF4444; font-family:Inter,sans-serif;">Zone 4 (162–172 bpm)</span></td>
               <td>Form hold under speed<br>Cue: Knees Open</td>
               <td>Bread + Whey<br>Core Workout</td></tr>
 
             <tr><td><span class="tag tag-run">WED 04</span></td>
-              <td><strong>EASY RUN</strong><br>45 min<br><span style="font-size:11px;color:#10B981;">Zone 2 (&lt;145 bpm)</span></td>
+              <td><strong>EASY RUN</strong><br>45 min<br><span style="font-size:11px;color:#10B981; font-family:Inter,sans-serif;">Zone 2 (&lt;145 bpm)</span></td>
               <td>Relax shoulders<br>Soft landing</td>
               <td>-<br>Foam Roll (Calves)</td></tr>
 
             <tr><td><span class="tag tag-run">THU 05</span></td>
-              <td><strong>TEMPO</strong><br>30 min<br><span style="font-size:11px;color:#F59E0B;">Zone 3 Upper (150–158)</span></td>
+              <td><strong>TEMPO</strong><br>30 min<br><span style="font-size:11px;color:#F59E0B; font-family:Inter,sans-serif;">Zone 3 Upper (150–158)</span></td>
               <td>Hold rhythm<br>Don’t surge</td>
               <td>Bread Pre-run<br>Bodyweight Upper</td></tr>
 
             <tr><td><span class="tag tag-rest">FRI 06</span></td>
-              <td><strong>ACTIVE RECOVERY</strong><br>-<br><span style="font-size:11px;color:#666;">Zone 1</span></td>
+              <td><strong>ACTIVE RECOVERY</strong><br>-<br><span style="font-size:11px;color:#666; font-family:Inter,sans-serif;">Zone 1</span></td>
               <td>Mobility Flow<br>Easy walk</td>
               <td>Carb Load (Light)</td></tr>
 
             <tr><td><span class="tag tag-long">SAT 07</span></td>
-              <td><strong>LONG RUN</strong><br>105 min<br><span style="font-size:11px;color:#10B981;">Zone 2–3 (&lt;155 bpm)</span></td>
+              <td><strong>LONG RUN</strong><br>105 min<br><span style="font-size:11px;color:#10B981; font-family:Inter,sans-serif;">Zone 2–3 (&lt;155 bpm)</span></td>
               <td>Full Protocol + Gel<br>Focus: Form lock late</td>
               <td>Gel @ 50m (water only)<br>Legs Up Wall</td></tr>
 
             <tr><td><span class="tag tag-rest">SUN 08</span></td>
-              <td><strong>REST DAY</strong><br>-<br><span style="font-size:11px;color:#666;">Reset</span></td>
+              <td><strong>REST DAY</strong><br>-<br><span style="font-size:11px;color:#666; font-family:Inter,sans-serif;">Reset</span></td>
               <td>Relax</td>
               <td>-</td></tr>`
       }
