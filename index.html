@@ -117,9 +117,25 @@
       transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .card.open .card-header { border-bottom: 1px solid var(--border-subtle); }
-    .card.open .card-body { padding: 18px 20px 20px; max-height: 4000px; opacity: 1; }
+    .card.open .card-body { padding: 18px 20px 20px; max-height: 5000px; opacity: 1; }
 
-    /* Dashboard (Whoop/Garmin-ish) */
+    /* Stat grid (used inside Phase cards) */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--border-subtle);
+      gap: 1px;
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .stat-item { background: var(--bg-card); padding: 14px 10px; text-align: center; }
+    .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; letter-spacing: 0.8px; }
+    .stat-value { font-size: 15px; font-weight: 700; color: var(--c-text-main); }
+    .stat-highlight { color: var(--c-green); }
+
+    /* Dashboard hero */
     .dash-hero {
       background: linear-gradient(180deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 50%, rgba(20,20,20,1) 100%);
       border: 1px solid rgba(16,185,129,0.15);
@@ -150,7 +166,7 @@
       letter-spacing: 1.6px;
       text-transform: uppercase;
       color: rgba(255,255,255,0.55);
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 8px;
     }
     .hero-left .hero-title{
@@ -163,7 +179,7 @@
     .hero-left .hero-sub{
       font-size: 12px;
       color: var(--c-text-sec);
-      line-height: 1.6;
+      line-height: 1.7;
       font-family: 'Prompt', sans-serif;
       max-width: 520px;
     }
@@ -172,7 +188,7 @@
       flex-direction:column;
       align-items:flex-end;
       gap:8px;
-      min-width: 160px;
+      min-width: 180px;
       position:relative;
       z-index:1;
     }
@@ -189,13 +205,14 @@
       backdrop-filter: blur(10px);
       white-space: nowrap;
     }
-    .pill b { color: #fff; font-weight: 700; }
+    .pill b { color: #fff; font-weight: 800; }
     .dot {
       width: 8px; height: 8px; border-radius: 99px;
       background: var(--c-green);
       box-shadow: 0 0 10px rgba(16,185,129,0.35);
     }
 
+    /* Tiles */
     .tile-grid {
       display:grid;
       grid-template-columns: repeat(12, 1fr);
@@ -239,7 +256,7 @@
     .t-sub {
       font-size: 12px;
       color: var(--c-text-sec);
-      line-height: 1.55;
+      line-height: 1.6;
       font-family: 'Prompt', sans-serif;
     }
     .accent-green { border-color: rgba(16,185,129,0.18); }
@@ -247,12 +264,9 @@
     .accent-blue { border-color: rgba(59,130,246,0.18); }
     .accent-red { border-color: rgba(239,68,68,0.18); }
 
-    /* tile spans */
     .span-12 { grid-column: span 12; }
-    .span-8 { grid-column: span 8; }
     .span-6 { grid-column: span 6; }
     .span-4 { grid-column: span 4; }
-    .span-3 { grid-column: span 3; }
 
     /* Schedule UI */
     .schedule-toolbar {
@@ -262,7 +276,7 @@
     }
     .month-group { display: flex; gap: 4px; background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle); }
     .month-pill {
-      padding: 6px 16px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--c-text-mute);
+      padding: 6px 16px; border-radius: 6px; font-size: 11px; font-weight: 800; color: var(--c-text-mute);
       cursor: pointer; transition: all 0.2s; border: 1px solid transparent; letter-spacing: 0.5px;
       user-select: none;
     }
@@ -279,7 +293,7 @@
     }
     .week-pill {
       flex: 1; text-align: center; padding: 8px 0; border-radius: 6px;
-      font-size: 11px; font-weight: 600; color: var(--c-text-sec);
+      font-size: 11px; font-weight: 700; color: var(--c-text-sec);
       cursor: pointer; transition: all 0.2s; position: relative;
       user-select: none;
     }
@@ -308,14 +322,13 @@
 
     .tag {
       display: inline-block; padding: 3px 8px; border-radius: 4px;
-      font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
       margin-bottom: 6px;
     }
     .tag-run { color: var(--c-green); border: 1px solid var(--c-green-dim); background: rgba(16,185,129,0.05); }
     .tag-rest { color: var(--c-text-mute); border: 1px solid #333; background: #111; }
     .tag-long { color: var(--c-yellow); border: 1px solid var(--c-yellow-dim); background: rgba(245,158,11,0.05); }
 
-    /* Mobile */
     @media (max-width: 768px) {
       body { flex-direction: column; }
 
@@ -332,10 +345,7 @@
 
       .main-content { padding: 18px 16px 88px 16px; }
 
-      .header-group {
-        align-items: flex-start;
-        flex-direction: column;
-      }
+      .header-group { align-items: flex-start; flex-direction: column; }
       .page-title { font-size: 24px; }
 
       .dash-hero { padding: 16px; border-radius: 16px; }
@@ -343,7 +353,9 @@
       .hero-right { align-items:flex-start; min-width: unset; }
 
       .tile-grid { gap: 10px; }
-      .span-8, .span-6, .span-4, .span-3 { grid-column: span 12; }
+      .span-6, .span-4 { grid-column: span 12; }
+
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
 
       .schedule-table thead { display: none; }
       .schedule-table, .schedule-table tbody, .schedule-table tr, .schedule-table td { display: block; width: 100%; }
@@ -359,7 +371,6 @@
 
 <body>
 
-  <!-- SIDEBAR -->
   <nav class="sidebar">
     <div class="brand-logo" onclick="nav('dashboard', document.querySelector('.nav-item'))" title="Home">
       <i class="fas fa-running" style="transform: scaleX(-1);"></i>
@@ -372,7 +383,7 @@
 
   <main class="main-content">
 
-    <!-- DASHBOARD -->
+    <!-- EVOLUTION LOG -->
     <div id="dashboard" class="section-view active">
 
       <div class="header-group">
@@ -393,7 +404,6 @@
               Week 1 focuses on introducing threshold stress while preserving mechanics under speed and fatigue
             </div>
           </div>
-
           <div class="hero-right">
             <div class="pill"><span class="dot"></span><b>Status</b>&nbsp;Active / Injury Free</div>
             <div class="pill"><i class="fas fa-calendar-check" style="color:rgba(255,255,255,0.75)"></i><b>Next Long</b>&nbsp;105 mins</div>
@@ -403,13 +413,12 @@
 
       <!-- Tiles -->
       <div class="tile-grid">
-
         <div class="tile span-6 accent-green">
           <div class="t-top">
             <div class="t-label">Key Metrics</div>
             <div class="t-icon"><i class="fas fa-tachometer-alt"></i></div>
           </div>
-          <div class="t-value" style="color:var(--c-green);">7:40 <span style="font-size:12px; font-weight:700; color:rgba(255,255,255,0.65)">/km</span></div>
+          <div class="t-value" style="color:var(--c-green);">7:40 <span style="font-size:12px; font-weight:800; color:rgba(255,255,255,0.65)">/km</span></div>
           <div class="t-sub">Reference: Long Run 31 Jan • Avg HR 148 • SPM 168 • GCT 282ms</div>
         </div>
 
@@ -428,7 +437,7 @@
             <div class="t-icon"><i class="fas fa-sliders-h"></i></div>
           </div>
           <div class="t-value">Fuel Update</div>
-          <div class="t-sub">Pre-run: bread only • Remove banana • SaltStick + coffee as usual</div>
+          <div class="t-sub">Pre-run: bread only • Remove banana • SaltStick + coffee</div>
         </div>
 
         <div class="tile span-4 accent-red">
@@ -456,62 +465,183 @@
           </div>
           <div class="t-value" style="font-size:16px;">The Glute Breakthrough</div>
           <div class="t-sub" style="line-height:1.9;">
-            The 100-minute run confirmed a stable aerobic base with HR holding steady. The key turning point was after minute 60 when the cue “knees open” brought glute medius into load sharing, stabilizing late-run pace and reducing knee fatigue. Next focus is to preserve this form at higher speeds during intervals and tempo.
+            The 100-minute run confirmed a stable aerobic base with HR holding steady. The turning point was after minute 60 when the cue “knees open” brought glute medius into load sharing, stabilizing late-run pace and reducing knee fatigue. Next focus is to preserve this form at higher speeds during intervals and tempo.
           </div>
         </div>
-
       </div>
 
-      <!-- Phase 4 (Expandable) -->
+      <!-- PHASE 4 (Current) -->
       <div class="card open" style="border-left: 3px solid var(--c-green);">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title">
-            <i class="fas fa-layer-group" style="color:var(--c-green);"></i>
-            PHASE 4 MECHANISM
+            <i class="fas fa-stream" style="color:var(--c-green);"></i>
+            PHASE 4: THRESHOLD &amp; STRENGTH ENDURANCE (CURRENT)
           </div>
-          <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="page-date">Updated: 02 Feb 2026</span>
+            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+          </div>
         </div>
         <div class="card-body">
-          <div style="font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif;">
-            <div style="margin-bottom:14px;">
-              <strong style="color:#fff;">1) ดันเพดาน “ความอึดที่ความเร็วสูง” (Lactate Threshold)</strong><br>
-              เฟสก่อน (Phase 3) คือการสร้างความทนทานและฐานให้ใหญ่ขึ้น เพื่อวิ่งได้นานขึ้น<br>
-              เฟสนี้ (Phase 4) คือทำให้คุณ “วิ่งได้เร็วขึ้นโดยไม่เหนื่อยฟรี” โดยพัฒนาความสามารถในการกำจัดของเสียจากการวิ่งเร็ว
-              <div style="margin-top:8px;">
-                <span style="color:#fff; font-weight:500;">กลไก:</span> เมื่อวิ่งเร็ว ร่างกายสร้างของเสียมากขึ้น หากเร็วเกินจุดหนึ่ง (Threshold) จะสะสมจนขาแข็ง หอบ และหมดแรง<br>
-                <span style="color:#fff; font-weight:500;">เป้าหมาย:</span> Intervals (วันอังคาร) และ Tempo (วันพฤหัส) คือการกระตุ้นระบบนี้ซ้ำ ๆ เพื่อให้ร่างกายกำจัดของเสียได้ดีขึ้น<br>
-                <span style="color:#fff; font-weight:500;">ผลลัพธ์:</span> วิ่ง Pace เดิมได้ด้วยหัวใจต่ำลง หรือวิ่งเร็วขึ้นได้นานเท่าเดิม
+
+          <div class="stat-grid">
+            <div class="stat-item">
+              <div class="stat-label">Pace</div>
+              <div class="stat-value stat-highlight">7:40</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">HR Avg</div>
+              <div class="stat-value">148</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">SPM</div>
+              <div class="stat-value">168</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-label">GCT</div>
+              <div class="stat-value">282ms</div>
+            </div>
+          </div>
+
+          <div style="background: var(--bg-hover); padding: 16px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+            <div class="page-label" style="color: var(--c-green); margin-bottom: 10px;">PHASE MECHANISM</div>
+            <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
+              <div style="margin-bottom:12px;">
+                <strong style="color:#fff;">1) ดันเพดานความอึดที่ความเร็วสูง (Lactate Threshold)</strong><br>
+                เฟสก่อนสร้างความทนทานและฐานให้ใหญ่ขึ้น เฟสนี้ทำให้วิ่งได้เร็วขึ้นโดยไม่เหนื่อยฟรี<br>
+                การซ้อม Intervals และ Tempo คือการกระตุ้นระบบกำจัดของเสียจากการวิ่งเร็วซ้ำ ๆ เพื่อยกจุด Threshold
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <strong style="color:#fff;">2) ความแข็งแรงยืนระยะ (Strength Endurance)</strong><br>
+                เป้าหมายคือทำให้กล้ามเนื้อขาทนต่อความล้าได้ดีขึ้น เพื่อลดปัญหาฟอร์มหลุดช่วงท้าย<br>
+                Intervals ซ้ำ ๆ ในสภาพล้าสะสมคือการฝึกให้กล้ามเนื้อทำงานได้แม้พลังงานเหลือน้อย
+              </div>
+
+              <div>
+                <strong style="color:#fff;">3) ล็อคท่าวิ่งใหม่ให้เป็นอัตโนมัติ (Technique Consolidation)</strong><br>
+                คิว “เปิดเข่า + ปลายเท้าแบะ” ต้องถูกฝึกในความเร็วสูงและตอนเหนื่อยเพื่อไม่ให้กลับไปท่าเดิม<br>
+                หากคุมคิวนี้ได้ใน Intervals จะคุมได้ในทุกสถานการณ์
               </div>
             </div>
+          </div>
 
-            <div style="margin-bottom:14px;">
-              <strong style="color:#fff;">2) ความแข็งแรงยืนระยะ (Strength Endurance)</strong><br>
-              ช่วงท้าย Long Run 100 นาทีที่รู้สึกว่าขาล้า ฟอร์มเริ่มหลุด เป็นเรื่องกล้ามเนื้อล้า มากกว่าปอดหมด<br>
-              Intervals ที่ต้องทำซ้ำในจังหวะเร็วจะบังคับให้กล้ามเนื้อทำงานได้แม้ความล้าสะสม ช่วยแก้ปัญหา “ขาหมดก่อนปอด” ในระยะยาว
+          <div style="margin-top:14px; font-size:12px; color:var(--c-text-sec); font-family:'Prompt',sans-serif; line-height:1.8;">
+            <div style="display:flex; gap:10px; align-items:flex-start;">
+              <i class="fas fa-bullseye" style="color:var(--c-blue); margin-top:4px;"></i>
+              <div><strong style="color:#fff;">Neural Focus:</strong> Knees Open &amp; Toe Out</div>
             </div>
+            <div style="display:flex; gap:10px; align-items:flex-start; margin-top:6px;">
+              <i class="fas fa-shoe-prints" style="color:var(--c-red); margin-top:4px;"></i>
+              <div><strong style="color:#fff;">Correction:</strong> Lacing Pressure (heel lock + loosen forefoot)</div>
+            </div>
+          </div>
 
-            <div>
-              <strong style="color:#fff;">3) ล็อคท่าวิ่งใหม่ให้เป็นอัตโนมัติ (Technique Consolidation)</strong><br>
-              คุณทำคิว “เปิดเข่า + ปลายเท้าแบะ” ได้ดีตอนวิ่งช้า แต่เมื่อวิ่งเร็วหรือเหนื่อยจัดมักกลับไปท่าเดิม<br>
-              เป้าหมายคือฝึกคิวนี้ในความเร็วสูง หากคุมได้ตอน Intervals แปลว่าคุมได้ในทุกสถานการณ์
+        </div>
+      </div>
+
+      <!-- PHASE 3 (Completed + Graduation Summary) -->
+      <div class="card open" style="border-left: 3px solid var(--c-green);">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title">
+            <i class="fas fa-check-circle" style="color:var(--c-green);"></i>
+            PHASE 3: NEUROMUSCULAR (COMPLETED)
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="page-date">Updated: 02 Feb 2026</span>
+            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div style="background: var(--bg-hover); padding: 16px; border-radius: 10px; border: 1px solid var(--border-subtle);">
+            <div class="page-label" style="color: var(--c-green); margin-bottom: 10px;">GRADUATION SUMMARY</div>
+
+            <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
+              <ul style="padding-left:18px; line-height:1.9;">
+                <li>Graduated Phase 3: completed Long Run 100 mins (13.06 km) without injury</li>
+                <li>Discovery: glute activation by opening knees and slightly toeing out reduced knee collapse and stabilized late-run pace</li>
+                <li>Protocol change: transition to Phase 4 threshold focus and update pre-run nutrition to bread only</li>
+              </ul>
             </div>
+          </div>
+
+          <div style="margin-top:12px; font-size:12px; color:var(--c-text-sec); font-family:'Prompt',sans-serif; line-height:1.8;">
+            <div><strong style="color:#fff;">Reference session:</strong> Long Run 100 mins (31 Jan 2026)</div>
           </div>
         </div>
       </div>
 
-      <!-- Phase 3 (Expandable Summary) -->
+      <!-- PHASE 2 (Completed) - restored -->
       <div class="card">
         <div class="card-header" onclick="toggleCard(this)">
-          <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 3 SUMMARY</div>
+          <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 2: AEROBIC BASE</div>
           <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
         </div>
         <div class="card-body">
-          <div class="page-label" style="color: var(--c-text-mute);">JAN 2026</div>
-          <div style="font-size:13px; color:var(--c-text-sec); line-height:1.9; font-family:'Prompt',sans-serif;">
-            <ul style="padding-left:18px; line-height:1.9;">
-              <li>Long Run 100 mins (13.06 km) completed without injury</li>
-              <li>Breakthrough technique: glute activation by opening knees and slightly toeing out to reduce knee collapse and stabilize late-run pacing</li>
-              <li>Phase transition readiness: stable aerobic base supporting upcoming threshold work</li>
+          <div class="page-label" style="color: var(--c-text-mute);">NOV - DEC 2025</div>
+          <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px; line-height:1.9; font-family:'Prompt',sans-serif;">
+            Built the engine. Focus was increasing aerobic capacity without injury, prioritizing HR stability and easy-run discipline.
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 1 (Completed) - restored -->
+      <div class="card">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 1: FAMILIARIZATION</div>
+          <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+        </div>
+        <div class="card-body">
+          <div class="page-label" style="color: var(--c-text-mute);">SEP - OCT 2025</div>
+          <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px; line-height:1.9; font-family:'Prompt',sans-serif;">
+            Transition to consistent running. Learning pacing feel, building routine tolerance, and improving basic movement quality.
+          </div>
+        </div>
+      </div>
+
+      <!-- PHASE 0 (Completed) - restored (full detail like original) -->
+      <div class="card">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> PHASE 0: PRE-CONDITIONING</div>
+          <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+        </div>
+        <div class="card-body">
+          <div class="page-label" style="color: var(--c-text-mute); margin-bottom: 14px;">PRE - AUG 2025</div>
+
+          <div style="margin-bottom: 16px;">
+            <div style="font-size: 11px; font-weight: 800; color: var(--c-text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
+              Initial State
+            </div>
+            <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 18px; font-family:'Prompt',sans-serif;">
+              <li>เริ่มวิ่งจริงจังครั้งแรก หลังจากได้รองเท้าใหม่</li>
+              <li>ยังไม่มีโครงสร้างการฝึก</li>
+              <li>วิ่งตามความรู้สึกเป็นหลัก</li>
+              <li>Pace และ Heart Rate แปรผันสูง ไม่เสถียร</li>
+              <li>แยกแยะความรู้สึกง่ายกับหนักไม่ชัดเจน</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom: 16px; background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 8px; border-left: 2px solid var(--c-red);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--c-red); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
+              Issues
+            </div>
+            <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
+              <li style="margin-bottom:4px;">• <strong>HR Spike:</strong> หัวใจขึ้นเร็วแม้เพซไม่เร็ว</li>
+              <li style="margin-bottom:4px;">• <strong>Pace Control:</strong> เผลอเร่งโดยไม่รู้ตัว รู้สึกยากที่จะวิ่งช้า</li>
+              <li style="margin-bottom:4px;">• <strong>Weakness:</strong> กล้ามเนื้อยังไม่ทนต่อการวิ่งยาว</li>
+              <li>• <strong>Inefficiency:</strong> ระบบประสาทไม่สัมพันธ์กัน เคลื่อนไหวเปลืองแรง</li>
+            </ul>
+          </div>
+
+          <div style="background: rgba(16, 185, 129, 0.05); padding: 12px; border-radius: 8px; border-left: 2px solid var(--c-green);">
+            <div style="font-size: 11px; font-weight: 800; color: var(--c-green); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
+              Adaptation
+            </div>
+            <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
+              <li style="margin-bottom:4px;">• ร่างกายเริ่มทนแรงกระแทกได้ดีขึ้น</li>
+              <li style="margin-bottom:4px;">• ความกังวลลดลง เริ่มเข้าใจฟอร์มตัวเอง</li>
+              <li>• แยกแยะความรู้สึกฝืนกับสบายได้ชัดเจนขึ้น</li>
             </ul>
           </div>
         </div>
@@ -519,7 +649,7 @@
 
     </div>
 
-    <!-- SCHEDULE -->
+    <!-- WEEKLY SCHEDULE -->
     <div id="schedule" class="section-view">
       <div class="header-group">
         <div>
@@ -643,7 +773,7 @@
 
             <tr><td><span class="tag tag-rest">SUN 08</span></td>
               <td><strong>REST DAY</strong><br>-<br><span style="font-size:11px;color:#666;">Reset</span></td>
-              <td>Cheat Meal (optional)<br>Relax</td>
+              <td>Relax</td>
               <td>-</td></tr>`
       }
     };
