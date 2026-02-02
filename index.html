@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>RUNNER_001 | Performance Hub</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <!-- Fonts (DO NOT CHANGE) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <!-- Icons -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 
@@ -53,12 +53,19 @@
       display: flex; flex-direction: column; align-items: center;
       padding: 30px 0; z-index: 100; flex-shrink: 0;
     }
+
     .main-content {
       flex-grow: 1;
       overflow-y: auto;
       padding: 40px;
       scroll-behavior: smooth;
+      background:
+        radial-gradient(900px 500px at 16% 8%, rgba(16,185,129,0.09), transparent 58%),
+        radial-gradient(760px 520px at 85% 18%, rgba(59,130,246,0.07), transparent 56%),
+        radial-gradient(720px 520px at 72% 92%, rgba(245,158,11,0.06), transparent 56%),
+        var(--bg-body);
     }
+
     .section-view { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s ease; }
     .section-view.active { display: block; opacity: 1; transform: translateY(0); }
 
@@ -66,9 +73,10 @@
     .brand-logo {
       font-size: 24px; color: var(--c-green); margin-bottom: 40px;
       width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--border-subtle); border-radius: 12px;
+      border: 1px solid var(--border-subtle); border-radius: 14px;
       cursor: pointer; transition: all 0.2s;
-      box-shadow: 0 0 15px rgba(16, 185, 129, 0.10);
+      background: rgba(255,255,255,0.02);
+      box-shadow: 0 0 18px rgba(16, 185, 129, 0.10);
     }
     .brand-logo:hover { transform: scale(1.05); background: var(--bg-hover); }
 
@@ -83,60 +91,83 @@
       width: 44px; height: 44px;
       display: flex; align-items: center; justify-content: center;
       color: var(--c-text-mute);
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       transition: all 0.2s;
       position: relative;
       user-select: none;
+      border: 1px solid rgba(255,255,255,0.00);
+      background: rgba(255,255,255,0.00);
     }
-    .nav-item:hover { color: var(--c-text-main); background: var(--bg-hover); }
-    .nav-item.active { color: var(--c-green); background: var(--c-green-dim); border: 1px solid rgba(16,185,129,0.2); }
+    .nav-item:hover { color: var(--c-text-main); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
+    .nav-item.active {
+      color: var(--c-green);
+      background: rgba(16,185,129,0.10);
+      border: 1px solid rgba(16,185,129,0.18);
+      box-shadow: 0 10px 26px rgba(0,0,0,0.25);
+    }
     .nav-item i { font-size: 18px; }
     .nav-label { display:none; }
 
     /* Headers */
     .header-group {
-      margin-bottom: 22px;
-      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       padding-bottom: 16px;
       display: flex;
       justify-content: space-between;
       align-items: flex-end;
       gap: 16px;
     }
-    .page-label { font-size: 10px; font-weight: 800; letter-spacing: 1.5px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
-    .page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; color: var(--c-text-main); line-height: 1; }
+    .page-label { font-size: 10px; font-weight: 900; letter-spacing: 1.6px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
+    .page-title { font-size: 28px; font-weight: 900; letter-spacing: -0.6px; color: var(--c-text-main); line-height: 1; }
     .page-date { font-size: 12px; color: var(--c-text-sec); font-family: 'Prompt', sans-serif; display:flex; align-items:center; gap:8px; }
 
-    /* Cards */
+    /* Cards (premium/glass-ish, no green stripe) */
     .card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.010));
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
       overflow: hidden;
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       position: relative;
+      box-shadow: 0 18px 48px rgba(0,0,0,0.45);
+      backdrop-filter: blur(10px);
+    }
+    .card::before{
+      content:'';
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(800px 220px at 12% 0%, rgba(16,185,129,0.05), transparent 60%),
+        radial-gradient(700px 220px at 88% 0%, rgba(59,130,246,0.04), transparent 60%);
+      pointer-events:none;
+      opacity: 0.75;
     }
     .card-header {
       padding: 18px 20px;
-      background: var(--bg-card);
       display: flex; justify-content: space-between; align-items: center;
       cursor: pointer; user-select: none;
+      position: relative;
+      z-index: 1;
+      background: rgba(20,20,20,0.35);
     }
-    .card-header:hover { background: var(--bg-hover); }
-    .card-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+    .card-header:hover { background: rgba(255,255,255,0.03); }
+    .card-title { font-size: 14px; font-weight: 900; display: flex; align-items: center; gap: 10px; letter-spacing: 0.6px; }
     .card-body {
       padding: 0 20px; max-height: 0; overflow: hidden; opacity: 0;
       transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      z-index: 1;
     }
-    .card.open .card-header { border-bottom: 1px solid var(--border-subtle); }
+    .card.open .card-header { border-bottom: 1px solid rgba(255,255,255,0.06); }
     .card.open .card-body { padding: 18px 20px 20px; max-height: 8000px; opacity: 1; }
 
     /* Reusable hero (CURRENT PHASE style) */
     .hero {
       background: linear-gradient(180deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 55%, rgba(20,20,20,1) 100%);
       border: 1px solid rgba(16,185,129,0.14);
-      border-radius: 14px;
+      border-radius: 16px;
       padding: 18px;
       position: relative;
       overflow: hidden;
@@ -194,7 +225,7 @@
       gap:8px;
       padding: 8px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.07);
       background: rgba(0,0,0,0.25);
       font-size: 11px;
       color: var(--c-text-sec);
@@ -208,7 +239,7 @@
       box-shadow: 0 0 10px rgba(16,185,129,0.35);
     }
 
-    /* Hero variants (for past phases) */
+    /* Hero variants */
     .hero.blue {
       background: linear-gradient(180deg, rgba(59,130,246,0.10) 0%, rgba(59,130,246,0.03) 55%, rgba(20,20,20,1) 100%);
       border-color: rgba(59,130,246,0.14);
@@ -235,18 +266,30 @@
       margin: 12px 0 18px;
     }
     .tile {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: 14px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
       padding: 14px;
       min-height: 92px;
       position: relative;
       overflow: hidden;
+      box-shadow: 0 14px 36px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
     }
-    .tile:hover { background: var(--bg-hover); }
+    .tile::before{
+      content:'';
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(360px 150px at 18% 20%, rgba(16,185,129,0.10), transparent 62%);
+      opacity: 0.75;
+      pointer-events:none;
+    }
+    .tile:hover { background: rgba(255,255,255,0.03); }
     .tile .t-top {
       display:flex; align-items:center; justify-content:space-between;
       margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
     }
     .t-label {
       font-size: 10px; font-weight: 900;
@@ -256,9 +299,9 @@
     }
     .t-icon {
       width: 30px; height: 30px;
-      border-radius: 10px;
+      border-radius: 12px;
       display:flex; align-items:center; justify-content:center;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.07);
       background: rgba(0,0,0,0.18);
       color: rgba(255,255,255,0.75);
     }
@@ -267,67 +310,117 @@
       font-weight: 900;
       letter-spacing: -0.2px;
       margin-bottom: 6px;
+      position: relative;
+      z-index: 1;
     }
     .t-sub {
       font-size: 12px;
       color: var(--c-text-sec);
       line-height: 1.65;
       font-family: 'Prompt', sans-serif;
+      position: relative;
+      z-index: 1;
     }
 
     .span-12 { grid-column: span 12; }
     .span-6 { grid-column: span 6; }
     .span-4 { grid-column: span 4; }
 
-    /* Stat grid (inside Phase 4 card) */
+    /* Panels (replace hard boxes + remove left stripes) */
+    .panel {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+      position: relative;
+    }
+    .panel::before{
+      content:'';
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(420px 160px at 14% 18%, rgba(255,255,255,0.05), transparent 62%);
+      pointer-events:none;
+      opacity: 0.85;
+    }
+    .panel.green::before { background: radial-gradient(420px 160px at 14% 18%, rgba(16,185,129,0.10), transparent 62%); }
+    .panel.yellow::before { background: radial-gradient(420px 160px at 14% 18%, rgba(245,158,11,0.10), transparent 62%); }
+    .panel.blue::before { background: radial-gradient(420px 160px at 14% 18%, rgba(59,130,246,0.10), transparent 62%); }
+    .panel.red::before { background: radial-gradient(420px 160px at 14% 18%, rgba(239,68,68,0.10), transparent 62%); }
+
+    .panel > * { position: relative; z-index: 1; }
+
+    /* Stat grid */
     .stat-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      background: var(--border-subtle);
+      background: rgba(255,255,255,0.06);
       gap: 1px;
-      border: 1px solid var(--border-subtle);
-      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 14px;
       overflow: hidden;
       margin: 14px 0 16px;
     }
-    .stat-item { background: var(--bg-card); padding: 14px 10px; text-align: center; }
+    .stat-item { background: rgba(0,0,0,0.18); padding: 14px 10px; text-align: center; }
     .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; letter-spacing: 0.8px; font-weight: 900; }
     .stat-value { font-size: 15px; font-weight: 900; color: var(--c-text-main); }
     .stat-highlight { color: var(--c-green); }
 
+    /* Meta rows */
+    .meta-rows{
+      margin-top:14px;
+      font-size:12px;
+      color:var(--c-text-sec);
+      font-family:'Prompt',sans-serif;
+      line-height:1.8;
+    }
+    .meta-row{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .meta-row + .meta-row{ margin-top: 8px; }
+    .meta-row strong{ color:#fff; font-weight: 700; }
+
     /* Schedule UI */
     .schedule-toolbar {
       display: flex; flex-direction: column; gap: 10px;
-      background: var(--bg-card); border: 1px solid var(--border-subtle);
-      border-radius: 12px; padding: 6px; margin-bottom: 20px;
+      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 8px; margin-bottom: 18px;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
     }
-    .month-group { display: flex; gap: 4px; background: var(--bg-body); padding: 4px; border-radius: 10px; border: 1px solid var(--border-subtle); }
+    .month-group { display: flex; gap: 4px; background: rgba(0,0,0,0.18); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.07); }
     .month-pill {
-      padding: 6px 16px; border-radius: 8px; font-size: 11px; font-weight: 900; color: var(--c-text-mute);
+      padding: 7px 16px; border-radius: 10px; font-size: 11px; font-weight: 900; color: var(--c-text-mute);
       cursor: pointer; transition: all 0.2s; border: 1px solid transparent; letter-spacing: 0.5px;
       user-select: none;
     }
-    .month-pill:hover { color: var(--c-text-main); }
+    .month-pill:hover { color: var(--c-text-main); background: rgba(255,255,255,0.03); }
     .month-pill.active {
       background: var(--c-green); color: #000;
-      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+      box-shadow: 0 10px 24px rgba(16, 185, 129, 0.25);
       border-color: var(--c-green);
     }
 
     .week-group {
       display: flex; flex-grow: 1; margin-left: 10px; gap: 2px;
-      background: var(--bg-body); padding: 4px; border-radius: 10px; border: 1px solid var(--border-subtle);
+      background: rgba(0,0,0,0.18); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.07);
     }
     .week-pill {
-      flex: 1; text-align: center; padding: 8px 0; border-radius: 8px;
-      font-size: 11px; font-weight: 800; color: var(--c-text-sec);
+      flex: 1; text-align: center; padding: 9px 0; border-radius: 10px;
+      font-size: 11px; font-weight: 900; color: var(--c-text-sec);
       cursor: pointer; transition: all 0.2s; position: relative;
       user-select: none;
+      border: 1px solid rgba(255,255,255,0.00);
     }
-    .week-pill:hover { background: var(--bg-hover); color: white; }
+    .week-pill:hover { background: rgba(255,255,255,0.03); color: #fff; }
     .week-pill.active {
-      background: var(--bg-hover); color: var(--c-green);
-      border: 1px solid rgba(16,185,129,0.1);
+      background: rgba(255,255,255,0.04);
+      color: var(--c-green);
+      border-color: rgba(16,185,129,0.14);
     }
     .week-pill.active::after {
       content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
@@ -338,32 +431,35 @@
     .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; }
     .schedule-table th {
       text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-mute);
-      padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-panel);
+      padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.18);
       font-weight: 900;
     }
     .schedule-table td {
-      padding: 18px 16px; vertical-align: top; border-bottom: 1px solid var(--border-subtle);
+      padding: 18px 16px; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,0.06);
       color: var(--c-text-sec); font-size: 13px; line-height: 1.55;
       font-family: 'Prompt', sans-serif;
     }
     .schedule-table tr:last-child td { border-bottom: none; }
-    .schedule-table tr:hover td { background: var(--bg-hover); }
+    .schedule-table tr:hover td { background: rgba(255,255,255,0.03); }
 
     .tag {
-      display: inline-block; padding: 3px 8px; border-radius: 6px;
+      display: inline-block; padding: 3px 8px; border-radius: 8px;
       font-size: 9px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.6px;
       margin-bottom: 6px;
       font-family: 'Inter', sans-serif;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(0,0,0,0.18);
     }
-    .tag-run { color: var(--c-green); border: 1px solid var(--c-green-dim); background: rgba(16,185,129,0.05); }
-    .tag-rest { color: var(--c-text-mute); border: 1px solid #333; background: #111; }
-    .tag-long { color: var(--c-yellow); border: 1px solid var(--c-yellow-dim); background: rgba(245,158,11,0.05); }
+    .tag-run { color: var(--c-green); border-color: rgba(16,185,129,0.18); background: rgba(16,185,129,0.06); }
+    .tag-rest { color: rgba(255,255,255,0.55); border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+    .tag-long { color: var(--c-yellow); border-color: rgba(245,158,11,0.18); background: rgba(245,158,11,0.06); }
 
     /* Mobile */
     @media (max-width: 768px) {
       body { flex-direction: column; }
 
-      /* Bottom nav redesign (centered, standard) */
+      /* Bottom nav (centered) */
       .sidebar {
         width: 100%;
         height: calc(76px + env(safe-area-inset-bottom));
@@ -372,7 +468,7 @@
         bottom: 0; top: auto;
         border-right: none;
         border-top: 1px solid rgba(255,255,255,0.06);
-        background: rgba(15, 15, 15, 0.90);
+        background: rgba(15, 15, 15, 0.88);
         backdrop-filter: blur(14px);
         justify-content: center;
         align-items: center;
@@ -383,7 +479,7 @@
         width: 100%;
         max-width: 520px;
         margin: 0 auto;
-        background: rgba(20,20,20,0.70);
+        background: rgba(20,20,20,0.66);
         border: 1px solid rgba(255,255,255,0.07);
         border-radius: 18px;
         padding: 8px;
@@ -416,7 +512,7 @@
       .nav-label{
         display:inline;
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 900;
         letter-spacing: 0.3px;
         color: rgba(255,255,255,0.70);
       }
@@ -438,8 +534,15 @@
 
       .schedule-table thead { display: none; }
       .schedule-table, .schedule-table tbody, .schedule-table tr, .schedule-table td { display: block; width: 100%; }
-      .schedule-table tr { margin-bottom: 15px; border: 1px solid var(--border-subtle); border-radius: 12px; background: var(--bg-card); overflow: hidden; }
-      .schedule-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+      .schedule-table tr {
+        margin-bottom: 12px;
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 16px;
+        background: rgba(255,255,255,0.02);
+        overflow: hidden;
+        box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+      }
+      .schedule-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
       .schedule-table td:last-child { border-bottom: none; }
 
       .month-group { width: 100%; justify-content: center; }
@@ -557,7 +660,7 @@
       </div>
 
       <!-- PHASE 4 (Current) -->
-      <div class="card open" style="border-left: 3px solid var(--c-green);">
+      <div class="card open">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title">
             <i class="fas fa-stream" style="color:var(--c-green);"></i>
@@ -589,7 +692,7 @@
             </div>
           </div>
 
-          <div style="background: var(--bg-hover); padding: 16px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+          <div class="panel green">
             <div class="page-label" style="color: var(--c-green); margin-bottom: 10px;">PHASE MECHANISM</div>
             <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
               <div style="margin-bottom:12px;">
@@ -612,14 +715,14 @@
             </div>
           </div>
 
-          <div style="margin-top:14px; font-size:12px; color:var(--c-text-sec); font-family:'Prompt',sans-serif; line-height:1.8;">
-            <div style="display:flex; gap:10px; align-items:flex-start;">
+          <div class="meta-rows">
+            <div class="meta-row">
               <i class="fas fa-bullseye" style="color:var(--c-blue); margin-top:4px;"></i>
-              <div><strong style="color:#fff;">Neural Focus:</strong> Knees Open &amp; Toe Out</div>
+              <div><strong>Neural Focus:</strong> Knees Open &amp; Toe Out</div>
             </div>
-            <div style="display:flex; gap:10px; align-items:flex-start; margin-top:6px;">
+            <div class="meta-row">
               <i class="fas fa-shoe-prints" style="color:var(--c-red); margin-top:4px;"></i>
-              <div><strong style="color:#fff;">Correction:</strong> Lacing Pressure (heel lock + loosen forefoot)</div>
+              <div><strong>Correction:</strong> Lacing Pressure (heel lock + loosen forefoot)</div>
             </div>
           </div>
 
@@ -627,7 +730,7 @@
       </div>
 
       <!-- PHASE 3 (Completed) -->
-      <div class="card open" style="border-left: 3px solid var(--c-green);">
+      <div class="card open">
         <div class="card-header" onclick="toggleCard(this)">
           <div class="card-title">
             <i class="fas fa-check-circle" style="color:var(--c-green);"></i>
@@ -640,7 +743,6 @@
         </div>
         <div class="card-body">
 
-          <!-- Phase hero (same CURRENT PHASE style, but completed) -->
           <div class="hero yellow">
             <div class="hero-top">
               <div>
@@ -657,7 +759,7 @@
             </div>
           </div>
 
-          <div style="margin-top:14px; background: var(--bg-hover); padding: 16px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+          <div style="margin-top:14px;" class="panel yellow">
             <div class="page-label" style="color: var(--c-yellow); margin-bottom: 10px;">GRADUATION SUMMARY</div>
             <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:'Prompt',sans-serif;">
               <ul style="padding-left:18px;">
@@ -698,9 +800,11 @@
             </div>
           </div>
 
-          <div style="margin-top:14px; font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif;">
+          <div style="margin-top:14px;" class="panel">
             <div class="page-label" style="color: var(--c-text-mute);">NOV - DEC 2025</div>
-            Built the engine. Focus was increasing aerobic capacity without injury, prioritizing HR stability and easy-run discipline.
+            <div style="font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif; margin-top:6px;">
+              Built the engine. Focus was increasing aerobic capacity without injury, prioritizing HR stability and easy-run discipline.
+            </div>
           </div>
 
         </div>
@@ -730,9 +834,11 @@
             </div>
           </div>
 
-          <div style="margin-top:14px; font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif;">
+          <div style="margin-top:14px;" class="panel blue">
             <div class="page-label" style="color: var(--c-text-mute);">SEP - OCT 2025</div>
-            Transition to consistent running. Learning pacing feel, building routine tolerance, and improving basic movement quality.
+            <div style="font-size:13px; color:var(--c-text-sec); line-height:1.95; font-family:'Prompt',sans-serif; margin-top:6px;">
+              Transition to consistent running. Learning pacing feel, building routine tolerance, and improving basic movement quality.
+            </div>
           </div>
 
         </div>
@@ -762,11 +868,11 @@
             </div>
           </div>
 
-          <!-- Full detail retained -->
+          <!-- Full detail retained (NO CONTENT DROPPED) -->
           <div style="margin-top:14px;">
             <div class="page-label" style="color: var(--c-text-mute); margin-bottom: 12px;">PRE - AUG 2025</div>
 
-            <div style="margin-bottom: 16px;">
+            <div class="panel" style="margin-bottom: 12px;">
               <div style="font-size: 11px; font-weight: 900; color: var(--c-text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
                 Initial State
               </div>
@@ -779,19 +885,19 @@
               </ul>
             </div>
 
-            <div style="margin-bottom: 16px; background: rgba(239, 68, 68, 0.05); padding: 12px; border-radius: 12px; border-left: 2px solid var(--c-red);">
+            <div class="panel red" style="margin-bottom: 12px;">
               <div style="font-size: 11px; font-weight: 900; color: var(--c-red); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
                 Issues
               </div>
               <ul style="font-size: 13px; color: var(--c-text-sec); line-height: 1.9; padding-left: 0; list-style: none; font-family:'Prompt',sans-serif;">
-                <li style="margin-bottom:4px;">• <strong>HR Spike:</strong> หัวใจขึ้นเร็วแม้เพซไม่เร็ว</li>
-                <li style="margin-bottom:4px;">• <strong>Pace Control:</strong> เผลอเร่งโดยไม่รู้ตัว รู้สึกยากที่จะวิ่งช้า</li>
-                <li style="margin-bottom:4px;">• <strong>Weakness:</strong> กล้ามเนื้อยังไม่ทนต่อการวิ่งยาว</li>
-                <li>• <strong>Inefficiency:</strong> ระบบประสาทไม่สัมพันธ์กัน เคลื่อนไหวเปลืองแรง</li>
+                <li style="margin-bottom:4px;">• <strong style="color:#fff;">HR Spike:</strong> หัวใจขึ้นเร็วแม้เพซไม่เร็ว</li>
+                <li style="margin-bottom:4px;">• <strong style="color:#fff;">Pace Control:</strong> เผลอเร่งโดยไม่รู้ตัว รู้สึกยากที่จะวิ่งช้า</li>
+                <li style="margin-bottom:4px;">• <strong style="color:#fff;">Weakness:</strong> กล้ามเนื้อยังไม่ทนต่อการวิ่งยาว</li>
+                <li>• <strong style="color:#fff;">Inefficiency:</strong> ระบบประสาทไม่สัมพันธ์กัน เคลื่อนไหวเปลืองแรง</li>
               </ul>
             </div>
 
-            <div style="background: rgba(16, 185, 129, 0.05); padding: 12px; border-radius: 12px; border-left: 2px solid var(--c-green);">
+            <div class="panel green">
               <div style="font-size: 11px; font-weight: 900; color: var(--c-green); margin-bottom: 8px; text-transform: uppercase; letter-spacing:0.8px;">
                 Adaptation
               </div>
@@ -832,13 +938,13 @@
           </div>
         </div>
 
-        <div id="schedule-status" style="padding: 0 10px 5px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec);">
+        <div id="schedule-status" style="padding: 0 10px 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec);">
           <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>
         </div>
       </div>
 
-      <div class="card open" style="border-top:none;">
+      <div class="card open" style="margin-top: 10px;">
         <table class="schedule-table">
           <thead>
             <tr>
@@ -983,6 +1089,7 @@
       tbody.innerHTML = block || '';
     }
 
+    // Init
     setScheduleMonth('FEB');
   </script>
 
