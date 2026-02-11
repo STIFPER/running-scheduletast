@@ -388,10 +388,10 @@
 
     <div class="nav-shell">
       <ul class="nav-list">
-        <li class="nav-item active" onclick="nav('dashboard', this)" title="Evolution Log">
+        <li class="nav-item" onclick="nav('dashboard', this)" title="Evolution Log">
           <i class="fas fa-stream"></i><span class="nav-label">Log</span>
         </li>
-        <li class="nav-item" onclick="nav('schedule', this)" title="Schedule">
+        <li class="nav-item active" onclick="nav('schedule', this)" title="Schedule">
           <i class="far fa-calendar-alt"></i><span class="nav-label">Plan</span>
         </li>
       </ul>
@@ -400,14 +400,14 @@
 
   <main class="main-content">
 
-    <div id="dashboard" class="section-view active">
+    <div id="dashboard" class="section-view">
 
       <div class="header-group">
         <div>
           <div class="page-label">PERFORMANCE HUB</div>
           <div class="page-title">EVOLUTION LOG</div>
         </div>
-        <div class="page-date"><i class="far fa-clock"></i> Updated: 09 Feb 2026</div>
+        <div class="page-date"><i class="far fa-clock"></i> Updated: 11 Feb 2026</div>
       </div>
 
       <div class="hero">
@@ -552,7 +552,7 @@
       </div>
     </div>
 
-    <div id="schedule" class="section-view">
+    <div id="schedule" class="section-view active">
       <div class="header-group">
         <div>
           <div class="page-label">TRAINING PLAN</div>
@@ -917,7 +917,7 @@
       const wk4 = document.getElementById('wk4');
 
       if (m === 'FEB') {
-        wk2.classList.remove('disabled'); // Unlock Wk2
+        wk2.classList.remove('disabled');
         wk3.classList.add('disabled');
         wk4.classList.add('disabled');
 
@@ -925,7 +925,8 @@
           `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
            <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`;
 
-        renderWeek(1, document.getElementById('wk1'));
+        // ✅ แก้ไข: ตั้งค่าให้เปิด Week 2 (สัปดาห์ปัจจุบัน) เป็นค่าเริ่มต้น
+        renderWeek(2, document.getElementById('wk2'));
       } else {
         wk2.classList.remove('disabled');
         wk3.classList.remove('disabled');
