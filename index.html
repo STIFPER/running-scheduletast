@@ -407,7 +407,7 @@
           <div class="page-label">PERFORMANCE HUB</div>
           <div class="page-title">EVOLUTION LOG</div>
         </div>
-        <div class="page-date"><i class="far fa-clock"></i> Updated: 11 Feb 2026</div>
+        <div class="page-date"><i class="far fa-clock"></i> Updated: 16 Feb 2026</div>
       </div>
 
       <div class="hero">
@@ -531,7 +531,7 @@
             PHASE 3: NEUROMUSCULAR (COMPLETED)
           </div>
           <div style="display:flex; align-items:center; gap:10px;">
-            <span class="page-date">Updated: 02 Feb 2026</span>
+            <span class="page-date">Jan 2026</span>
             <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
           </div>
         </div>
@@ -550,6 +550,79 @@
           </div>
         </div>
       </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title">
+            <i class="fas fa-check-circle" style="color:var(--c-green);"></i>
+            PHASE 2: AEROBIC BASE &amp; STRENGTH (COMPLETED)
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="page-date">Dec 2025</span>
+            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="hero blue">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">COMPLETED PHASE</div>
+                <div class="hero-title">Phase 2: Aerobic Base</div>
+                <div class="hero-sub">Building engine volume and structural tolerance</div>
+              </div>
+              <div class="hero-right">
+                <div class="pill"><span class="dot" style="background:var(--c-blue); box-shadow:0 0 10px rgba(59,130,246,0.35)"></span><b>Status</b>&nbsp;Graduated</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title">
+            <i class="fas fa-check-circle" style="color:var(--c-green);"></i>
+            PHASE 1: FOUNDATION (COMPLETED)
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="page-date">Nov 2025</span>
+            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+          </div>
+        </div>
+        <div class="card-body">
+           <div class="hero red">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">COMPLETED PHASE</div>
+                <div class="hero-title">Phase 1: Foundation</div>
+                <div class="hero-sub">Initial conditioning and habit formation</div>
+              </div>
+              <div class="hero-right">
+                <div class="pill"><span class="dot" style="background:var(--c-red); box-shadow:0 0 10px rgba(239,68,68,0.35)"></span><b>Status</b>&nbsp;Graduated</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+       <div class="card">
+        <div class="card-header" onclick="toggleCard(this)">
+          <div class="card-title">
+            <i class="fas fa-check-circle" style="color:var(--c-green);"></i>
+            PHASE 0: PRE-CONDITIONING (COMPLETED)
+          </div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span class="page-date">Oct 2025</span>
+            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+          </div>
+        </div>
+        <div class="card-body">
+          <div style="padding:10px; color:var(--c-text-sec); font-size:12px;">
+            Initial assessment and injury prevention setup.
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <div id="schedule" class="section-view active">
@@ -1075,14 +1148,14 @@
 
       if (m === 'FEB') {
         wk2.classList.remove('disabled');
-        wk3.classList.remove('disabled'); // ✅ เปิดใช้งาน Week 3
+        wk3.classList.remove('disabled');
         wk4.classList.add('disabled');
 
         document.getElementById('schedule-status').innerHTML =
           `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
            <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`;
 
-        // ✅ ตั้งค่าเริ่มต้นเป็น Week 3 (สัปดาห์ปัจจุบัน)
+        // ✅ ตั้งค่าเริ่มต้นเป็น Week 3
         renderWeek(3, document.getElementById('wk3'));
       } else {
         wk2.classList.remove('disabled');
