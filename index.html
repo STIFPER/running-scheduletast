@@ -1,959 +1,844 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>RUNNER_001 | Performance Hub</title>
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
-
-  <style>
-    :root {
-      --bg-body: #050505;
-      --bg-panel: #0F0F0F;
-      --bg-card: #141414;
-      --bg-hover: #1F1F1F;
-      --border-subtle: #262626;
-
-      --c-green: #10B981;
-      --c-green-dim: rgba(16, 185, 129, 0.10);
-
-      --c-yellow: #F59E0B;
-      --c-yellow-dim: rgba(245, 158, 11, 0.10);
-
-      --c-red: #EF4444;
-      --c-red-dim: rgba(239, 68, 68, 0.10);
-
-      --c-blue: #3B82F6;
-      --c-purple: #8B5CF6;
-
-      --c-text-main: #FFFFFF;
-      --c-text-sec: #A3A3A3;
-      --c-text-mute: #525252;
-
-      /* ✅ Font system: TH primary + EN secondary */
-      --font-en: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text",
-                 "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
-      --font-th: "IBM Plex Sans Thai", -apple-system, BlinkMacSystemFont, "Sukhumvit Set",
-                 "Thonburi", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-
-      --font-ui: var(--font-th);
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
-    body {
-      background-color: var(--bg-body);
-      color: var(--c-text-main);
-      font-family: var(--font-ui);
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      line-height: 1.55;
-      text-rendering: geometricPrecision;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    /* English-first UI bits */
-    .page-label, .page-title, .hero-kicker, .card-title, .t-label, .stat-label,
-    .month-pill, .week-pill, .nav-label, .schedule-table th, .tag, .pill b {
-      font-family: var(--font-en);
-    }
-
-    /* Layout */
-    .sidebar {
-      width: 80px;
-      background: var(--bg-panel);
-      border-right: 1px solid var(--border-subtle);
-      display: flex; flex-direction: column; align-items: center;
-      padding: 30px 0; z-index: 100; flex-shrink: 0;
-    }
-
-    .main-content {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 40px;
-      scroll-behavior: smooth;
-      background:
-        radial-gradient(900px 500px at 16% 8%, rgba(16,185,129,0.09), transparent 58%),
-        radial-gradient(760px 520px at 85% 18%, rgba(59,130,246,0.07), transparent 56%),
-        radial-gradient(720px 520px at 72% 92%, rgba(245,158,11,0.06), transparent 56%),
-        var(--bg-body);
-    }
-
-    .section-view { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s ease; }
-    .section-view.active { display: block; opacity: 1; transform: translateY(0); }
-
-    /* Nav (desktop) */
-    .brand-logo {
-      font-size: 24px; color: var(--c-green); margin-bottom: 40px;
-      width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
-      border: 1px solid var(--border-subtle); border-radius: 14px;
-      cursor: pointer; transition: all 0.2s;
-      background: rgba(255,255,255,0.02);
-      box-shadow: 0 0 18px rgba(16, 185, 129, 0.10);
-    }
-    .brand-logo:hover { transform: scale(1.05); background: var(--bg-hover); }
-
-    .nav-shell { width: 100%; }
-    .nav-list {
-      list-style: none;
-      width: 100%;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 15px;
-    }
-    .nav-item {
-      width: 44px; height: 44px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--c-text-mute);
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-      user-select: none;
-      border: 1px solid rgba(255,255,255,0.00);
-      background: rgba(255,255,255,0.00);
-    }
-    .nav-item:hover { color: var(--c-text-main); background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.06); }
-    .nav-item.active {
-      color: var(--c-green);
-      background: rgba(16,185,129,0.10);
-      border: 1px solid rgba(16,185,129,0.18);
-      box-shadow: 0 10px 26px rgba(0,0,0,0.25);
-    }
-    .nav-item i { font-size: 18px; }
-    .nav-label { display:none; }
-
-    /* Headers */
-    .header-group {
-      margin-bottom: 18px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      padding-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-    }
-    .page-label { font-size: 10px; font-weight: 800; letter-spacing: 1.6px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
-    .page-title { font-size: 28px; font-weight: 800; letter-spacing: -0.6px; color: var(--c-text-main); line-height: 1; }
-    .page-date { font-size: 12px; color: var(--c-text-sec); font-family: inherit; display:flex; align-items:center; gap:8px; }
-
-    /* Cards */
-    .card {
-      background: linear-gradient(180deg, rgba(255,255,255,0.028), rgba(255,255,255,0.010));
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 16px;
-      position: relative;
-      box-shadow: 0 18px 48px rgba(0,0,0,0.45);
-      backdrop-filter: blur(10px);
-    }
-    .card::before{
-      content:'';
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(800px 220px at 12% 0%, rgba(16,185,129,0.05), transparent 60%),
-        radial-gradient(700px 220px at 88% 0%, rgba(59,130,246,0.04), transparent 60%);
-      pointer-events:none;
-      opacity: 0.75;
-    }
-    .card-header {
-      padding: 18px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; user-select: none;
-      position: relative;
-      z-index: 1;
-      background: rgba(20,20,20,0.35);
-    }
-    .card-header:hover { background: rgba(255,255,255,0.03); }
-    .card-title { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 10px; letter-spacing: 0.6px; }
-    .card-body {
-      padding: 0 20px; max-height: 0; overflow: hidden; opacity: 0;
-      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-      z-index: 1;
-    }
-    .card.open .card-header { border-bottom: 1px solid rgba(255,255,255,0.06); }
-    .card.open .card-body { padding: 18px 20px 20px; max-height: 8000px; opacity: 1; }
-
-    /* Heroes */
-    .hero {
-      background: linear-gradient(180deg, rgba(16,185,129,0.10) 0%, rgba(16,185,129,0.03) 55%, rgba(20,20,20,1) 100%);
-      border: 1px solid rgba(16,185,129,0.14);
-      border-radius: 16px;
-      padding: 18px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero::after{
-      content:'';
-      position:absolute;
-      right:-120px; top:-120px;
-      width: 240px; height: 240px;
-      background: radial-gradient(circle, rgba(16,185,129,0.18) 0%, rgba(16,185,129,0.00) 60%);
-      transform: rotate(15deg);
-    }
-    .hero-top {
-      display:flex; align-items:flex-start; justify-content:space-between;
-      gap:16px; position:relative; z-index:1;
-    }
-    .hero-kicker{ font-size: 10px; letter-spacing: 1.6px; text-transform: uppercase; color: rgba(255,255,255,0.55); font-weight: 800; margin-bottom: 8px; }
-    .hero-title{ font-size: 18px; font-weight: 800; letter-spacing: -0.3px; line-height: 1.15; margin-bottom: 8px; }
-    .hero-sub{ font-size: 12px; color: var(--c-text-sec); line-height: 1.75; font-family: inherit; max-width: 560px; }
-    .hero-right { display:flex; flex-direction:column; align-items:flex-end; gap:8px; min-width: 190px; position:relative; z-index:1; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RUNNER_001 | Performance Hub</title>
     
-    .pill {
-      display:inline-flex; align-items:center; gap:8px; padding: 8px 10px;
-      border-radius: 999px; border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(0,0,0,0.25); font-size: 11px; color: var(--c-text-sec);
-      backdrop-filter: blur(10px); white-space: nowrap;
-    }
-    .pill b { color: #fff; font-weight: 800; }
-    .dot { width: 8px; height: 8px; border-radius: 99px; background: var(--c-green); box-shadow: 0 0 10px rgba(16,185,129,0.35); }
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    .hero.blue { background: linear-gradient(180deg, rgba(59,130,246,0.10) 0%, rgba(59,130,246,0.03) 55%, rgba(20,20,20,1) 100%); border-color: rgba(59,130,246,0.14); }
-    .hero.blue::after { background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.00) 60%); }
-    .hero.yellow { background: linear-gradient(180deg, rgba(245,158,11,0.10) 0%, rgba(245,158,11,0.03) 55%, rgba(20,20,20,1) 100%); border-color: rgba(245,158,11,0.14); }
-    .hero.yellow::after { background: radial-gradient(circle, rgba(245,158,11,0.18) 0%, rgba(245,158,11,0.00) 60%); }
-    .hero.red { background: linear-gradient(180deg, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0.03) 55%, rgba(20,20,20,1) 100%); border-color: rgba(239,68,68,0.14); }
-    .hero.red::after { background: radial-gradient(circle, rgba(239,68,68,0.18) 0%, rgba(239,68,68,0.00) 60%); }
+    <style>
+        :root {
+            /* --- COLOR PALETTE --- */
+            --bg-body: #050505;
+            --bg-panel: #0F0F0F;
+            --bg-card: #141414;
+            --bg-hover: #1F1F1F;
+            --border-subtle: #262626;
+            
+            /* Status Colors */
+            --c-green: #10B981;
+            --c-green-dim: rgba(16, 185, 129, 0.1);
+            --c-yellow: #F59E0B;
+            --c-yellow-dim: rgba(245, 158, 11, 0.1);
+            --c-red: #EF4444;
+            --c-red-dim: rgba(239, 68, 68, 0.1);
+            --c-blue: #3B82F6;
+            --c-purple: #8B5CF6;
+            --c-text-main: #FFFFFF;
+            --c-text-sec: #A3A3A3;
+            --c-text-mute: #525252;
+        }
 
-    /* Tiles */
-    .tile-grid { display:grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin: 12px 0 18px; }
-    .tile {
-      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px; padding: 14px; min-height: 92px; position: relative; overflow: hidden;
-      box-shadow: 0 14px 36px rgba(0,0,0,0.35); backdrop-filter: blur(10px);
-    }
-    .tile::before{
-      content:''; position:absolute; inset:-2px;
-      background: radial-gradient(360px 150px at 18% 20%, rgba(16,185,129,0.10), transparent 62%);
-      opacity: 0.75; pointer-events:none;
-    }
-    .tile:hover { background: rgba(255,255,255,0.03); }
-    .tile .t-top { display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; position: relative; z-index: 1; }
-    .t-label { font-size: 10px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; color: var(--c-text-mute); }
-    .t-icon {
-      width: 30px; height: 30px; border-radius: 12px; display:flex; align-items:center; justify-content:center;
-      border: 1px solid rgba(255,255,255,0.07); background: rgba(0,0,0,0.18); color: rgba(255,255,255,0.75);
-    }
-    .t-value { font-size: 18px; font-weight: 800; letter-spacing: -0.2px; margin-bottom: 6px; position: relative; z-index: 1; }
-    .t-sub { font-size: 12px; color: var(--c-text-sec); line-height: 1.65; font-family: inherit; position: relative; z-index: 1; }
-    .span-12 { grid-column: span 12; } .span-6 { grid-column: span 6; } .span-4 { grid-column: span 4; }
+        /* --- GLOBAL RESET --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--c-text-main); 
+            font-family: 'Inter', 'Prompt', sans-serif;
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex;
+        }
 
-    /* Panels */
-    .panel {
-      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px; padding: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.35);
-      backdrop-filter: blur(10px); overflow: hidden; position: relative;
-    }
-    .panel::before{
-      content:''; position:absolute; inset:-2px;
-      background: radial-gradient(420px 160px at 14% 18%, rgba(255,255,255,0.05), transparent 62%);
-      pointer-events:none; opacity: 0.85;
-    }
-    .panel.green::before { background: radial-gradient(420px 160px at 14% 18%, rgba(16,185,129,0.10), transparent 62%); }
-    .panel.yellow::before { background: radial-gradient(420px 160px at 14% 18%, rgba(245,158,11,0.10), transparent 62%); }
-    .panel.blue::before { background: radial-gradient(420px 160px at 14% 18%, rgba(59,130,246,0.10), transparent 62%); }
-    .panel.red::before { background: radial-gradient(420px 160px at 14% 18%, rgba(239,68,68,0.10), transparent 62%); }
-    .panel > * { position: relative; z-index: 1; }
+        /* --- UI ELEMENTS --- */
+        .status-indicator {
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+        }
+        .status-indicator.active { box-shadow: 0 0 8px currentColor; }
+        .st-green { background-color: var(--c-green); color: var(--c-green); }
+        .st-yellow { background-color: var(--c-yellow); color: var(--c-yellow); }
+        .st-red { background-color: var(--c-red); color: var(--c-red); }
+        .st-blue { background-color: var(--c-blue); color: var(--c-blue); }
 
-    /* Stats & Meta */
-    .stat-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); background: rgba(255,255,255,0.06); gap: 1px;
-      border: 1px solid rgba(255,255,255,0.07); border-radius: 14px; overflow: hidden; margin: 14px 0 16px;
-    }
-    .stat-item { background: rgba(0,0,0,0.18); padding: 14px 10px; text-align: center; }
-    .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; letter-spacing: 0.8px; font-weight: 800; }
-    .stat-value { font-size: 15px; font-weight: 800; color: var(--c-text-main); }
-    .stat-highlight { color: var(--c-green); }
+        /* --- LAYOUT --- */
+        .sidebar {
+            width: 80px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-subtle);
+            display: flex; flex-direction: column; align-items: center;
+            padding: 30px 0; z-index: 100; flex-shrink: 0;
+        }
 
-    .meta-rows{ margin-top:14px; font-size:12px; color:var(--c-text-sec); font-family: inherit; line-height:1.8; }
-    .meta-row{ display:flex; gap:10px; align-items:flex-start; }
-    .meta-row + .meta-row{ margin-top: 8px; }
-    .meta-row strong{ color:#fff; font-weight: 700; }
+        .main-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scroll-behavior: smooth;
+        }
 
-    /* Schedule UI */
-    .schedule-toolbar {
-      display: flex; flex-direction: column; gap: 10px;
-      background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px; padding: 8px; margin-bottom: 18px;
-      box-shadow: 0 16px 40px rgba(0,0,0,0.35); backdrop-filter: blur(10px);
-    }
-    .month-group { display: flex; gap: 4px; background: rgba(0,0,0,0.18); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.07); }
-    .month-pill {
-      padding: 7px 16px; border-radius: 10px; font-size: 11px; font-weight: 800; color: var(--c-text-mute);
-      cursor: pointer; transition: all 0.2s; border: 1px solid transparent; letter-spacing: 0.5px; user-select: none;
-    }
-    .month-pill:hover { color: var(--c-text-main); background: rgba(255,255,255,0.03); }
-    .month-pill.active {
-      background: var(--c-green); color: #000; box-shadow: 0 10px 24px rgba(16, 185, 129, 0.25); border-color: var(--c-green);
-    }
+        .section-view { display: none; opacity: 0; transform: translateY(10px); transition: 0.3s ease; }
+        .section-view.active { display: block; opacity: 1; transform: translateY(0); }
 
-    .week-group {
-      display: flex; flex-grow: 1; margin-left: 10px; gap: 2px;
-      background: rgba(0,0,0,0.18); padding: 4px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.07);
-    }
-    .week-pill {
-      flex: 1; text-align: center; padding: 9px 0; border-radius: 10px;
-      font-size: 11px; font-weight: 800; color: var(--c-text-sec);
-      cursor: pointer; transition: all 0.2s; position: relative;
-      user-select: none; border: 1px solid rgba(255,255,255,0.00);
-    }
-    .week-pill:hover { background: rgba(255,255,255,0.03); color: #fff; }
-    .week-pill.active {
-      background: rgba(255,255,255,0.04); color: var(--c-green); border-color: rgba(16,185,129,0.14);
-    }
-    .week-pill.active::after {
-      content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
-      width: 4px; height: 4px; background: var(--c-green); border-radius: 50%;
-    }
-    .week-pill.disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
+        /* --- NAVIGATION --- */
+        .brand-logo { 
+            font-size: 24px; color: var(--c-green); margin-bottom: 40px; 
+            width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border-subtle); border-radius: 12px;
+            cursor: pointer; transition: all 0.2s;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.1);
+        }
+        .brand-logo:hover { transform: scale(1.05); background: var(--bg-hover); }
+        
+        .nav-list { list-style: none; width: 100%; display: flex; flex-direction: column; align-items: center; gap: 15px; }
+        .nav-item {
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--c-text-mute);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .nav-item:hover { color: var(--c-text-main); background: var(--bg-hover); }
+        .nav-item.active { color: var(--c-green); background: var(--c-green-dim); border: 1px solid rgba(16,185,129,0.2); }
+        .nav-item i { font-size: 18px; }
 
-    .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-    .schedule-table th {
-      text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-mute);
-      padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); background: rgba(0,0,0,0.18); font-weight: 800;
-    }
-    .schedule-table td {
-      padding: 18px 16px; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,0.06);
-      color: var(--c-text-sec); font-size: 13px; line-height: 1.55; font-family: inherit;
-    }
-    .schedule-table tr:last-child td { border-bottom: none; }
-    .schedule-table tr:hover td { background: rgba(255,255,255,0.03); }
+        /* --- HEADERS --- */
+        .header-group { margin-bottom: 30px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .page-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; color: var(--c-text-mute); text-transform: uppercase; margin-bottom: 8px; }
+        .page-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: var(--c-text-main); line-height: 1; }
+        .page-date { font-size: 12px; color: var(--c-text-sec); font-family: 'Prompt', sans-serif; }
 
-    .tag {
-      display: inline-block; padding: 3px 8px; border-radius: 8px;
-      font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px;
-      margin-bottom: 6px; border: 1px solid rgba(255,255,255,0.07); background: rgba(0,0,0,0.18);
-    }
-    .tag-run { color: var(--c-green); border-color: rgba(16,185,129,0.18); background: rgba(16,185,129,0.06); }
-    .tag-rest { color: rgba(255,255,255,0.55); border-color: rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
-    .tag-long { color: var(--c-yellow); border-color: rgba(245,158,11,0.18); background: rgba(245,158,11,0.06); }
+        /* --- CARDS & GRID --- */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .card-header {
+            padding: 18px 24px;
+            background: var(--bg-card);
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; user-select: none;
+        }
+        .card-header:hover { background: var(--bg-hover); }
+        .card-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
+        .card-body { 
+            padding: 0 24px; max-height: 0; overflow: hidden; opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card.open .card-header { border-bottom: 1px solid var(--border-subtle); }
+        .card.open .card-body { padding: 24px; max-height: 2000px; opacity: 1; }
+        
+        /* Full Height Content helper */
+        .full-h { height: 100%; display: flex; flex-direction: column; }
 
-    /* Mobile */
-    @media (max-width: 768px) {
-      body { flex-direction: column; }
-      .sidebar {
-        width: 100%; height: calc(76px + env(safe-area-inset-bottom));
-        padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); position: fixed; bottom: 0; top: auto;
-        border-right: none; border-top: 1px solid rgba(255,255,255,0.06); background: rgba(15, 15, 15, 0.88);
-        backdrop-filter: blur(14px); justify-content: center; align-items: center;
-      }
-      .brand-logo { display: none; }
-      .nav-shell{ width: 100%; max-width: 520px; margin: 0 auto; background: rgba(20,20,20,0.66); border: none; border-radius: 18px; padding: 8px; box-shadow: none; }
-      .nav-list{ width: 100%; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; }
-      .nav-item{ flex: 1; height: 46px; width: auto; border-radius: 14px; justify-content: center; gap: 8px; padding: 0 10px; border: 1px solid rgba(255,255,255,0.00); background: transparent; }
-      .nav-item:hover { background: transparent; }
-      .nav-item.active{ background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.18); }
-      .nav-item i { font-size: 16px; }
-      .nav-label{ display:inline; font-size: 11px; font-weight: 800; letter-spacing: 0.3px; color: rgba(255,255,255,0.70); }
-      .nav-item.active .nav-label { color: var(--c-green); }
+        /* --- SCHEDULE TOOLBAR --- */
+        .schedule-toolbar {
+            display: flex; flex-direction: column; gap: 10px;
+            background: var(--bg-card); border: 1px solid var(--border-subtle);
+            border-radius: 12px; padding: 6px; margin-bottom: 20px;
+        }
+        .toolbar-row { display: flex; justify-content: space-between; align-items: center; }
+        
+        /* Month Selector Style */
+        .month-group { display: flex; gap: 4px; background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle); }
+        .month-pill {
+            padding: 6px 16px; border-radius: 6px; font-size: 11px; font-weight: 700; color: var(--c-text-mute);
+            cursor: pointer; transition: all 0.2s; border: 1px solid transparent; letter-spacing: 0.5px;
+        }
+        .month-pill:hover { color: var(--c-text-main); }
+        .month-pill.active { 
+            background: var(--c-green); color: #000; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25); border-color: var(--c-green);
+        }
 
-      .main-content { padding: 18px 16px calc(100px + env(safe-area-inset-bottom)) 16px; }
-      .header-group { align-items: flex-start; flex-direction: column; }
-      .page-title { font-size: 24px; }
-      .hero { padding: 16px; border-radius: 16px; }
-      .hero-top { flex-direction: column; align-items:flex-start; }
-      .hero-right { align-items:flex-start; min-width: unset; }
-      .tile-grid { gap: 10px; } .span-6, .span-4 { grid-column: span 12; }
-      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+        /* Week Selector Style */
+        .week-group { 
+            display: flex; flex-grow: 1; margin-left: 10px; gap: 2px;
+            background: var(--bg-body); padding: 4px; border-radius: 8px; border: 1px solid var(--border-subtle);
+        }
+        .week-pill {
+            flex: 1; text-align: center; padding: 8px 0; border-radius: 6px; 
+            font-size: 11px; font-weight: 600; color: var(--c-text-sec);
+            cursor: pointer; transition: all 0.2s; position: relative;
+        }
+        .week-pill:hover { background: var(--bg-hover); color: white; }
+        .week-pill.active { 
+            background: var(--bg-hover); color: var(--c-green); 
+            border: 1px solid rgba(16,185,129,0.1);
+        }
+        .week-pill.active::after {
+            content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+            width: 4px; height: 4px; background: var(--c-green); border-radius: 50%;
+        }
+        .week-pill.disabled { opacity: 0.3; cursor: not-allowed; }
+        
+        @media (max-width: 768px) {
+            .schedule-toolbar { gap: 8px; }
+            .month-group { width: 100%; justify-content: center; }
+            .week-group { width: 100%; margin: 0; }
+        }
 
-      .schedule-table thead { display: none; }
-      .schedule-table, .schedule-table tbody, .schedule-table tr, .schedule-table td { display: block; width: 100%; }
-      .schedule-table tr {
-        margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.07); border-radius: 16px;
-        background: rgba(255,255,255,0.02); overflow: hidden; box-shadow: 0 16px 40px rgba(0,0,0,0.35);
-      }
-      .schedule-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-      .schedule-table td:last-child { border-bottom: none; }
-      .month-group { width: 100%; justify-content: center; } .week-group { width: 100%; margin-left: 0; }
-    }
-  </style>
+        /* --- TABLE STYLE --- */
+        .schedule-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        .schedule-table th { 
+            text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--c-text-mute);
+            padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-panel);
+        }
+        .schedule-table td { 
+            padding: 18px 16px; vertical-align: top; border-bottom: 1px solid var(--border-subtle);
+            color: var(--c-text-sec); font-size: 13px; line-height: 1.5;
+        }
+        .schedule-table tr:last-child td { border-bottom: none; }
+        .schedule-table tr:hover td { background: var(--bg-hover); }
+
+        /* Tags */
+        .tag { 
+            display: inline-block; padding: 3px 8px; border-radius: 4px; 
+            font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        .tag-run { color: var(--c-green); border: 1px solid var(--c-green-dim); background: rgba(16,185,129,0.05); }
+        .tag-rest { color: var(--c-text-mute); border: 1px solid #333; background: #111; }
+        .tag-long { color: var(--c-yellow); border: 1px solid var(--c-yellow-dim); background: rgba(245,158,11,0.05); }
+
+        /* --- STATS & CALENDAR --- */
+        .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--border-subtle); gap: 1px; border: 1px solid var(--border-subtle); border-radius: 6px; overflow: hidden; }
+        .stat-item { background: var(--bg-card); padding: 15px; text-align: center; }
+        .stat-label { font-size: 10px; text-transform: uppercase; color: var(--c-text-mute); margin-bottom: 4px; }
+        .stat-value { font-size: 15px; font-weight: 600; color: var(--c-text-main); font-family: 'Inter', sans-serif; }
+        .stat-highlight { color: var(--c-green); }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 20px; }
+        .cal-day-header { text-align: center; font-size: 10px; color: var(--c-text-mute); padding-bottom: 10px; }
+        .cal-day { 
+            background: var(--bg-hover); border-radius: 4px; aspect-ratio: 1/1; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-size: 12px; color: var(--c-text-mute); border: 1px solid transparent; position: relative;
+            cursor: default; transition: 0.2s;
+        }
+        .cal-day.active { background: var(--bg-card); color: var(--c-text-main); border-color: var(--border-subtle); }
+        .cal-day.today { border-color: var(--c-green); color: var(--c-green); background: var(--c-green-dim); }
+        
+        /* Shoe Icon Style */
+        .shoe-svg { 
+            width: 14px; height: 14px; margin-top: 4px; 
+            fill: var(--c-text-mute); opacity: 0.3; transition: 0.2s; 
+        }
+        .cal-day.active .shoe-svg { fill: var(--c-green); opacity: 1; }
+        .cal-day.active .shoe-svg.long { fill: var(--c-yellow); }
+
+        /* --- HR STATS FIX (Mobile Optimization) --- */
+        .hr-stats-wrapper {
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px;
+            border-top: 1px solid var(--border-subtle); 
+            padding-top: 15px;
+            margin-top: 15px;
+        }
+        .hr-stat { text-align: center; }
+        .hr-stat-label { 
+            font-size: 10px; 
+            color: var(--c-text-mute); 
+            text-transform: uppercase; 
+            margin-bottom: 4px; 
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+        }
+        .hr-stat-val { 
+            font-size: 18px; 
+            font-weight: 700; 
+            line-height: 1.2; 
+        }
+        .hr-stat-desc { 
+            font-size: 10px; 
+            color: var(--c-text-sec); 
+            margin-top: 4px; 
+            line-height: 1.3;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { 
+                width: 100%; height: 60px; flex-direction: row; padding: 0 20px; 
+                position: fixed; bottom: 0; top: auto; border-right: none; border-top: 1px solid var(--border-subtle);
+                background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(10px);
+                justify-content: space-around;
+            }
+            .brand-logo { display: none; }
+            .nav-list { flex-direction: row; justify-content: space-between; width: 100%; gap: 0; }
+            .nav-item { width: auto; height: 40px; padding: 0 10px; background: transparent !important; border: none !important; }
+            .nav-item.active { color: var(--c-green); }
+            
+            .main-content { padding: 20px 20px 80px 20px; }
+            .grid-2 { grid-template-columns: 1fr; }
+            
+            /* Table to Cards for Mobile */
+            .schedule-table thead { display: none; }
+            .schedule-table, .schedule-table tbody, .schedule-table tr, .schedule-table td { display: block; width: 100%; }
+            .schedule-table tr { margin-bottom: 15px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-card); overflow: hidden; }
+            .schedule-table td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+            .schedule-table td:last-child { border-bottom: none; }
+
+            /* HR Stats fix */
+            .hr-stat-val { font-size: 15px; } 
+            .hr-stat-desc { font-size: 9px; opacity: 0.8; }
+            .hr-stats-wrapper { gap: 5px; }
+        }
+    </style>
 </head>
-
 <body>
 
-  <nav class="sidebar">
-    <div class="brand-logo" onclick="nav('dashboard', document.querySelector('.nav-item'))" title="Home">
-      <i class="fas fa-running" style="transform: scaleX(-1);"></i>
-    </div>
-
-    <div class="nav-shell">
-      <ul class="nav-list">
-        <li class="nav-item" onclick="nav('dashboard', this)" title="Evolution Log">
-          <i class="fas fa-stream"></i><span class="nav-label">Log</span>
-        </li>
-        <li class="nav-item active" onclick="nav('schedule', this)" title="Schedule">
-          <i class="far fa-calendar-alt"></i><span class="nav-label">Plan</span>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <main class="main-content">
-
-    <div id="dashboard" class="section-view">
-
-      <div class="header-group">
-        <div>
-          <div class="page-label">PERFORMANCE HUB</div>
-          <div class="page-title">EVOLUTION LOG</div>
+    <nav class="sidebar">
+        <div class="brand-logo" onclick="nav('dashboard', document.querySelector('.nav-item'))" title="Home">
+            <i class="fas fa-running" style="transform: scaleX(-1);"></i>
         </div>
-        <div class="page-date"><i class="far fa-clock"></i> Updated: 11 Feb 2026</div>
-      </div>
+        <ul class="nav-list">
+            <li class="nav-item active" onclick="nav('dashboard', this)" title="Evolution Log"><i class="fas fa-stream"></i></li>
+            <li class="nav-item" onclick="nav('schedule', this)" title="Schedule"><i class="far fa-calendar-alt"></i></li>
+            <li class="nav-item" onclick="nav('handbook', this)" title="Handbook"><i class="fas fa-book"></i></li>
+            <li class="nav-item" onclick="nav('recovery', this)" title="Recovery"><i class="fas fa-heartbeat"></i></li>
+            <li class="nav-item" onclick="nav('stats', this)" title="Stats"><i class="fas fa-chart-pie"></i></li>
+        </ul>
+    </nav>
 
-      <div class="hero">
-        <div class="hero-top">
-          <div>
-            <div class="hero-kicker">CURRENT PHASE</div>
-            <div class="hero-title">Phase 4: Threshold &amp; Strength Endurance</div>
-            <div class="hero-sub">
-              Introduction to threshold stress while preserving mechanics under speed and fatigue
-            </div>
-          </div>
-          <div class="hero-right">
-            <div class="pill"><span class="dot"></span><b>Status</b>&nbsp;Active</div>
-            <div class="pill"><i class="fas fa-calendar-check" style="color:rgba(255,255,255,0.75)"></i><b>Next Long</b>&nbsp;105 mins</div>
-          </div>
-        </div>
-      </div>
+    <main class="main-content">
 
-      <div class="tile-grid">
-        <div class="tile span-6" style="border-color: rgba(16,185,129,0.18);">
-          <div class="t-top">
-            <div class="t-label">Key Metrics</div>
-            <div class="t-icon"><i class="fas fa-tachometer-alt"></i></div>
-          </div>
-          <div class="t-value" style="color:var(--c-green);">7:40 <span style="font-size:12px; font-weight:800; color:rgba(255,255,255,0.65)">/km</span></div>
-          <div class="t-sub">Reference: Long Run 31 Jan • Avg HR 148 • SPM 168 • GCT 282ms</div>
-        </div>
-
-        <div class="tile span-6" style="border-color: rgba(59,130,246,0.18);">
-          <div class="t-top">
-            <div class="t-label">Neural Focus</div>
-            <div class="t-icon"><i class="fas fa-bullseye"></i></div>
-          </div>
-          <div class="t-value">Knees Open &amp; Toe Out</div>
-          <div class="t-sub">Objective: keep the cue stable during intervals and tempo</div>
-        </div>
-
-        <div class="tile span-4" style="border-color: rgba(245,158,11,0.18);">
-          <div class="t-top">
-            <div class="t-label">Protocol Change</div>
-            <div class="t-icon"><i class="fas fa-sliders-h"></i></div>
-          </div>
-          <div class="t-value">Fuel Update</div>
-          <div class="t-sub">Pre-run: bread only • SaltStick + coffee</div>
-        </div>
-
-        <div class="tile span-4" style="border-color: rgba(239,68,68,0.18);">
-          <div class="t-top">
-            <div class="t-label">Correction</div>
-            <div class="t-icon"><i class="fas fa-shoe-prints"></i></div>
-          </div>
-          <div class="t-value">Lacing Pressure</div>
-          <div class="t-sub">Heel lock, loosen forefoot to handle swelling and numbness risk</div>
-        </div>
-
-        <div class="tile span-4" style="border-color: rgba(16,185,129,0.18);">
-          <div class="t-top">
-            <div class="t-label">Phase 3 Result</div>
-            <div class="t-icon"><i class="fas fa-check-circle"></i></div>
-          </div>
-          <div class="t-value">Graduated</div>
-          <div class="t-sub">Long Run 100 mins completed without injury • Mechanic breakthrough confirmed</div>
-        </div>
-      </div>
-
-      <div class="card open">
-        <div class="card-header" onclick="toggleCard(this)">
-          <div class="card-title">
-            <i class="fas fa-stream" style="color:var(--c-green);"></i>
-            PHASE 4: THRESHOLD &amp; STRENGTH ENDURANCE (CURRENT)
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span class="page-date">Updated: 02 Feb 2026</span>
-            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
-          </div>
-        </div>
-        <div class="card-body">
-
-          <div class="stat-grid">
-            <div class="stat-item">
-              <div class="stat-label">Pace</div>
-              <div class="stat-value stat-highlight">7:40</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">HR Avg</div>
-              <div class="stat-value">148</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">SPM</div>
-              <div class="stat-value">168</div>
-            </div>
-            <div class="stat-item">
-              <div class="stat-label">GCT</div>
-              <div class="stat-value">282ms</div>
-            </div>
-          </div>
-
-          <div class="panel green">
-            <div class="page-label" style="color: var(--c-green); margin-bottom: 10px;">PHASE MECHANISM</div>
-            <div style="font-size:13px; color: var(--c-text-sec); line-height: 1.95; font-family:inherit;">
-              <div style="margin-bottom:12px;">
-                <strong style="color:#fff;">1) ดันเพดานความอึดที่ความเร็วสูง (Lactate Threshold)</strong><br>
-                เฟสก่อนสร้างความทนทานและฐานให้ใหญ่ขึ้น เฟสนี้ทำให้วิ่งได้เร็วขึ้นโดยไม่เหนื่อยฟรี<br>
-                การซ้อม Intervals และ Tempo คือการกระตุ้นระบบกำจัดของเสียจากการวิ่งเร็วซ้ำ ๆ เพื่อยกจุด Threshold
-              </div>
-              <div style="margin-bottom:12px;">
-                <strong style="color:#fff;">2) ความแข็งแรงยืนระยะ (Strength Endurance)</strong><br>
-                เป้าหมายคือทำให้กล้ามเนื้อขาทนต่อความล้าได้ดีขึ้น เพื่อลดปัญหาฟอร์มหลุดช่วงท้าย<br>
-                Intervals ซ้ำ ๆ ในสภาพล้าสะสมคือการฝึกให้กล้ามเนื้อทำงานได้แม้พลังงานเหลือน้อย
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-header" onclick="toggleCard(this)">
-          <div class="card-title">
-            <i class="fas fa-check-circle" style="color:var(--c-green);"></i>
-            PHASE 3: NEUROMUSCULAR (COMPLETED)
-          </div>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span class="page-date">Updated: 02 Feb 2026</span>
-            <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="hero yellow">
-            <div class="hero-top">
-              <div>
-                <div class="hero-kicker">COMPLETED PHASE</div>
-                <div class="hero-title">Phase 3: Neuromuscular</div>
-                <div class="hero-sub">Consolidation of mechanics under fatigue</div>
-              </div>
-              <div class="hero-right">
-                <div class="pill"><span class="dot" style="background:var(--c-yellow); box-shadow:0 0 10px rgba(245,158,11,0.35)"></span><b>Status</b>&nbsp;Graduated</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="schedule" class="section-view active">
-      <div class="header-group">
-        <div>
-          <div class="page-label">TRAINING PLAN</div>
-          <div class="page-title">WEEKLY SCHEDULE</div>
-        </div>
-      </div>
-
-      <div class="schedule-toolbar">
-        <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
-          <div class="month-group">
-            <div class="month-pill" id="month-jan" onclick="setScheduleMonth('JAN')">JAN 2026</div>
-            <div class="month-pill active" id="month-feb" onclick="setScheduleMonth('FEB')">FEB 2026</div>
-          </div>
-
-          <div class="week-group">
-            <div class="week-pill active" id="wk1" onclick="renderWeek(1, this)">WEEK 01</div>
-            <div class="week-pill" id="wk2" onclick="renderWeek(2, this)">WEEK 02</div>
-            <div class="week-pill" id="wk3" onclick="renderWeek(3, this)">WEEK 03</div>
-            <div class="week-pill" id="wk4" onclick="renderWeek(4, this)">WEEK 04</div>
-          </div>
-        </div>
-
-        <div id="schedule-status" style="padding: 0 10px 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec);">
-          <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
-          <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>
-        </div>
-      </div>
-
-      <div class="card open" style="margin-top: 10px;">
-        <table class="schedule-table">
-          <thead>
-            <tr>
-              <th width="15%">DAY</th>
-              <th width="35%">PROGRAM &amp; HR</th>
-              <th width="25%">FOCUS</th>
-              <th width="25%">NUTRITION &amp; STRENGTH</th>
-            </tr>
-          </thead>
-          <tbody id="schedule-body"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </main>
-
-  <script>
-    function toggleCard(headerEl) {
-      const card = headerEl.closest('.card');
-      if (!card) return;
-      card.classList.toggle('open');
-    }
-
-    function nav(id, el) {
-      document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
-      const target = document.getElementById(id);
-      if (target) target.classList.add('active');
-
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      if (el) el.classList.add('active');
-    }
-
-    const scheduleData = {
-      JAN: {
-        1: `<tr>
-              <td><span class="tag tag-rest">W1</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Neuromuscular calibration and aerobic consolidation</td>
-              <td>Form awareness, cadence stability, hip drive foundations</td>
-              <td>Consistency, recovery discipline, long-run readiness</td>
-            </tr>`,
-        2: `<tr>
-              <td><span class="tag tag-rest">W2</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Repeatability under fatigue and form retention</td>
-              <td>Maintain technique under load; reduce wasted motion</td>
-              <td>Simple fueling practice; post-run protein consistency</td>
-            </tr>`,
-        3: `<tr>
-              <td><span class="tag tag-rest">W3</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Neural efficiency and stride economy</td>
-              <td>Lock in cues; smoother transitions between paces</td>
-              <td>Recovery priority; mobility and soft-tissue maintenance</td>
-            </tr>`,
-        4: `<tr>
-              <td><span class="tag tag-rest">W4</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Long run completion and graduation preparation</td>
-              <td>Glute activation cue stability; late-run form control</td>
-              <td>Final long-run execution; readiness for Phase 4 threshold</td>
-            </tr>`
-      },
-
-      FEB: {
-        1: `<tr>
-              <td><span class="tag tag-rest">MON 02</span></td>
-              <td><strong>REST DAY</strong><br>-</td>
-              <td><i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ยืดเหยียดก้น/สะโพกเบาๆ</td>
-              <td><i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>กินอาหารครบ 5 หมู่ + น้ำ 2-3 ลิตร</td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">TUE 03</span></td>
-              <td>
-                <strong>INTERVALS (TRACK)</strong><br>
-                1) วอร์ม 15 นาที (Jog)<br>
-                2) วิ่งเร็ว 3 นาที × 5 รอบ (พักจ็อกเบาๆ 2 นาที)<br>
-                3) คูลดาวน์ 10 นาที
-                <br>
-                <span style="font-size:11px; color:#EF4444; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  ช่วงวิ่งเร็ว: 162–172 bpm (ห้ามต่ำกว่า 160, ห้ามเกิน 175)<br>
-                  <i class="fas fa-arrow-down" style="margin-right:6px; color:rgba(255,255,255,0.65)"></i>
-                  ช่วงพัก: ต่ำกว่า 140 bpm
-                </span>
-              </td>
-              <td><i class="fas fa-shoe-prints" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>รองเท้าคู่เก่ง (Vomero)</td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ก่อนวิ่ง: ขนมปังขาว 1 แผ่น<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>หลังวิ่ง: เวย์โปรตีน
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">WED 04</span></td>
-              <td>
-                <strong>EASY RUN</strong><br>
-                45 นาที วิ่งสบายๆ เน้นท่าวิ่ง “เปิดเข่า/ปลายเท้าแบะ”<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>Zone 2: 135–145 bpm (ห้ามเกิน 150)
-                </span>
-              </td>
-              <td><i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>Foam Roller (เน้นน่อง/หน้าขา)</td>
-              <td><i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>น้ำเปล่าปกติ</td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">THU 05</span></td>
-              <td>
-                <strong>TEMPO RUN</strong><br>
-                1) วอร์ม 10 นาที<br>
-                2) วิ่งคงที่ 30 นาที<br>
-                3) คูลดาวน์ 10 นาที<br>
-                <span style="font-size:11px; color:#F59E0B; font-family:inherit,sans-serif;">
-                  <i class="fas fa-gauge-high" style="margin-right:6px;"></i>Zone 3 (ปลาย): 150–158 bpm (เลี้ยงให้นิ่งที่สุด ห้ามกระชาก)
-                </span>
-              </td>
-              <td><i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>บอดี้เวท (Core / Plank)</td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ก่อนวิ่ง: ขนมปัง 1 แผ่น<br>
-                <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ระหว่างวิ่ง: จิบน้ำ
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">FRI 06</span></td>
-              <td>
-                <strong>ACTIVE RECOVERY</strong><br>
-                เดินเร็ว หรือ ปั่นจักรยาน 30–40 นาที<br>
-                <span style="font-size:11px; color:#A3A3A3; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>Zone 1: 110–125 bpm
-                </span>
-              </td>
-              <td><i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>Foam Roller (เน้นหลัง/ก้น)</td>
-              <td><i class="fas fa-bowl-rice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>มื้อเย็น: เริ่มเติมคาร์บ (ข้าว/แป้ง) ให้เยอะขึ้นเล็กน้อย</td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-long">SAT 07</span></td>
-              <td>
-                <strong>LONG RUN</strong><br>
-                105 นาที (1 ชม. 45 นาที)<br>
-                เริ่มวิ่ง 15:30–16:00 น.<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>Zone 2–3: 140–155 bpm (ตั้งเตือนที่ 155 ห้ามเกิน)
-                </span>
-              </td>
-              <td><i class="fas fa-suitcase-medical" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>วาสลีน, หมวก, แว่นกันแดด</td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ก่อนวิ่ง: ขนมปัง 2 แผ่น + กาแฟ + SaltStick 1 เม็ด<br>
-                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>นาทีที่ 50: เจล 1 ซอง + น้ำ
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">SUN 08</span></td>
-              <td><strong>REST DAY</strong><br>-</td>
-              <td>-</td>
-              <td><i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>กินของอร่อยได้ (Cheat Meal ได้)</td>
-            </tr>`,
-
-        2: `<tr>
-              <td><span class="tag tag-rest">MON 09</span></td>
-              <td>
-                <strong>REST DAY</strong><br>
-                ⛔️ พักผ่อนให้เต็มที่ ให้ร่างกายฟื้นตัวจาก Long Run วันเสาร์
-              </td>
-              <td>
-                <i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Flexibility: ยืดขาหนีบ (Butterfly Stretch) เบาๆ 3 เซต
-              </td>
-              <td>
-                <i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                น้ำ 2–3 ลิตร<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                โปรตีนให้ถึง
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">TUE 10</span></td>
-              <td>
-                <strong>INTERVALS (คุมโซน)</strong><br>
-                • Warm Up: 15 นาที (จ็อก+ยืดเหยียด)<br>
-                • Run: 3 นาที @ Pace 5:45 - 6:00 (ห้ามเร็วกว่านี้!)<br>
-                • Rest: 2 นาที (เดิน/จ็อกเบาๆ)<br>
-                • Repeat: 5 รอบ (เน้น Pace นิ่งเท่ากันทุกรอบ)<br>
-                • Cool Down: 10 นาที<br><br>
-                <span style="font-size:11px; color:#EF4444; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  คุมโซนตามแผน (อย่าอัดถึง 5:00)
-                </span>
-                <div style="margin-top:8px; font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: ใช้สะโพกส่งแรง • รอบขา 169+ • Pace ต้องนิ่ง
+        <div id="dashboard" class="section-view active">
+            <div class="header-group">
+                <div>
+                    <div class="page-label">PERFORMANCE HUB</div>
+                    <div class="page-title">EVOLUTION LOG</div>
                 </div>
-              </td>
-              <td>
-                <div style="margin-bottom:8px;">
-                  <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                  Drills:<br>
-                  • A-Skip (เน้นดึงเข่า)<br>
-                  • Leg Swings (หน้า-หลัง/ข้าง)
+                <div class="page-date"><i class="far fa-clock"></i> Updated: 16 Feb 2026</div>
+            </div>
+
+            <div class="card open current-phase" style="border-left: 3px solid var(--c-green);">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title">
+                        <span class="status-indicator st-green active"></span> 
+                        PHASE 4: THRESHOLD & STRENGTH (CURRENT)
+                    </div>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span class="page-date">Updated: 16 Feb 2026</span>
+                        <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
+                    </div>
                 </div>
-                <i class="fas fa-shoe-prints" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Equipment: รองเท้าวิ่งคู่เก่ง
-              </td>
-              <td>
-                <i class="fas fa-apple-whole" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Pre-Run: กล้วย 1 ลูก + เกลือแร่ 1 เม็ด (ก่อน 45 นาที)<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Post-Run: เวย์/นมโปรตีน + แป้งทันที
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">WED 11</span></td>
-              <td>
-                <strong>EASY RUN + STRENGTH</strong><br>
-                • วิ่ง: 40–45 นาที<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>
-                  Zone 2: 135–148 bpm
-                </span><br>
-                • Pace: 7:30 - 8:00 (วิ่งสบายๆ)<br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: จับความรู้สึกขาหนีบ ถ้าตึงให้ผ่อน
+                <div class="card-body">
+                    <div style="background:rgba(16,185,129,0.05); padding:15px; border-radius:12px; margin-bottom:15px;">
+                       <div class="page-label" style="color:var(--c-green);">WEEK 3 STATUS</div>
+                       <strong style="font-size:18px;">Consolidation & Efficiency</strong>
+                       <p style="font-size:13px; color:var(--c-text-sec); margin-top:5px;">
+                         สัปดาห์นี้เน้นการยืนระยะความเร็ว (Tempo/Intervals) ด้วยฟอร์มที่นิ่งขึ้น และเตรียมร่างกายให้พร้อมสำหรับ Long Run 105 นาที
+                       </p>
+                    </div>
+                    <div class="stat-grid">
+                        <div class="stat-item"><div class="stat-label">Last Pace</div><div class="stat-value stat-highlight">7:40</div></div>
+                        <div class="stat-item"><div class="stat-label">HR Avg</div><div class="stat-value">148</div></div>
+                        <div class="stat-item"><div class="stat-label">SPM</div><div class="stat-value">168</div></div>
+                        <div class="stat-item"><div class="stat-label">GCT</div><div class="stat-value">282ms</div></div>
+                    </div>
                 </div>
-              </td>
-              <td>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Strength (เน้นก้น/ขาหนีบ):<br>
-                • Clamshells: 15/ข้าง × 3 (สำคัญมาก!)<br>
-                • Glute Bridge: 15 × 3<br>
-                • Side Plank: 30 วิ/ข้าง
-              </td>
-              <td>
-                <i class="fas fa-bowl-rice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Dinner: คาร์บดี (ข้าวกล้อง/โฮลวีต) เตรียมพลังงานสำหรับ Tempo
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">THU 12</span></td>
-              <td>
-                <strong>TEMPO RUN (ฝึกความทนทาน)</strong><br>
-                • Warm Up: 10 นาที<br>
-                • Run: 30 นาที ต่อเนื่อง (ห้ามเดิน)<br>
-                • Target Pace: 6:45 - 6:50 (ล็อกความเร็วนี้!)<br>
-                • Cool Down: 10 นาที<br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: กิโลแรก 7:00 ก่อน แล้วค่อยขยับมา 6:45 (Negative Split)
+            </div>
+
+            <div class="card">
+                <div class="card-header" onclick="toggleCard(this)">
+                    <div class="card-title"><i class="fas fa-check-circle" style="color:var(--c-green);"></i> &nbsp; PHASE 3: NEUROMUSCULAR</div>
+                    <i class="fas fa-chevron-down" style="font-size:12px; color:var(--c-text-mute);"></i>
                 </div>
-              </td>
-              <td>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Prehab:<br>
-                • Foam Roller (น่อง/หน้าขา/ก้น)<br>
-                • ห้ามกลิ้งทับขาหนีบโดยตรง
-              </td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Pre-Run: ขนมปัง 1 แผ่น + เกลือแร่ 1 เม็ด<br>
-                <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Note: ถ้าอากาศร้อน เอาน้ำราดตัวช่วย
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">FRI 13</span></td>
-              <td>
-                <strong>ACTIVE RECOVERY</strong><br>
-                • เดินเร็ว หรือ จ็อกเบาๆ 30 นาที<br>
-                • เพื่อให้เลือดไหลเวียน (ห้ามวิ่งเหนื่อย)
-              </td>
-              <td>
-                <i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Stretching:<br>
-                • Frog Stretch (ท่ากบ) ยืดขาหนีบลึกๆ<br>
-                • Quad Stretch (ยืดหน้าขา)
-              </td>
-              <td>
-                <i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Hydration: โหลดน้ำ + เกลือแร่ เตรียม Long Run พรุ่งนี้
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-long">SAT 14</span></td>
-              <td>
-                <strong>LONG RUN (ยืนระยะ)</strong><br>
-                • เวลา: 105 นาที (1 ชม. 45 นาที)<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  Zone 2–3 (Avg HR ~148 bpm)
-                </span><br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Strategy:<br>
-                  • 0–10 นาที: ช้ากว่าเป้าหมาย<br>
-                  • ช่วงกลาง: คงที่<br>
-                  • ช่วงท้าย: คุมฟอร์มสะโพกไม่ตก
+                <div class="card-body">
+                    <div class="page-label" style="color:var(--c-text-mute);">JAN - FEB 2026</div>
+                    <div style="font-size:13px; color:var(--c-text-sec); margin-bottom:10px;">
+                        Unlocked Hip Drive & Glute Activation. Found "Train Tracks" stance.
+                    </div>
                 </div>
-              </td>
-              <td>
-                <i class="fas fa-suitcase-medical" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Equipment:<br>
-                • เจล 2 ซอง (หรือแบ่งกิน)<br>
-                • น้ำ 500–600 มล.<br>
-                • หมวก/แว่นกันแดด
-              </td>
-              <td>
-                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                During Run:<br>
-                • เจลรอบ 1: นาทีที่ 50<br>
-                • เจลรอบ 2: นาทีที่ 80 (1:20)<br>
-                • จิบน้ำทุก 2 กม.
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">SUN 15</span></td>
-              <td>
-                <strong>REST DAY</strong><br>
-                ⛔️ พักสมบูรณ์ นอนหลับให้เต็มที่
-              </td>
-              <td>
-                <i class="fas fa-hand-holding-heart" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Massage: นวดผ่อนคลายเบาๆ (ถ้ามีเวลา)
-              </td>
-              <td>
-                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Cheat Meal: ให้รางวัล 1 มื้อ (เลี่ยงของทอดจัดๆ)
-              </td>
-            </tr>`
-      }
-    };
+            </div>
+        </div>
 
+        <div id="schedule" class="section-view">
+            <div class="header-group">
+                <div>
+                    <div class="page-label">TRAINING PLAN</div>
+                    <div class="page-title">WEEKLY SCHEDULE</div>
+                </div>
+            </div>
 
-    let currentScheduleMonth = 'FEB';
+            <div class="schedule-toolbar">
+                <div class="toolbar-row" style="display:flex; flex-wrap:wrap; gap:10px;">
+                    <div class="month-group">
+                        <div class="month-pill" id="month-jan" onclick="setScheduleMonth('JAN')">JAN 2026</div>
+                        <div class="month-pill active" id="month-feb" onclick="setScheduleMonth('FEB')">FEB 2026</div>
+                    </div>
+                    
+                    <div class="week-group">
+                        <div class="week-pill" id="wk1" onclick="renderWeek(1, this)">WEEK 01</div>
+                        <div class="week-pill" id="wk2" onclick="renderWeek(2, this)">WEEK 02</div>
+                        <div class="week-pill active" id="wk3" onclick="renderWeek(3, this)">WEEK 03</div>
+                        <div class="week-pill" id="wk4" onclick="renderWeek(4, this)">WEEK 04</div>
+                    </div>
+                </div>
+                <div style="padding: 0 10px 5px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec); margin-top:5px;">
+                    <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold</span>
+                    <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Efficiency</span>
+                </div>
+            </div>
 
-    function setScheduleMonth(m) {
-      currentScheduleMonth = m;
+            <div class="card open" style="border-top: none;">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th width="15%">DAY</th>
+                            <th width="35%">PROGRAM & HR</th>
+                            <th width="25%">FOCUS</th>
+                            <th width="25%">NUTRITION & RECOVERY</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schedule-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
 
-      document.getElementById('month-jan').classList.toggle('active', m === 'JAN');
-      document.getElementById('month-feb').classList.toggle('active', m === 'FEB');
+        <div id="handbook" class="section-view">
+             <div class="header-group">
+                <div>
+                    <div class="page-label">KNOWLEDGE BASE</div>
+                    <div class="page-title">HANDBOOK & GEAR</div>
+                </div>
+            </div>
 
-      const wk2 = document.getElementById('wk2');
-      const wk3 = document.getElementById('wk3');
-      const wk4 = document.getElementById('wk4');
+            <div class="grid-2" style="align-items: stretch; margin-bottom:20px;">
+                <div class="card open full-h" style="border-top: 3px solid var(--c-yellow);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-shoe-prints"></i> GEAR TRACKER</div>
+                    </div>
+                    <div class="card-body full-h">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                            <div>
+                                <div class="page-label">PRIMARY</div>
+                                <div style="font-size:15px; font-weight:600;">Nike Vomero Plus</div>
+                            </div>
+                            <div style="text-align:right;">
+                                <div style="font-size:18px; font-weight:700; color:var(--c-yellow);">748</div>
+                                <div style="font-size:10px; color:var(--c-text-mute);">/ 1000 km</div>
+                            </div>
+                        </div>
+                        
+                        <div style="height:4px; background:var(--bg-hover); border-radius:2px; overflow:hidden; margin-bottom:8px;">
+                            <div style="width:74.8%; height:100%; background:var(--c-yellow);"></div>
+                        </div>
+                        
+                        <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--c-text-sec); margin-bottom:15px;">
+                            <span><i class="fas fa-battery-half" style="color:var(--c-green); margin-right:4px;"></i> ~252 km remaining</span>
+                            <span>Est. 1.5 Months</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card open full-h" style="border-top: 3px solid var(--c-blue);">
+                    <div class="card-header"><div class="card-title"><i class="fas fa-fingerprint"></i> RUNNER IDENTITY</div></div>
+                    <div class="card-body full-h">
+                        <div style="font-size:13px; color:var(--c-text-sec); line-height:1.6;">
+                            <strong>Type:</strong> Cognitive-Associative Learner<br>
+                            Needs data to validate feeling.
+                        </div>
+                        <div style="margin-top:10px; font-size:12px;">
+                            <i class="fas fa-check" style="color:var(--c-blue); margin-right:5px;"></i> Base > Speed<br>
+                            <i class="fas fa-check" style="color:var(--c-blue); margin-right:5px;"></i> HR > Pace
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-      if (m === 'FEB') {
-        wk2.classList.remove('disabled');
-        wk3.classList.add('disabled');
-        wk4.classList.add('disabled');
+            <div class="card open">
+                <div class="card-header">
+                    <div class="card-title"><i class="fas fa-chart-bar"></i> DYNAMIC HR ZONES</div>
+                </div>
+                <div class="card-body">
+                    <div style="height:200px; margin-bottom:5px;">
+                        <canvas id="zoneChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        document.getElementById('schedule-status').innerHTML =
-          `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
-           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`;
+        <div id="recovery" class="section-view">
+             <div class="header-group">
+                <div>
+                    <div class="page-label">MAINTENANCE</div>
+                    <div class="page-title">RECOVERY ROOM</div>
+                </div>
+            </div>
 
-        // ✅ แก้ไข: ตั้งค่าให้เปิด Week 2 (สัปดาห์ปัจจุบัน) เป็นค่าเริ่มต้น
-        renderWeek(2, document.getElementById('wk2'));
-      } else {
-        wk2.classList.remove('disabled');
-        wk3.classList.remove('disabled');
-        wk4.classList.remove('disabled');
+            <div class="grid-2">
+                <div class="card open" style="border-top:3px solid var(--c-purple);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-bed" style="color:var(--c-purple);"></i> SLEEP PROTOCOL</div>
+                    </div>
+                    <div class="card-body">
+                        <ul style="font-size:13px; color:var(--c-text-sec); line-height:1.8; padding-left:20px;">
+                            <li><strong>Timing:</strong> 22:30 - 06:00 (7.5 hrs target)</li>
+                            <li><strong>Tools:</strong> Earplugs + Eye Mask (Mandatory)</li>
+                        </ul>
+                    </div>
+                </div>
 
-        document.getElementById('schedule-status').innerHTML =
-          `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 3: Neuromuscular</span>
-           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Form consolidation</span>`;
+                <div class="card open" style="border-top:3px solid var(--c-blue);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-toolbox" style="color:var(--c-blue);"></i> RECOVERY TOOLS</div>
+                    </div>
+                    <div class="card-body">
+                        <ul style="font-size:13px; color:var(--c-text-sec); line-height:1.8; padding-left:20px;">
+                            <li><strong>Foam Roller:</strong> Calves & IT Band (Daily)</li>
+                            <li><strong>Massage Ball:</strong> Plantar Fascia (Morning)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        renderWeek(1, document.getElementById('wk1'));
-      }
-    }
+        <div id="stats" class="section-view">
+            <div class="header-group">
+                <div>
+                    <div class="page-label">OVERVIEW</div>
+                    <div class="page-title">STATS & CALENDAR</div>
+                </div>
+                <div class="page-date"><i class="far fa-clock"></i> Updated: 16 Feb 2026</div>
+            </div>
 
-    function renderWeek(weekNum, btn) {
-      if (btn && btn.classList.contains('disabled')) return;
+            <div class="stat-grid" style="margin-bottom:20px; border-color:var(--border-subtle);">
+                <div class="stat-item">
+                    <div class="stat-label">Feb Dist.</div>
+                    <div class="stat-value text-z2" style="color:var(--c-text-main);">75.0 km</div> 
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Proj. End</div>
+                    <div class="stat-value" style="color:var(--c-text-mute);">~130 km</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Sessions</div>
+                    <div class="stat-value" style="color:var(--c-green);">12</div> 
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Focus</div>
+                    <div class="stat-value" style="color:var(--c-yellow); font-size:13px;">Threshold</div>
+                </div>
+            </div>
 
-      document.querySelectorAll('.week-pill').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+            <div class="card open">
+                <div class="card-header">
+                     <div class="card-title"><i class="fas fa-chart-line"></i> WEEKLY VOLUME (FEB)</div>
+                </div>
+                <div class="card-body">
+                    <div style="height:150px;">
+                         <canvas id="volumeChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-      const tbody = document.getElementById('schedule-body');
-      const block = scheduleData[currentScheduleMonth]?.[weekNum];
-      tbody.innerHTML = block || '';
-    }
+    </main>
 
-    // Init
-    setScheduleMonth('FEB');
-  </script>
+    <script>
+        // --- CONSTANTS ---
+        const scheduleData = {
+            JAN: { 1: `<tr><td>No Data</td></tr>` },
+            FEB: {
+                1: `<tr><td><span class="tag tag-rest">W1</span></td><td><strong>COMPLETED</strong></td><td>-</td><td>-</td></tr>`,
+                
+                2: `<tr>
+                      <td><span class="tag tag-rest">MON 09</span></td>
+                      <td><strong>REST DAY</strong><br>พักผ่อนเต็มที่</td>
+                      <td>ยืดขาหนีบเบาๆ</td>
+                      <td>น้ำ 2-3 ลิตร</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-run">TUE 10</span></td>
+                      <td><strong>INTERVALS 5x3min</strong><br>Pace 5:45-6:00</td>
+                      <td>คุมโซน/รอบขา 169+</td>
+                      <td>เวย์ + แป้งหลังวิ่ง</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-run">WED 11</span></td>
+                      <td><strong>EASY 45 MIN</strong><br>Zone 2 (135-148 bpm)</td>
+                      <td>จับความรู้สึกขาหนีบ</td>
+                      <td>Clamshells 15x3</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-run">THU 12</span></td>
+                      <td><strong>TEMPO 30 MIN</strong><br>Pace 6:45-6:50</td>
+                      <td>Negative Split</td>
+                      <td>Foam Roll น่อง/หน้าขา</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-rest">FRI 13</span></td>
+                      <td><strong>ACTIVE RECOVERY</strong><br>เดินเร็ว 30 นาที</td>
+                      <td>Frog Stretch</td>
+                      <td>โหลดน้ำ + เกลือแร่</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-long">SAT 14</span></td>
+                      <td><strong>LONG RUN 105 MIN</strong><br>Zone 2-3</td>
+                      <td>คุมฟอร์มสะโพกท้ายเกม</td>
+                      <td>เจล 2 ซอง (นาที 50, 80)</td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-rest">SUN 15</span></td>
+                      <td><strong>REST DAY</strong><br>พักสมบูรณ์</td>
+                      <td>นวดผ่อนคลาย</td>
+                      <td>Cheat Meal</td>
+                    </tr>
+                    <tr>
+                      <td colspan="4" style="padding:0; border-top: 2px solid var(--border-subtle);">
+                        <div style="background: linear-gradient(180deg, rgba(245, 158, 11, 0.05) 0%, var(--bg-card) 100%); padding: 20px;">
+                          <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                             <i class="fas fa-trophy" style="color:var(--c-yellow);"></i>
+                             <strong style="color:var(--c-yellow); font-size:12px; letter-spacing:1px;">WEEK 2 BREAKTHROUGH</strong>
+                          </div>
+                          <strong style="font-size:14px; color:#fff;">"สัปดาห์ร่างทอง (Golden Form)"</strong>
+                          <p style="font-size:13px; color:var(--c-text-sec); margin-top:5px; line-height:1.6;">
+                            ร่างกายตอบสนองดีเยี่ยมในทุก Session โดยเฉพาะ Intervals ที่คุม Heart Rate ได้นิ่ง และ Long Run ที่จบได้แบบไม่ทรมาน เป็นสัญญาณว่า Aerobic Base และความแข็งแรงเริ่มเข้าที่แล้ว
+                          </p>
+                        </div>
+                      </td>
+                    </tr>`,
 
+                3: `<tr>
+                      <td><span class="tag tag-rest">MON 16</span></td>
+                      <td>
+                        <strong>REST DAY (พักสมบูรณ์)</strong><br>
+                        พักจากสัปดาห์ร่างทอง ชาร์จพลัง 100%
+                      </td>
+                      <td>
+                        <i class="fas fa-child-reaching" style="color:rgba(255,255,255,0.6); margin-right:6px;"></i>
+                        Butterfly Stretch (เน้นมาก)<br>
+                        Frog Stretch 3 เซต
+                      </td>
+                      <td>
+                        <i class="fas fa-drumstick-bite" style="color:rgba(255,255,255,0.6); margin-right:6px;"></i>
+                        โปรตีนสูง + น้ำ 3 ลิตร
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-run">TUE 17</span></td>
+                      <td>
+                        <strong>INTERVALS 6x3min</strong><br>
+                        • Run: 3 นาที @ 5:45-6:00<br>
+                        • Rest: 2 นาที (เดิน)<br>
+                        • Repeat: 6 รอบ (เพิ่ม 1 รอบ)<br>
+                        <span style="font-size:11px; color:#EF4444;">Target: Negative Split</span>
+                      </td>
+                      <td>
+                        Focus: ท่าเปิดปลายเท้า<br>
+                        Drills: A-Skip / Leg Swings
+                      </td>
+                      <td>
+                        <i class="fas fa-shoe-prints" style="color:rgba(255,255,255,0.6); margin-right:6px;"></i>
+                        รองเท้าคู่เก่ง (Carbon)<br>
+                        <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:6px;"></i>
+                        Post: เวย์ + ขนมปัง/ข้าวขาว
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-run">WED 18</span></td>
+                      <td>
+                        <strong>EASY RUN + GLUTE</strong><br>
+                        • 45 นาที (Zone 2: 135-148)<br>
+                        • Pace: 7:30 - 8:00 (ห้ามเร็ว)<br>
+                        <span style="font-size:11px; color:#10B981;">จับความรู้สึก VMO/ก้น</span>
+                      </td>
+                      <td>
+                        Strength:<br>
+                        • Clamshells 15/ข้าง x3<br>
+                        • Glute Bridge 15 x3<br>
+                        • Side Plank 45วิ
+                      </td>
+                      <td>
+                        <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:6px;"></i>
+                        Foam Roll (เว้นขาหนีบ)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-run">THU 19</span></td>
+                      <td>
+                        <strong>TEMPO RUN (Progression)</strong><br>
+                        • Run: 35-40 นาที (เพิ่มเวลา)<br>
+                        • Pace: 6:45 - 6:50 (ล็อกความเร็ว)<br>
+                        <span style="font-size:11px; color:#F59E0B;">วัดใจความอึดนาทีที่ 30+</span>
+                      </td>
+                      <td>
+                        Prehab: ยืดเหยียด Dynamic<br>
+                        *เช็กขาหนีบ ถ้าตึงลดเหลือ 30 นาที
+                      </td>
+                      <td>
+                        Pre: ขนมปัง + เกลือแร่<br>
+                        (จิบน้ำได้ถ้าอากาศร้อน)
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-rest">FRI 20</span></td>
+                      <td>
+                        <strong>ACTIVE RECOVERY</strong><br>
+                        เดินเร็ว/ปั่นจักรยาน 30 นาที<br>
+                        (งดวิ่ง ถนอมขา)
+                      </td>
+                      <td>
+                        Stretching:<br>
+                        • Frog Stretch 2 นาที<br>
+                        • Couch Stretch
+                      </td>
+                      <td>
+                        โหลดน้ำ + เกลือแร่ เตรียม Long Run
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-long">SAT 21</span></td>
+                      <td>
+                        <strong>LONG RUN 105 MIN</strong><br>
+                        • เวลา: 1 ชม. 45 นาที<br>
+                        • Zone 2-3 (< 148 bpm)<br>
+                        <span style="font-size:11px; color:#F59E0B;">ครึ่งหลังปล่อยไหล (7:30)</span>
+                      </td>
+                      <td>
+                        Focus: กราฟหัวใจต้องราบเรียบ<br>
+                        Check: "เปิดปลายเท้า" ทุก 10 นาที
+                      </td>
+                      <td>
+                        Gel: 2 ซอง (นาที 50, 80)<br>
+                        น้ำ 600 มล. + วาสลีน
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tag tag-rest">SUN 22</span></td>
+                      <td>
+                        <strong>REST DAY</strong><br>
+                        นอนหลับให้เต็มอิ่ม
+                      </td>
+                      <td>
+                        Massage: นวดเบาๆ / แช่น้ำอุ่น
+                      </td>
+                      <td>
+                        <i class="fas fa-gift" style="color:rgba(255,255,255,0.6); margin-right:6px;"></i>
+                        Cheat Meal 1 มื้อจัดเต็ม
+                      </td>
+                    </tr>`,
+                    
+                4: `<tr><td colspan="4" style="text-align:center; padding:30px; color:#555;">Week 4 Data Locked</td></tr>`
+            }
+        };
+
+        let currentScheduleMonth = 'FEB';
+
+        function setScheduleMonth(m) {
+            currentScheduleMonth = m;
+            document.getElementById('month-jan').classList.toggle('active', m === 'JAN');
+            document.getElementById('month-feb').classList.toggle('active', m === 'FEB');
+
+            const wk1 = document.getElementById('wk1');
+            const wk2 = document.getElementById('wk2');
+            const wk3 = document.getElementById('wk3');
+            const wk4 = document.getElementById('wk4');
+
+            if (m === 'FEB') {
+                wk1.classList.remove('disabled');
+                wk2.classList.remove('disabled');
+                wk3.classList.remove('disabled');
+                wk4.classList.remove('disabled');
+                // Auto Open Week 3
+                renderWeek(3, wk3); 
+            } else {
+                renderWeek(1, wk1);
+            }
+        }
+
+        function renderWeek(weekNum, btn) {
+            if (btn && btn.classList.contains('disabled')) return;
+            document.querySelectorAll('.week-pill').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const tbody = document.getElementById('schedule-body');
+            const block = scheduleData[currentScheduleMonth]?.[weekNum];
+            tbody.innerHTML = block || '';
+        }
+
+        function nav(id, el) {
+            document.querySelectorAll('.section-view').forEach(s => s.classList.remove('active'));
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            if(el) el.classList.add('active');
+
+            if(id === 'handbook') renderChart();
+            if(id === 'stats') renderVolumeChart();
+        }
+
+        function toggleCard(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        let chartInstance = null;
+        function renderChart() {
+            const ctx = document.getElementById('zoneChart');
+            if (!ctx || chartInstance) return;
+
+            Chart.defaults.color = '#525252';
+            Chart.defaults.font.family = 'Inter';
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Z1', 'Z2', 'Z3', 'Z4', 'Z5'],
+                    datasets: [{
+                        label: 'HR Range',
+                        data: [[115, 138], [138, 152], [153, 160], [161, 166], [167, 168]],
+                        backgroundColor: ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'],
+                        borderRadius: 4, barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { min: 100, max: 180, grid: { display: false } },
+                        y: { grid: { display: false }, ticks: { color: '#A3A3A3' } }
+                    }
+                }
+            });
+        }
+
+        let volChartInstance = null;
+        function renderVolumeChart() {
+            const ctx = document.getElementById('volumeChart');
+            if (!ctx || volChartInstance) return;
+
+            volChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['W1', 'W2', 'W3 (Cur)', 'W4'],
+                    datasets: [{
+                        label: 'Distance (km)',
+                        data: [28, 35, 42, 30], // Estimated/Actual data
+                        backgroundColor: ['#333', '#333', '#10B981', '#333'],
+                        borderRadius: 4, barPercentage: 0.6
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#262626' } },
+                        x: { grid: { display: false }, ticks: { color: '#A3A3A3' } }
+                    }
+                }
+            });
+        }
+
+        // Init
+        setScheduleMonth('FEB');
+    </script>
 </body>
 </html>
