@@ -637,20 +637,21 @@
         <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
           <div class="month-group">
             <div class="month-pill" id="month-jan" onclick="setScheduleMonth('JAN')">JAN 2026</div>
-            <div class="month-pill active" id="month-feb" onclick="setScheduleMonth('FEB')">FEB 2026</div>
+            <div class="month-pill" id="month-feb" onclick="setScheduleMonth('FEB')">FEB 2026</div>
+            <div class="month-pill active" id="month-mar" onclick="setScheduleMonth('MAR')">MAR 2026</div>
           </div>
 
           <div class="week-group">
             <div class="week-pill" id="wk1" onclick="renderWeek(1, this)">WEEK 01</div>
-            <div class="week-pill" id="wk2" onclick="renderWeek(2, this)">WEEK 02</div>
-            <div class="week-pill active" id="wk3" onclick="renderWeek(3, this)">WEEK 03</div>
+            <div class="week-pill active" id="wk2" onclick="renderWeek(2, this)">WEEK 02</div>
+            <div class="week-pill" id="wk3" onclick="renderWeek(3, this)">WEEK 03</div>
             <div class="week-pill" id="wk4" onclick="renderWeek(4, this)">WEEK 04</div>
           </div>
         </div>
 
         <div id="schedule-status" style="padding: 0 10px 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec);">
-          <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
-          <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>
+          <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Build Phase</span>
+          <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Sub-2 Speed & 18K Endurance</span>
         </div>
       </div>
 
@@ -717,447 +718,221 @@
 
       FEB: {
         1: `<tr>
-              <td><span class="tag tag-rest">MON 02</span></td>
-              <td><strong>REST DAY</strong><br>-</td>
-              <td><i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ยืดเหยียดก้น/สะโพกเบาๆ</td>
-              <td><i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>กินอาหารครบ 5 หมู่ + น้ำ 2-3 ลิตร</td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">TUE 03</span></td>
-              <td>
-                <strong>INTERVALS (TRACK)</strong><br>
-                1) วอร์ม 15 นาที (Jog)<br>
-                2) วิ่งเร็ว 3 นาที × 5 รอบ (พักจ็อกเบาๆ 2 นาที)<br>
-                3) คูลดาวน์ 10 นาที
-                <br>
-                <span style="font-size:11px; color:#EF4444; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  ช่วงวิ่งเร็ว: 162–172 bpm (ห้ามต่ำกว่า 160, ห้ามเกิน 175)<br>
-                  <i class="fas fa-arrow-down" style="margin-right:6px; color:rgba(255,255,255,0.65)"></i>
-                  ช่วงพัก: ต่ำกว่า 140 bpm
-                </span>
+              <td width="15%"><span class="tag tag-run">W1</span></td>
+              <td colspan="3" style="line-height: 1.8;">
+                <strong style="color: #fff; font-size: 14px;">การปรับตัวเข้าสู่ความเข้มข้นใหม่ (Adaptation)</strong><br>
+                สัปดาห์เปิดหัวของเดือน เป็นช่วงเวลาแห่งการปรับจูนร่างกายให้รับมือกับปริมาณการซ้อมของเฟส 3 กล้ามเนื้อและระบบหายใจเริ่มเรียนรู้ที่จะทำงานประสานกันภายใต้ความเหนื่อยล้าที่เพิ่มขึ้น ถือเป็นสัปดาห์แห่งการปูรากฐานความอดทนให้แน่นหนาขึ้นเพื่อเตรียมรับมือกับโจทย์ที่ท้าทายในสัปดาห์ต่อๆ ไป
               </td>
-              <td><i class="fas fa-shoe-prints" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>รองเท้าคู่เก่ง (Vomero)</td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ก่อนวิ่ง: ขนมปังขาว 1 แผ่น<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>หลังวิ่ง: เวย์โปรตีน
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">WED 04</span></td>
-              <td>
-                <strong>EASY RUN</strong><br>
-                45 นาที วิ่งสบายๆ เน้นท่าวิ่ง “เปิดเข่า/ปลายเท้าแบะ”<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>Zone 2: 135–145 bpm (ห้ามเกิน 150)
-                </span>
-              </td>
-              <td><i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>Foam Roller (เน้นน่อง/หน้าขา)</td>
-              <td><i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>น้ำเปล่าปกติ</td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">THU 05</span></td>
-              <td>
-                <strong>TEMPO RUN</strong><br>
-                1) วอร์ม 10 นาที<br>
-                2) วิ่งคงที่ 30 นาที<br>
-                3) คูลดาวน์ 10 นาที<br>
-                <span style="font-size:11px; color:#F59E0B; font-family:inherit,sans-serif;">
-                  <i class="fas fa-gauge-high" style="margin-right:6px;"></i>Zone 3 (ปลาย): 150–158 bpm (เลี้ยงให้นิ่งที่สุด ห้ามกระชาก)
-                </span>
-              </td>
-              <td><i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>บอดี้เวท (Core / Plank)</td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ก่อนวิ่ง: ขนมปัง 1 แผ่น<br>
-                <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ระหว่างวิ่ง: จิบน้ำ
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">FRI 06</span></td>
-              <td>
-                <strong>ACTIVE RECOVERY</strong><br>
-                เดินเร็ว หรือ ปั่นจักรยาน 30–40 นาที<br>
-                <span style="font-size:11px; color:#A3A3A3; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>Zone 1: 110–125 bpm
-                </span>
-              </td>
-              <td><i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>Foam Roller (เน้นหลัง/ก้น)</td>
-              <td><i class="fas fa-bowl-rice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>มื้อเย็น: เริ่มเติมคาร์บ (ข้าว/แป้ง) ให้เยอะขึ้นเล็กน้อย</td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-long">SAT 07</span></td>
-              <td>
-                <strong>LONG RUN</strong><br>
-                105 นาที (1 ชม. 45 นาที)<br>
-                เริ่มวิ่ง 15:30–16:00 น.<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>Zone 2–3: 140–155 bpm (ตั้งเตือนที่ 155 ห้ามเกิน)
-                </span>
-              </td>
-              <td><i class="fas fa-suitcase-medical" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>วาสลีน, หมวก, แว่นกันแดด</td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>ก่อนวิ่ง: ขนมปัง 2 แผ่น + กาแฟ + SaltStick 1 เม็ด<br>
-                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>นาทีที่ 50: เจล 1 ซอง + น้ำ
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">SUN 08</span></td>
-              <td><strong>REST DAY</strong><br>-</td>
-              <td>-</td>
-              <td><i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>กินของอร่อยได้ (Cheat Meal ได้)</td>
             </tr>`,
 
+        2: `<tr>
+              <td width="15%"><span class="tag tag-run">W2</span></td>
+              <td colspan="3" style="line-height: 1.8;">
+                <strong style="color: #fff; font-size: 14px;">ปลดล็อกกลศาสตร์ท่าวิ่ง (Biomechanics Breakthrough)</strong><br>
+                ไฮไลต์ของสัปดาห์นี้คือการค้นพบ "จังหวะที่ใช่" ของร่างกายตัวเอง! โดยเฉพาะเทคนิคการ "เกร็งก้นเบาๆ" ในจังหวะถีบตัว ผลลัพธ์ที่ได้คือพลังในการส่งตัวไปข้างหน้า (Push-off) ทรงพลังขึ้นอย่างชัดเจน และที่สำคัญคือมันช่วยแก้ปัญหาความไม่มั่นคงของขาซ้าย ทำให้ฟอร์มการวิ่งเสถียร แข็งแรง และประหยัดพลังงานมากขึ้นแบบก้าวกระโดด
+              </td>
+            </tr>`,
+
+        3: `<tr>
+              <td width="15%"><span class="tag tag-run">W3</span></td>
+              <td colspan="3" style="line-height: 1.8;">
+                <strong style="color: #fff; font-size: 14px;">ก้าวข้ามขีดจำกัดความเร็วและหัวใจ (System Upgrade)</strong><br>
+                ร่างกายฟิตขึ้นกว่าสัปดาห์ก่อนหน้าอย่างเห็นได้ชัด! ในวันซ้อม Interval (ลงคอร์สความเร็ว) สามารถกดความเร็วในรอบสุดท้ายได้จนเกือบหมดหลอด ถือเป็นการทะลวงขีดจำกัดเดิมของตัวเองสำเร็จ นอกจากนี้ยังตัดสินใจปรับ Mindset ครั้งใหญ่ ด้วยการ "ยึดอัตราการเต้นของหัวใจ (HR) เป็นหลัก" ในวัน Easy Run และ Long Run ซึ่งผลลัพธ์คือร่างกายฟื้นฟูได้ดีเยี่ยมและคุมพลังงานได้นิ่งกว่าเดิมมาก
+              </td>
+            </tr>`,
+
+        4: `<tr>
+              <td width="15%"><span class="tag tag-run">W4</span></td>
+              <td colspan="3" style="line-height: 1.8;">
+                <strong style="color: #fff; font-size: 14px;">บททดสอบความอึดและโภชนาการ (The Masterpiece)</strong><br>
+                ปิดท้ายเดือนกุมภาพันธ์ด้วยผลงานชิ้นโบแดง! สามารถพิชิตการซ้อม Long Run ระยะทาง 15 กิโลเมตร ในสภาพอากาศที่ร้อนระอุได้ด้วยความรู้สึก "สบายๆ และฟิตมาก" (ทำเพซเฉลี่ย 7:46 โดยที่หัวใจเฉลี่ยนิ่งอยู่ที่ 147 bpm เท่านั้น) ยิ่งไปกว่านั้น สัปดาห์นี้ยังได้ค้นพบอาวุธลับทางโภชนาการคือเจล Amino Vital Red Shot ที่ให้พลังงานดีเยี่ยมและเข้ากับระบบย่อยอาหารได้สมบูรณ์แบบ ไม่มีปัญหาเรื่องลำไส้มากวนใจเลย
+                
+                <div style="margin-top: 18px; padding: 14px 16px; background: rgba(16,185,129,0.08); border-left: 3px solid var(--c-green); border-radius: 6px;">
+                  <strong style="color: var(--c-green); font-size: 13px;"><i class="fas fa-trophy" style="margin-right:6px;"></i> บทสรุปส่งท้ายเดือน:</strong><br>
+                  <span style="font-size: 13px;">เดือนกุมภาพันธ์จบลงด้วยความรู้สึกที่ว่า "กล้ามเนื้อทุกส่วนทำงานประสานกันได้สมบูรณ์ที่สุด" ทั้งความมั่นใจ ความทนทาน และเทคนิคการวิ่ง ถูกอัปเกรดขึ้นมาพร้อมลุยในเดือนต่อไปได้อย่างแข็งแกร่ง!</span>
+                </div>
+              </td>
+            </tr>`
+      },
+
+      MAR: {
+        1: `<tr>
+              <td width="15%"><span class="tag tag-run">W1</span></td>
+              <td colspan="3" style="line-height: 1.8;">
+                <strong style="color: #fff; font-size: 14px;">🏆 สรุปผลงานรายสัปดาห์ (Build Phase - สัปดาห์ที่ 1)</strong><br>
+                สัปดาห์นี้คือสัปดาห์แห่งการ "ยกระดับเครื่องยนต์" อย่างแท้จริงครับ ร่างกายของคุณตอบสนองต่อตารางซ้อมได้ทะลุเป้าหมายทุกมิติ!<br><br>
+                
+                <strong style="color: var(--c-green);"><i class="fas fa-fire" style="margin-right:6px;"></i> ไฮไลต์ความสำเร็จในแต่ละสนาม:</strong><br>
+                • <strong>อังคาร (Interval Run): ทะลวงขีดจำกัดความเร็ว</strong><br>
+                คุณจับความรู้สึก "Flow State" ได้เป็นครั้งแรก สับเพซ 5:23 ในก๊อกสุดท้าย ดันหัวใจไปแตะ 176 bpm ตามเป้าเป๊ะๆ นี่คือการปลดล็อกระบบประสาทให้คุ้นชินกับความเร็วระดับ Sub-2 อย่างเป็นทางการ<br>
+                • <strong>พุธ (Easy Run): พิสูจน์ความประหยัดพลังงาน</strong><br>
+                นี่คือผลลัพธ์ที่ชัดเจนที่สุดของสัปดาห์! คุณใช้ความเร็ว 7:40-7:50 เท่าเดิม แต่หัวใจกลับดรอปลงมาเฉลี่ยแค่ 129 bpm (แช่โซน 2 ล้วนๆ) เป็นการยืนยันว่ากล้ามเนื้อหัวใจคุณแข็งแรงขึ้นและบีบเลือดได้ทรงพลังกว่าเดิมมากๆ<br>
+                • <strong>พฤหัสบดี (Tempo Run): คุมจังหวะแบบ Negative Split</strong><br>
+                คุณเปลี่ยนจากคนที่โดนความเร็วลาก กลายเป็นคนคุมพวงมาลัย 100% การเปิดที่ 6:40 แล้วค่อยๆ ไล่บี้กดเพซลงมาปิดจบที่ 6:06 ในช่วงท้าย ถือเป็นเทคนิคการวิ่งระดับแอดวานซ์ที่แสดงถึงความนิ่งของจิตใจและพลังงานที่เหลือเฟือ<br>
+                • <strong>อาทิตย์ (Long Run 16K): ชนะความร้อน 35 องศาแบบหมดจด</strong><br>
+                การเลื่อนวันซ้อมเพราะรู้ว่าร่างกายไม่พร้อมคือความฉลาดขั้นสุด และการเอาชนะอุณหภูมิเดือดๆ ด้วยเทคนิค "ราดน้ำลดอุณหภูมิแกนกลาง" รวมถึงจังหวะการกินเจล+เกลือแร่ตอน 1 ชั่วโมงพอดี ทำให้คุณจบ 16 กิโลเมตรด้วยเพซเฉลี่ย 7:41 หัวใจ 147 bpm โดยที่ถังพลังงานยังเหลือถึง 38%!<br><br>
+                
+                <strong style="color: var(--c-blue);"><i class="fas fa-brain" style="margin-right:6px;"></i> สรุปการพัฒนาทางร่างกายและจิตใจ (The Upgrades)</strong><br>
+                • <strong>Heat Tolerance (ทนทานความร้อน):</strong> ร่างกายคุณเรียนรู้ที่จะระบายความร้อนได้ดีขึ้น การวิ่งในงานพัทยาที่ว่าร้อน จะกลายเป็นเรื่องชิลๆ ไปเลย<br>
+                • <strong>Nutrition System (ลำไส้เหล็ก):</strong> ระบบย่อยอาหารของคุณรับมือกับเจลและเกลือแร่เม็ดในขณะวิ่งได้สมบูรณ์แบบ 100% ไม่มีลมตี ไม่มีตะคริว<br>
+                • <strong>Mental Toughness (จิตใจแกร่ง):</strong> คุณอ่านร่างกายตัวเองขาด รู้ว่าตอนไหนควรเร่ง ตอนไหนควรผ่อน และพร้อมที่จะก้าวข้ามขีดจำกัดด้วยตัวเอง
+              </td>
+            </tr>`,
         2: `<tr>
               <td><span class="tag tag-rest">MON 09</span></td>
               <td>
                 <strong>REST DAY</strong><br>
-                ⛔️ พักผ่อนให้เต็มที่ ให้ร่างกายฟื้นตัวจาก Long Run วันเสาร์
+                พักผ่อนเต็มวัน ไม่มีการวิ่ง
               </td>
               <td>
-                <i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Flexibility: ยืดขาหนีบ (Butterfly Stretch) เบาๆ 3 เซต
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: กลิ้งคลายหน้าขา (Quads), แก้มก้น (Glutes) และน่อง 15-20 นาที
               </td>
               <td>
-                <i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                น้ำ 2–3 ลิตร<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                โปรตีนให้ถึง
+                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารตามปกติ เน้นโปรตีนเพื่อซ่อมแซมเส้นใยกล้ามเนื้อที่ล้ามาจากการวิ่ง 16K
               </td>
             </tr>
             <tr>
               <td><span class="tag tag-run">TUE 10</span></td>
               <td>
-                <strong>INTERVALS (คุมโซน)</strong><br>
-                • Warm Up: 15 นาที (จ็อก+ยืดเหยียด)<br>
-                • Run: 3 นาที @ Pace 5:45 - 6:00 (ห้ามเร็วกว่านี้!)<br>
-                • Rest: 2 นาที (เดิน/จ็อกเบาๆ)<br>
-                • Repeat: 5 รอบ (เน้น Pace นิ่งเท่ากันทุกรอบ)<br>
-                • Cool Down: 10 นาที<br><br>
-                <span style="font-size:11px; color:#EF4444; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  คุมโซนตามแผน (อย่าอัดถึง 5:00)
-                </span>
-                <div style="margin-top:8px; font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: ใช้สะโพกส่งแรง • รอบขา 169+ • Pace ต้องนิ่ง
-                </div>
+                <strong>INTERVAL RUN</strong><br>
+                • Warm-up 15 นาที<br>
+                • วิ่งเร็ว 3 นาที (Pace 5:30-5:35) สลับเดิน/จ็อก 90 วินาที x 6 เซ็ต<br>
+                • Cool-down 10 นาที<br>
+                <span style="font-size:11px; color:#EF4444;"><i class="fas fa-heart-pulse" style="margin-right:6px;"></i> HR: ดันแตะ 164 - 176 bpm ในช่วงปลายเซ็ต</span>
               </td>
               <td>
-                <div style="margin-bottom:8px;">
-                  <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                  Drills:<br>
-                  • A-Skip (เน้นดึงเข่า)<br>
-                  • Leg Swings (หน้า-หลัง/ข้าง)
-                </div>
-                <i class="fas fa-shoe-prints" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Equipment: รองเท้าวิ่งคู่เก่ง
+                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: ท่า Monster Walk และ Side Leg Raises วอร์มก้น 2 เซ็ตก่อนวิ่ง<br>
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: คลายหน้าสะโพก (Psoas) หลังวิ่ง
               </td>
               <td>
-                <i class="fas fa-apple-whole" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Pre-Run: กล้วย 1 ลูก + เกลือแร่ 1 เม็ด (ก่อน 45 นาที)<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Post-Run: เวย์/นมโปรตีน + แป้งทันที
+                <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ดื่มน้ำเปล่า 1-2 แก้วก่อนวิ่ง งดอาหารหนัก และจิบเกลือแร่ชดเชยโซเดียมหลังวิ่งจบ
               </td>
             </tr>
             <tr>
               <td><span class="tag tag-run">WED 11</span></td>
               <td>
-                <strong>EASY RUN + STRENGTH</strong><br>
-                • วิ่ง: 40–45 นาที<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>
-                  Zone 2: 135–148 bpm
-                </span><br>
-                • Pace: 7:30 - 8:00 (วิ่งสบายๆ)<br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: จับความรู้สึกขาหนีบ ถ้าตึงให้ผ่อน
-                </div>
+                <strong>EASY RUN (50 นาที)</strong><br>
+                วิ่งสบายๆ เพื่อขับกรดแลคเตท<br>
+                <span style="font-size:11px; color:#10B981;"><i class="fas fa-heart" style="margin-right:6px;"></i> HR: คุมให้อยู่ในช่วง 135 - 148 bpm ไม่เน้นความเร็ว ปล่อยจอยให้ร่างกายฟื้นฟู</span>
               </td>
               <td>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Strength (เน้นก้น/ขาหนีบ):<br>
-                • Clamshells: 15/ข้าง × 3 (สำคัญมาก!)<br>
-                • Glute Bridge: 15 × 3<br>
-                • Side Plank: 30 วิ/ข้าง
+                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: ท่า Kneeling Hip Flexor Rock (โยกหน้าสะโพก) ก่อนวิ่ง<br>
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดข้างขา (IT Band) หลังวิ่ง
               </td>
               <td>
-                <i class="fas fa-bowl-rice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Dinner: คาร์บดี (ข้าวกล้อง/โฮลวีต) เตรียมพลังงานสำหรับ Tempo
+                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารมื้อปกติ คุมความเร็วตามสภาพอากาศเพื่อไม่ให้หัวใจดีดเกินโซน
               </td>
             </tr>
             <tr>
               <td><span class="tag tag-run">THU 12</span></td>
               <td>
-                <strong>TEMPO RUN (ฝึกความทนทาน)</strong><br>
-                • Warm Up: 10 นาที<br>
-                • Run: 30 นาที ต่อเนื่อง (ห้ามเดิน)<br>
-                • Target Pace: 6:45 - 6:50 (ล็อกความเร็วนี้!)<br>
-                • Cool Down: 10 นาที<br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: กิโลแรก 7:00 ก่อน แล้วค่อยขยับมา 6:45 (Negative Split)
-                </div>
+                <strong>TEMPO RUN (45 นาที)</strong><br>
+                • Warm-up 15 นาที<br>
+                • วิ่ง Pace 6:30-6:35 ต่อเนื่อง 45 นาที<br>
+                • Cool-down 10 นาที<br>
+                <span style="font-size:11px; color:#F59E0B;"><i class="fas fa-gauge-high" style="margin-right:6px;"></i> HR: เลี้ยงให้นิ่งช่วง 149 - 163 bpm</span>
               </td>
               <td>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Prehab:<br>
-                • Foam Roller (น่อง/หน้าขา/ก้น)<br>
-                • ห้ามกลิ้งทับขาหนีบโดยตรง
+                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: ใช้ยางยืดล็อกกระดูกเชิงกรานและปลุกแก้มก้นก่อนวิ่ง
               </td>
               <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Pre-Run: ขนมปัง 1 แผ่น + เกลือแร่ 1 เม็ด<br>
-                <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Note: ถ้าอากาศร้อน เอาน้ำราดตัวช่วย
+                <i class="fas fa-apple-whole" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานกล้วยหอมครึ่งลูกก่อนวิ่ง 45 นาที เติมคาร์โบไฮเดรตให้มีแรงดันเพซแบบนิ่งๆ
               </td>
             </tr>
             <tr>
               <td><span class="tag tag-rest">FRI 13</span></td>
               <td>
-                <strong>ACTIVE RECOVERY</strong><br>
-                • เดินเร็ว หรือ จ็อกเบาๆ 30 นาที<br>
-                • เพื่อให้เลือดไหลเวียน (ห้ามวิ่งเหนื่อย)
+                <strong>STRENGTH & CONDITIONING (40 นาที)</strong><br>
+                ไม่มีการวิ่ง<br>
+                • Bulgarian Split Squat<br>
+                • Single-Leg Glute Bridge<br>
+                • Deadbug<br>
+                (ท่าละ 3 เซ็ต/12-15 ครั้ง)
               </td>
               <td>
-                <i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Stretching:<br>
-                • Frog Stretch (ท่ากบ) ยืดขาหนีบลึกๆ<br>
-                • Quad Stretch (ยืดหน้าขา)
+                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> Strength: โฟกัสการเกร็งแกนกลางลำตัวให้มั่นคง<br>
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: กลิ้งคลายแผ่นหลังและกล้ามเนื้อขาทุกส่วน
               </td>
               <td>
-                <i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Hydration: โหลดน้ำ + เกลือแร่ เตรียม Long Run พรุ่งนี้
+                <i class="fas fa-bowl-rice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> เริ่มโหลดคาร์โบไฮเดรตในมื้อเย็น (Carb Load) เตรียมเสบียงไกลโคเจนสำหรับพรุ่งนี้
               </td>
             </tr>
             <tr>
               <td><span class="tag tag-long">SAT 14</span></td>
               <td>
-                <strong>LONG RUN (ยืนระยะ)</strong><br>
-                • เวลา: 105 นาที (1 ชม. 45 นาที)<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  Zone 2–3 (Avg HR ~148 bpm)
-                </span><br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Strategy:<br>
-                  • 0–10 นาที: ช้ากว่าเป้าหมาย<br>
-                  • ช่วงกลาง: คงที่<br>
-                  • ช่วงท้าย: คุมฟอร์มสะโพกไม่ตก
-                </div>
+                <strong>LONG RUN (18 กิโลเมตร)</strong><br>
+                วิ่งต่อเนื่อง ปล่อยนาฬิกาเดินยาว ห้ามกดหยุดเวลาพักกินน้ำ/ราดน้ำ<br>
+                <span style="font-size:11px; color:#10B981;"><i class="fas fa-heart-pulse" style="margin-right:6px;"></i> HR: เลี้ยงความเหนื่อยให้อยู่ช่วง 135 - 148 bpm</span>
               </td>
               <td>
-                <i class="fas fa-suitcase-medical" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Equipment:<br>
-                • เจล 2 ซอง (หรือแบ่งกิน)<br>
-                • น้ำ 500–600 มล.<br>
-                • หมวก/แว่นกันแดด
+                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: วอร์มกระดูกเชิงกรานและข้อสะโพกก่อนก้าวแรก<br>
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดพังผืดทั่วร่างทันทีหลังวิ่งจบ (ถ้าแช่น้ำเย็นสลับได้จะดีมาก)
               </td>
               <td>
-                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                During Run:<br>
-                • เจลรอบ 1: นาทีที่ 50<br>
-                • เจลรอบ 2: นาทีที่ 80 (1:20)<br>
-                • จิบน้ำทุก 2 กม.
+                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> แผนเจล Amino Vital Red Shot (110 kcal) + เกลือแร่:<br>
+                • นาทีที่ 0: เกลือแร่ 1 เม็ด<br>
+                • นาทีที่ 60: เจลซองที่ 1 + เกลือแร่เม็ดที่ 2<br>
+                • นาทีที่ 120: เจลซองที่ 2
               </td>
             </tr>
             <tr>
               <td><span class="tag tag-rest">SUN 15</span></td>
               <td>
-                <strong>REST DAY</strong><br>
-                ⛔️ พักสมบูรณ์ นอนหลับให้เต็มที่
-              </td>
-              <td>
-                <i class="fas fa-hand-holding-heart" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Massage: นวดผ่อนคลายเบาๆ (ถ้ามีเวลา)
-              </td>
-              <td>
-                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Cheat Meal: ให้รางวัล 1 มื้อ (เลี่ยงของทอดจัดๆ)
-              </td>
-            </tr>`,
-
-        3: `<tr>
-              <td><span class="tag tag-rest">MON 16</span></td>
-              <td>
-                <strong>REST DAY</strong><br>
-                ⛔️ พักผ่อนให้เต็มที่ ร่างกายซ่อมแซมจากสัปดาห์ "ร่างทอง"
-              </td>
-              <td>
-                <i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Flexibility:<br>
-                • Butterfly Stretch (เน้นมาก)<br>
-                • Frog Stretch 3 เซต
-              </td>
-              <td>
-                <i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                น้ำ 2–3 ลิตร<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                โปรตีนสูงซ่อมแซมกล้ามเนื้อ
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">TUE 17</span></td>
-              <td>
-                <strong>INTERVALS (Consolidation)</strong><br>
-                • Warm Up: 15 นาที (Zone 1)<br>
-                • Run: 3 นาที @ Pace 5:45 - 6:00<br>
-                • Rest: 2 นาที (เดิน/จ็อกเบาๆ)<br>
-                • Repeat: 6 รอบ (เพิ่ม 1 รอบ)<br>
-                • Cool Down: 10 นาที<br><br>
-                <span style="font-size:11px; color:#EF4444; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  Focus: Negative Split (เริ่ม 6:00 จบ 5:45)
-                </span>
-                <div style="margin-top:8px; font-size:12px; color:rgba(255,255,255,0.75);">
-                  Drills: A-Skip / B-Skip, Leg Swings
-                </div>
-              </td>
-              <td>
-                <i class="fas fa-shoe-prints" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Equipment: รองเท้าคู่เก่ง (Carbon/Tempo)
-              </td>
-              <td>
-                <i class="fas fa-apple-whole" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Pre-Run: กล้วย 1 ลูก + เกลือแร่ 1 เม็ด<br>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Post-Run: เวย์/นมโปรตีน + คาร์บไว (ขนมปัง/ข้าวขาว)
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">WED 18</span></td>
-              <td>
-                <strong>EASY RUN + GLUTE ACTIVATION</strong><br>
-                • เวลา: 45 นาที<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart" style="margin-right:6px;"></i>
-                  Zone 2: 135–148 bpm
-                </span><br>
-                • Pace: 7:30 - 8:00 (ห้ามเร็วกว่านี้)<br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: วิ่งสบายๆ จับความรู้สึก "หน้าขาใน (VMO)" แทนขาหนีบ
-                </div>
-              </td>
-              <td>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Strength (เน้นก้น/VMO):<br>
-                • Clamshells (ยางยืด): 15/ข้าง x 3<br>
-                • Glute Bridge: 15 x 3<br>
-                • Side Plank: 45 วิ/ข้าง
-              </td>
-              <td>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Recovery: โฟมโรลเลอร์ (น่อง, หน้าขา, ก้น) *ห้ามกลิ้งทับขาหนีบ
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-run">THU 19</span></td>
-              <td>
-                <strong>TEMPO RUN (Progression)</strong><br>
-                • Warm Up: 10 นาที<br>
-                • Run: 35-40 นาที (เพิ่มเวลา 5-10 นาที)<br>
-                • Target Pace: 6:45 - 6:50 (ล็อกความเร็วเดิม)<br>
-                • Cool Down: 10 นาที<br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Focus: ผ่านนาทีที่ 30 ให้ได้ด้วยฟอร์มเดิม (วัดใจความอึด)
-                </div>
-              </td>
-              <td>
-                <i class="fas fa-child-reaching" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Prehab: ยืดเหยียด Dynamic ก่อนวิ่ง<br>
-                *เช็กอาการขาหนีบ ถ้าตึงลดเหลือ 30 นาที
-              </td>
-              <td>
-                <i class="fas fa-bread-slice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Pre-Run: ขนมปัง 1-2 แผ่น + เกลือแร่ 1 เม็ด<br>
-                <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Note: จิบน้ำระหว่างวิ่งได้ถ้าอากาศร้อนจัด
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">FRI 20</span></td>
-              <td>
                 <strong>ACTIVE RECOVERY</strong><br>
-                • เดินเร็ว หรือ ปั่นจักรยานเบาๆ 30 นาที<br>
-                • งดวิ่ง เพื่อถนอมขาให้ Long Run
+                เดินเบาๆ 20-30 นาที หรือพักผ่อนเต็มที่<br>
+                <span style="font-size:11px; color:#A3A3A3;"><i class="fas fa-heart" style="margin-right:6px;"></i> HR: ต่ำกว่า 135 bpm</span>
               </td>
               <td>
-                <i class="fas fa-person-walking" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Stretching:<br>
-                • Frog Stretch (ท่ากบ) 2 นาที<br>
-                • Couch Stretch (ยืดหน้าขา)
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: ยืดเหยียดและกลิ้งจุดที่ตึงเครียดตามความรู้สึกของร่างกาย
               </td>
               <td>
-                <i class="fas fa-droplet" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Hydration: โหลดน้ำ + เกลือแร่ เตรียม Long Run
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-long">SAT 21</span></td>
-              <td>
-                <strong>LONG RUN (Efficiency)</strong><br>
-                • เวลา: 105 นาที (1 ชม. 45 นาที)<br>
-                <span style="font-size:11px; color:#10B981; font-family:inherit,sans-serif;">
-                  <i class="fas fa-heart-pulse" style="margin-right:6px;"></i>
-                  Zone 2-3 (Target HR < 148 bpm)
-                </span><br><br>
-                <div style="font-size:12px; color:rgba(255,255,255,0.75);">
-                  Strategy: ครึ่งแรก 7:40-8:00, ครึ่งหลังปล่อยไหล (ถ้าได้ 7:30 เยี่ยม)<br>
-                  Focus: กราฟหัวใจต้องราบเรียบ
-                </div>
-              </td>
-              <td>
-                <i class="fas fa-suitcase-medical" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Equipment:<br>
-                • เจล 2 ซอง (นาทีที่ 50, 80)<br>
-                • น้ำ 600 มล.<br>
-                • วาสลีนกันเสียดสี
-              </td>
-              <td>
-                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                During Run: จิบน้ำทุก 2 กม. / เช็กฟอร์ม "เปิดปลายเท้า" ทุก 10 นาที
-              </td>
-            </tr>
-            <tr>
-              <td><span class="tag tag-rest">SUN 22</span></td>
-              <td>
-                <strong>REST DAY</strong><br>
-                ⛔️ พักผ่อน นอนหลับให้เต็มอิ่ม
-              </td>
-              <td>
-                <i class="fas fa-hand-holding-heart" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Massage: นวดเบาๆ หรือแช่น้ำอุ่นผ่อนคลาย
-              </td>
-              <td>
-                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i>
-                Cheat Meal: จัดเต็ม 1 มื้อให้รางวัลตัวเอง
+                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารอิสระ ให้รางวัลตัวเอง เน้นโปรตีนเพื่อการฟื้นฟูและดื่มน้ำชดเชยให้เพียงพอ
               </td>
             </tr>`
       }
     };
 
 
-    let currentScheduleMonth = 'FEB';
+    let currentScheduleMonth = 'MAR';
 
     function setScheduleMonth(m) {
       currentScheduleMonth = m;
 
       document.getElementById('month-jan').classList.toggle('active', m === 'JAN');
       document.getElementById('month-feb').classList.toggle('active', m === 'FEB');
+      document.getElementById('month-mar').classList.toggle('active', m === 'MAR');
 
+      const wk1 = document.getElementById('wk1');
       const wk2 = document.getElementById('wk2');
       const wk3 = document.getElementById('wk3');
       const wk4 = document.getElementById('wk4');
 
-      if (m === 'FEB') {
+      if (m === 'MAR') {
+        wk1.classList.remove('disabled');
+        wk2.classList.remove('disabled');
+        wk3.classList.add('disabled'); // ยังไม่มีข้อมูลสัปดาห์ 3
+        wk4.classList.add('disabled'); // ยังไม่มีข้อมูลสัปดาห์ 4
+
+        document.getElementById('schedule-status').innerHTML =
+          `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Build Phase</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Sub-2 Speed & 18K Endurance</span>`;
+
+        // ✅ ตั้งค่าเริ่มต้นเป็นสัปดาห์ที่ 2 ของเดือนมีนาคม
+        renderWeek(2, document.getElementById('wk2'));
+
+      } else if (m === 'FEB') {
+        wk1.classList.remove('disabled');
         wk2.classList.remove('disabled');
         wk3.classList.remove('disabled');
-        wk4.classList.add('disabled');
+        wk4.classList.remove('disabled');
 
         document.getElementById('schedule-status').innerHTML =
           `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
            <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`;
 
-        // ✅ ตั้งค่าเริ่มต้นเป็น Week 3
-        renderWeek(3, document.getElementById('wk3'));
+        renderWeek(4, document.getElementById('wk4'));
       } else {
+        wk1.classList.remove('disabled');
         wk2.classList.remove('disabled');
         wk3.classList.remove('disabled');
         wk4.classList.remove('disabled');
@@ -1181,8 +956,8 @@
       tbody.innerHTML = block || '';
     }
 
-    // Init
-    setScheduleMonth('FEB');
+    // Init: เปิดหน้ามาเริ่มที่เดือนมีนาคมเลย
+    setScheduleMonth('MAR');
   </script>
 
 </body>
