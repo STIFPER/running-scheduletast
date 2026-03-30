@@ -374,7 +374,7 @@
       }
       .schedule-table td { padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.06); }
       .schedule-table td:last-child { border-bottom: none; }
-      .month-group { width: 100%; justify-content: center; } .week-group { width: 100%; margin-left: 0; }
+      .month-group { width: 100%; justify-content: center; flex-wrap: wrap; } .week-group { width: 100%; margin-left: 0; }
     }
   </style>
 </head>
@@ -407,7 +407,7 @@
           <div class="page-label">PERFORMANCE HUB</div>
           <div class="page-title">EVOLUTION LOG</div>
         </div>
-        <div class="page-date"><i class="far fa-clock"></i> Updated: 23 Mar 2026</div>
+        <div class="page-date"><i class="far fa-clock"></i> Updated: 30 Mar 2026</div>
       </div>
 
       <div class="hero">
@@ -565,20 +565,21 @@
           <div class="month-group">
             <div class="month-pill" id="month-jan" onclick="setScheduleMonth('JAN')">JAN 2026</div>
             <div class="month-pill" id="month-feb" onclick="setScheduleMonth('FEB')">FEB 2026</div>
-            <div class="month-pill active" id="month-mar" onclick="setScheduleMonth('MAR')">MAR 2026</div>
+            <div class="month-pill" id="month-mar" onclick="setScheduleMonth('MAR')">MAR 2026</div>
+            <div class="month-pill active" id="month-apr" onclick="setScheduleMonth('APR')">APR 2026</div>
           </div>
 
           <div class="week-group">
-            <div class="week-pill" id="wk1" onclick="renderWeek(1, this)">WEEK 01</div>
+            <div class="week-pill active" id="wk1" onclick="renderWeek(1, this)">WEEK 01</div>
             <div class="week-pill" id="wk2" onclick="renderWeek(2, this)">WEEK 02</div>
-            <div class="week-pill active" id="wk3" onclick="renderWeek(3, this)">WEEK 03</div>
+            <div class="week-pill" id="wk3" onclick="renderWeek(3, this)">WEEK 03</div>
             <div class="week-pill" id="wk4" onclick="renderWeek(4, this)">WEEK 04</div>
           </div>
         </div>
 
         <div id="schedule-status" style="padding: 0 10px 6px 10px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: var(--c-text-sec);">
-          <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Build Phase</span>
-          <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Sub-2 Speed & 21.1K Target</span>
+          <span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Race Preparation Phase</span>
+          <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: To be updated</span>
         </div>
       </div>
 
@@ -728,120 +729,157 @@
               </td>
             </tr>`,
         4: `<tr>
-              <td><span class="tag tag-rest">MON 23</span></td>
+              <td width="15%"><span class="tag tag-run">W4</span></td>
+              <td colspan="3" style="line-height: 1.8;">
+                <strong style="color: #fff; font-size: 14px;">🏆 สรุปผลงานรายสัปดาห์ (Step-back Week - สัปดาห์ที่ 4)</strong><br>
+                จบสัปดาห์ที่ 4 (23 - 29 มีนาคม) อย่างสมบูรณ์แบบ โชว์ศักยภาพการเป็น "นักวิ่งที่ชาญฉลาด (Smart Runner)" อย่างแท้จริง ปิดฉาก Phase 2: Build Phase ได้สวยงาม ร่างกายและจิตใจฟิตเต็ม 100%!<br><br>
+
+                <strong style="color: var(--c-green);"><i class="fas fa-brain" style="margin-right:6px;"></i> 1. ชัยชนะเหนือ "อีโก้" และกลยุทธ์ (Mental & Strategic Mastery)</strong><br>
+                • <strong>คุมโซนหัวใจวันอากาศร้อน (35°C):</strong> หักดิบลดความเร็วในวัน Easy (Pace 8) และ Tempo (Pace 6:30-6:40) เพื่อรักษา HR ไม่ให้ทะลุโซนอันตราย<br>
+                • <strong>Self-Coaching (Long Run 15K):</strong> วิ่งกดหัวใจ Low Zone 2 (135 bpm) สร้างฐานไขมัน และจบด้วย Fast Finish กิโลสุดท้าย (Pace 7:25) จำลองวันแข่งจริงได้อย่างสมบูรณ์แบบ<br><br>
+
+                <strong style="color: var(--c-blue);"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> 2. การจัดการบาดเจ็บ (Injury & Biomechanics Recovery)</strong><br>
+                • <strong>Zero Pain:</strong> ลดระยะ Tempo และ Long Run ช่วยซ่อมพังผืดเท้าขวาและน่องได้ 100% วิ่งจบโดยไม่มีอาการเจ็บจี๊ด<br>
+                • <strong>GCT Balance:</strong> สมดุลเวลาสัมผัสพื้นเสถียร ซ้าย 49.5% / ขวา 50.5% ไม่มีการเดินกะเผลกหรือบิดเท้าหนีเจ็บเลย<br><br>
+
+                <strong style="color: var(--c-yellow);"><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i> 3. บทเรียนราคาแพง (Key Lessons Learned)</strong><br>
+                • <strong>โภชนาการวัน Interval:</strong> กินข้าวแค่มื้อเดียวแล้วไปซัดคอร์สความเร็ว ทำให้น้ำตาลตก เกิดอาการหาวและเหนื่อยแทบขาดใจ ย้ำเตือนว่าโภชนาการสำคัญเท่ากับการซ้อม<br>
+                • <strong>ระวัง Overstriding:</strong> วิ่งเร็ว Pace 5 ต้นๆ แต่รอบขา (Cadence) ตกเหลือ 153 spm เสี่ยงกระแทกข้อต่อ ในอนาคตต้องโฟกัสซอยเท้าให้ถี่ขึ้น (165-170 spm)
+              </td>
+            </tr>`
+      },
+
+      APR: {
+        1: `<tr>
+              <td><span class="tag tag-rest">MON 30</span></td>
               <td>
-                <strong>REST DAY (CURRENT)</strong><br>
-                พักผ่อน 100% งดการกระแทกเพื่อฟื้นฟูฝ่าเท้าและน่อง
+                <strong>REST DAY</strong><br>
+                พักผ่อน 100% ปล่อยให้กล้ามเนื้อได้ซ่อมแซมตัวเองเตรียมรับความหนักของสัปดาห์นี้
               </td>
               <td>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: คลึงน่องด้านใน/นอก และแช่น้ำแข็ง (Ice Bath) เท้าขวา 15 นาที
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: คลึงกล้ามเนื้อน่องและหน้าขาสบายๆ 10-15 นาที
               </td>
               <td>
                 <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารตามปกติ เน้นโปรตีนเพื่อซ่อมแซมเส้นใยกล้ามเนื้อ
               </td>
             </tr>
             <tr>
-              <td><span class="tag tag-run">TUE 24</span></td>
+              <td><span class="tag tag-run">TUE 31</span></td>
               <td>
-                <strong>INTERVAL RUN</strong><br>
+                <strong>INTERVAL RUN (7 เซ็ต)</strong><br>
                 • Warm-up 15 นาที<br>
-                • วิ่ง 3 นาที สลับเดินพัก 90 วินาที x 6 เซ็ต<br>
+                • วิ่ง 3 นาที สลับเดินพัก 90 วินาที (ทำ 7 รอบ)<br>
                 • Cool-down 10 นาที<br>
-                <span style="font-size:11px; color:#EF4444;"><i class="fas fa-heart-pulse" style="margin-right:6px;"></i> HR: สูงสุดไม่เกิน 176 bpm | Pace 5:20-5:25 (ห้ามเกร็งฝ่าเท้าหนีเจ็บ)</span>
+                <span style="font-size:11px; color:#EF4444;"><i class="fas fa-heart-pulse" style="margin-right:6px;"></i> HR: สูงสุดไม่เกิน 176 bpm | Pace: 5:15 - 5:20</span><br>
+                <div style="font-size:11px; margin-top:6px; color:var(--c-text-sec);">
+                  *กฎอากาศร้อน: ถ้าร้อนจัดจน HR ทะลุ 176 ให้ลดความเร็วเป็น 5:25-5:30<br>
+                  *เทคนิค: โฟกัสรอบขา (Cadence) ให้อยู่ระดับ 165+ spm ซอยเท้าให้เร็วขึ้นเพื่อลดแรงกระแทก
+                </div>
               </td>
               <td>
                 <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: ท่า Monster Walk ปลุกแก้มก้นก่อนวิ่ง<br>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดคลายหน้าสะโพกและน่องหลังซ้อม
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดคลายหน้าสะโพกและน่องหลังซ้อมทันที
               </td>
               <td>
                 <i class="fas fa-bottle-water" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ดื่มน้ำเปล่าก่อนวิ่ง งดอาหารหนัก จิบเกลือแร่ชดเชยโซเดียมทันทีหลังวิ่งจบ
               </td>
             </tr>
             <tr>
-              <td><span class="tag tag-run">WED 25</span></td>
+              <td><span class="tag tag-run">WED 01</span></td>
               <td>
-                <strong>EASY RUN (ลดเหลือ 45 นาที)</strong><br>
-                วิ่งปล่อยจอย คอยสังเกตความรู้สึกฝ่าเท้าขวา<br>
-                <span style="font-size:11px; color:#10B981;"><i class="fas fa-heart" style="margin-right:6px;"></i> HR: โซน 2 (135 - 148 bpm) นิ่งๆ</span>
+                <strong>EASY RUN (50 นาที)</strong><br>
+                วิ่งฟื้นฟู สบายๆ ไม่สนใจความเร็ว<br>
+                <span style="font-size:11px; color:#10B981;"><i class="fas fa-heart" style="margin-right:6px;"></i> HR: โซน 2 (135 - 145 bpm) นิ่งๆ</span><br>
+                <div style="font-size:11px; margin-top:6px; color:var(--c-text-sec);">
+                  *กฎอากาศร้อน: ถ้าร้อนมากจนหัวใจแตะ 148 ให้ลดความเร็วลงเป็นเดินสลับวิ่งได้เลย ขอแค่ HR ไม่เกิน
+                </div>
               </td>
               <td>
-                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: ยืดหน้าสะโพกก่อนวิ่ง<br>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดน่องและใช้ลูกกอล์ฟคลึงอุ้งเท้าเบาๆ
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: รีดน่องและหน้าขาเบาๆ เพื่อรีดกรดแลคเตทจากวันอังคาร
               </td>
               <td>
-                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารปกติ คุมการดื่มน้ำระหว่างวันให้เพียงพอ
+                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารปกติ คุมการดื่มน้ำระหว่างวันให้เพียงพอเพื่อลดความข้นของเลือด
               </td>
             </tr>
             <tr>
-              <td><span class="tag tag-run">THU 26</span></td>
+              <td><span class="tag tag-run">THU 02</span></td>
               <td>
-                <strong>TEMPO RUN (ลดเหลือ 40 นาที)</strong><br>
+                <strong>TEMPO RUN (50 นาที)</strong><br>
                 • Warm-up 15 นาที<br>
-                • วิ่งแช่ความเร็ว 40 นาทีรวดเดียว<br>
+                • วิ่งแช่ความเร็ว 50 นาทีรวดเดียว<br>
                 • Cool-down 10 นาที<br>
-                <span style="font-size:11px; color:#F59E0B;"><i class="fas fa-gauge-high" style="margin-right:6px;"></i> HR: 149 - 163 bpm | Pace: 6:20-6:25 (ห้ามดื้อเร่งเพซ!)</span>
+                <span style="font-size:11px; color:#F59E0B;"><i class="fas fa-gauge-high" style="margin-right:6px;"></i> HR: 149 - 163 bpm | Pace: 6:15 - 6:20</span><br>
+                <div style="font-size:11px; margin-top:6px; color:var(--c-text-sec);">
+                  *กฎอากาศร้อน: ถ้า HR แตะ 164+ ให้ดรอปเพซไปที่ 6:30-6:40 ทันที ยึดหัวใจเป็นหลัก
+                </div>
               </td>
               <td>
                 <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: ล็อกกระดูกเชิงกรานและแก้มก้นก่อนวิ่ง<br>
-                <i class="fas fa-snowflake" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> แช่น้ำแข็ง: ประคบเท้าขวาทันทีหลังวิ่งจบ
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดคลายน่องด้านในและด้านนอก
               </td>
               <td>
                 <i class="fas fa-apple-whole" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานกล้วยหอมครึ่งลูกก่อนวิ่ง 45 นาที เติมคาร์โบไฮเดรตให้มีแรงประคองเพซ
               </td>
             </tr>
             <tr>
-              <td><span class="tag tag-rest">FRI 27</span></td>
+              <td><span class="tag tag-rest">FRI 03</span></td>
               <td>
                 <strong>STRENGTH & CONDITIONING (40 นาที)</strong><br>
-                งดท่ากระโดดหรือเขย่ง เน้นช่วงล่างและแกนกลาง<br>
+                งดท่ากระโดดหรือวิ่ง เน้นช่วงล่างและแกนกลางลำตัว
+              </td>
+              <td>
+                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด & บอดี้เวท (Core & Glutes):<br>
                 • Glute Bridge<br>
                 • Deadbug<br>
                 • Clamshells<br>
-                (ทำท่าละ 3 เซ็ต/12-15 ครั้ง)
-              </td>
-              <td>
-                <i class="fas fa-dumbbell" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> Strength: โฟกัสการเกร็งแกนกลางลำตัวให้มั่นคง<br>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: จัดเต็มรีดขาทุกส่วนเพื่อเตรียมพร้อมสำหรับ Long Run
+                <span style="font-size:11px; color:var(--c-text-sec);">(ทำท่าละ 3 เซ็ต / 12-15 ครั้ง)</span>
               </td>
               <td>
                 <i class="fas fa-bowl-rice" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> เริ่มโหลดคาร์โบไฮเดรตมื้อเย็น (Carb Load) เติมไกลโคเจนเข้ากล้ามเนื้อ
               </td>
             </tr>
             <tr>
-              <td><span class="tag tag-long">SAT 28</span></td>
+              <td><span class="tag tag-long">SAT 04</span></td>
               <td>
-                <strong>LONG RUN (ลดระยะเหลือ 15 กิโลเมตร)</strong><br>
-                วิ่งต่อเนื่อง คุมจังหวะสบายๆ ถนอมฝ่าเท้า<br>
-                <span style="font-size:11px; color:#10B981;"><i class="fas fa-heart-pulse" style="margin-right:6px;"></i> HR: คุมความเหนื่อยช่วง 135 - 148 bpm เป็นหลัก</span>
+                <strong>LONG RUN (21 กิโลเมตร)</strong><br>
+                ทดสอบระยะฮาล์ฟมาราธอน วิ่งต่อเนื่อง<br>
+                <span style="font-size:11px; color:#10B981;"><i class="fas fa-heart-pulse" style="margin-right:6px;"></i> HR: โซน 2 ถึง 3 ต้นๆ (140 - 150 bpm)</span><br>
+                <div style="font-size:11px; margin-top:6px; color:var(--c-text-sec);">
+                  *กฎอากาศร้อน: คุมจังหวะให้หัวใจนิ่งที่สุด ช่วงท้ายหากหัวใจเด้งเพราะความร้อนให้ประคองโซน ไม่ต้องเร่งเพซ
+                </div>
               </td>
               <td>
-                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: วอร์มกระดูกเชิงกรานและสะโพกก่อนวิ่ง<br>
+                <i class="fas fa-link" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ยางยืด: วอร์มกระดูกเชิงกรานและสะโพกก่อนวิ่ง 5 นาที<br>
                 <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px; margin-top:8px;"></i> โฟมโรลเลอร์: รีดพังผืดทั่วร่างทันทีหลังวิ่งจบ
               </td>
               <td>
-                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> แผนเจล Amino Vital Red Shot (110 kcal) 1 ซอง:<br>
+                <i class="fas fa-bolt" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> เจล Amino Vital Red Shot (110 kcal) x 2 ซอง:<br>
                 • นาทีที่ 0: เกลือแร่ 1 เม็ด<br>
-                • นาทีที่ 45: เจลซองที่ 1 + เกลือแร่ (ซองเดียวจบสำหรับ 15 กม.)
+                • กม.ที่ 7 (~นาที 50): เจลซองที่ 1<br>
+                • กม.ที่ 14 (~นาที 100): เจลซองที่ 2
               </td>
             </tr>
             <tr>
-              <td><span class="tag tag-rest">SUN 29</span></td>
+              <td><span class="tag tag-rest">SUN 05</span></td>
               <td>
                 <strong>ACTIVE RECOVERY</strong><br>
                 เดินเบาๆ 20-30 นาที ปิดสวิตช์การวิ่ง 100%<br>
                 <span style="font-size:11px; color:#A3A3A3;"><i class="fas fa-heart" style="margin-right:6px;"></i> HR: ต่ำกว่า 135 bpm</span>
               </td>
               <td>
-                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: ยืดเหยียดจุดที่ตึงเครียดตามความรู้สึก
+                <i class="fas fa-roller" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> โฟมโรลเลอร์: ยืดเหยียดจุดที่รู้สึกตึงเครียดตามความรู้สึก
               </td>
               <td>
-                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารอิสระ ให้รางวัลตัวเอง เน้นโปรตีนฟื้นฟู
+                <i class="fas fa-utensils" style="color:rgba(255,255,255,0.6); margin-right:8px;"></i> ทานอาหารอิสระ ให้รางวัลตัวเอง เน้นโปรตีนเพื่อซ่อมแซมหลังจบ 21 กม.
               </td>
-            </tr>`
+            </tr>`,
+        2: ``,
+        3: ``,
+        4: ``
       }
     };
 
-    let currentScheduleMonth = 'MAR';
+    let currentScheduleMonth = 'APR';
 
     function setScheduleMonth(m) {
       currentScheduleMonth = m;
@@ -849,23 +887,35 @@
       document.getElementById('month-jan').classList.toggle('active', m === 'JAN');
       document.getElementById('month-feb').classList.toggle('active', m === 'FEB');
       document.getElementById('month-mar').classList.toggle('active', m === 'MAR');
+      document.getElementById('month-apr').classList.toggle('active', m === 'APR');
 
       const wk1 = document.getElementById('wk1');
       const wk2 = document.getElementById('wk2');
       const wk3 = document.getElementById('wk3');
       const wk4 = document.getElementById('wk4');
 
-      if (m === 'MAR') {
+      if (m === 'APR') {
+        wk1.classList.remove('disabled');
+        wk2.classList.add('disabled');
+        wk3.classList.add('disabled');
+        wk4.classList.add('disabled');
+
+        document.getElementById('schedule-status').innerHTML =
+          `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Race Preparation Phase</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: To be updated</span>`;
+
+        renderWeek(1, document.getElementById('wk1'));
+
+      } else if (m === 'MAR') {
         wk1.classList.remove('disabled');
         wk2.classList.remove('disabled');
-        wk3.classList.remove('disabled'); // ✅ ปลดล็อก W3
-        wk4.classList.remove('disabled'); // ✅ ปลดล็อก W4
+        wk3.classList.remove('disabled');
+        wk4.classList.remove('disabled');
 
         document.getElementById('schedule-status').innerHTML =
           `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Build Phase</span>
            <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Sub-2 Speed & 21.1K Target</span>`;
 
-        // ✅ ตั้งค่าเริ่มต้นเป็นสัปดาห์ที่ 4 (ปัจจุบัน 23 มีนาคม)
         renderWeek(4, document.getElementById('wk4'));
 
       } else if (m === 'FEB') {
@@ -879,6 +929,7 @@
            <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`;
 
         renderWeek(4, document.getElementById('wk4'));
+
       } else {
         wk1.classList.remove('disabled');
         wk2.classList.remove('disabled');
@@ -904,8 +955,8 @@
       tbody.innerHTML = block || '';
     }
 
-    // Init: เปิดหน้ามาเริ่มที่เดือนมีนาคมเลย
-    setScheduleMonth('MAR');
+    // Init: เปิดหน้ามาเริ่มที่เดือนเมษายนเลย
+    setScheduleMonth('APR');
   </script>
 
 </body>
