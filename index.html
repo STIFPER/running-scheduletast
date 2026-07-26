@@ -1102,9 +1102,11 @@
         text-align: center;
         padding: 9px 2px;
         border-radius: 11px;
-        font-size: 11px;
+        font-size: 9px;
         font-weight: 600;
-        color: var(--c-text-sec);
+        letter-spacing: 0.6px;
+        text-transform: uppercase;
+        color: var(--c-text-mute);
         cursor: pointer;
         transition:
           background 0.22s ease,
@@ -1120,16 +1122,16 @@
       }
       .week-pill.active {
         font-weight: 700;
-        color: #eafff6;
+        color: #04140e;
         background: linear-gradient(
           177deg,
-          rgba(16, 185, 129, 0.34) 0%,
-          rgba(16, 185, 129, 0.12) 100%
+          rgba(110, 231, 183, 1) 0%,
+          var(--c-green) 100%
         );
-        border-color: rgba(16, 185, 129, 0.42);
+        border-color: rgba(167, 243, 208, 0.55);
         box-shadow:
           0 8px 20px -8px rgba(16, 185, 129, 0.5),
-          inset 0 1px 0 rgba(255, 255, 255, 0.22);
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
       }
       .week-pill.disabled {
         opacity: 0.35;
@@ -1500,6 +1502,7 @@
         border-radius: 99px;
         background: linear-gradient(90deg, var(--c-green), #34d399);
         box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+        transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
       }
       .gauge-bar.yellow .gauge-bar-fill {
         background: linear-gradient(90deg, var(--c-yellow), #fbbf24);
@@ -1510,6 +1513,62 @@
         color: var(--c-text-mute);
         margin-top: 6px;
         font-family: inherit;
+      }
+
+      /* ---------- Ring gauge (animated circular progress) ---------- */
+      .ring-gauge-fill {
+        transition: stroke-dashoffset 1.1s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .ring-purple {
+        stroke: var(--c-purple);
+        filter: drop-shadow(0 0 5px rgba(139, 92, 246, 0.55));
+      }
+      .ring-green {
+        stroke: var(--c-green);
+        filter: drop-shadow(0 0 5px rgba(16, 185, 129, 0.55));
+      }
+
+      /* ---------- Weekly volume bar chart (real data, animated grow-in) ---------- */
+      .vol-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 5px;
+        height: 96px;
+      }
+      .vol-bar {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        gap: 6px;
+      }
+      .vol-bar-track {
+        width: 100%;
+        max-width: 20px;
+        flex-grow: 1;
+        display: flex;
+        align-items: flex-end;
+      }
+      .vol-bar-fill {
+        width: 100%;
+        border-radius: 5px 5px 2px 2px;
+        background: linear-gradient(180deg, #6ee7b7 0%, var(--c-green) 100%);
+        transform: scaleY(0);
+        transform-origin: bottom;
+        transition: transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .vol-bar.is-peak .vol-bar-fill {
+        background: linear-gradient(180deg, #fff 0%, var(--c-green) 100%);
+      }
+      .vol-bar-label {
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.2px;
+        color: var(--c-text-mute);
+        white-space: nowrap;
       }
 
       /* ---------- Phase 6 weekly breakdown list (Log tab) ---------- */
@@ -1554,15 +1613,15 @@
       /* ---------- Enhanced week-pill (calendar day-picker feel) ---------- */
       .week-pill .wp-range {
         display: block;
-        font-size: 8px;
-        font-weight: 500;
-        color: var(--c-text-mute);
-        letter-spacing: 0.2px;
-        margin-top: 3px;
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--c-text-main);
+        letter-spacing: -0.1px;
+        margin-top: 4px;
         text-transform: none;
       }
       .week-pill.active .wp-range {
-        color: rgba(167, 243, 208, 0.8);
+        color: #04140e;
       }
       /* "Today" marker. When a pill is *only* today it gets a quiet outlined
          badge; when it is also the selected week the badge goes solid so the
@@ -1928,6 +1987,17 @@
             </div>
           </div>
 
+          <div class="panel bd-6" style="padding: 16px 16px 12px">
+            <div
+              class="t-top"
+              style="margin-bottom: 14px"
+            >
+              <div class="t-label">Weekly Volume &middot; May&ndash;Jul 2026</div>
+              <div class="t-icon"><i class="fas fa-chart-column"></i></div>
+            </div>
+            <div class="vol-chart" id="vol-chart"></div>
+          </div>
+
           <div
             class="tile bd-3"
             style="border-color: rgba(16, 185, 129, 0.18)"
@@ -1960,25 +2030,30 @@
               <div class="t-label">Latest Session</div>
               <div class="t-icon"><i class="fas fa-route"></i></div>
             </div>
-            <div class="t-value grad-num-purple">
-              16.01
-              <span
-                style="
-                  font-size: 12px;
-                  font-weight: 500;
-                  color: rgba(255, 255, 255, 0.65);
-                "
-                >km (Long Run)</span
-              >
+            <div style="display: flex; align-items: center; gap: 14px">
+              <svg class="ring-gauge" id="latest-ring" viewBox="0 0 64 64" width="58" height="58">
+                <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="6"></circle>
+                <circle class="ring-gauge-fill ring-purple" cx="32" cy="32" r="26" fill="none" stroke-width="6" stroke-linecap="round" stroke-dasharray="163.36" stroke-dashoffset="163.36" transform="rotate(-90 32 32)"></circle>
+              </svg>
+              <div style="min-width: 0">
+                <div class="t-value grad-num-purple" style="margin-bottom: 2px">
+                  16.01
+                  <span
+                    style="
+                      font-size: 12px;
+                      font-weight: 500;
+                      color: rgba(255, 255, 255, 0.65);
+                    "
+                    >km (Long Run)</span
+                  >
+                </div>
+                <div class="t-sub" style="margin: 0">75.9% of race distance</div>
+              </div>
             </div>
-            <div class="t-sub">
+            <div class="t-sub" style="margin-top: 10px">
               26 Jul 2026 • Even split pacing • HR spent 76% of time in Zone
               3
             </div>
-            <div class="gauge-bar">
-              <div class="gauge-bar-fill" style="width: 75.9%"></div>
-            </div>
-            <div class="gauge-caption">16.01 / 21.0975 km — 75.9% of race distance</div>
           </div>
 
           <div class="tile tile-blue bd-2">
@@ -2024,6 +2099,55 @@
           </div>
         </div>
 
+        <script>
+          (function () {
+            // Single source of truth for the 12 real May-Jul weekly stats, shared by
+            // the top-of-page volume chart and the Phase 6 accordion's week list below.
+            window.PHASE6_WEEKS = [
+              { label: "MAY W1 (4–10)", sessions: 1, km: 4.88, hr: 128, note: "First run back post-injury (treadmill)" },
+              { label: "MAY W2 (11–17)", sessions: 2, km: 9.07, hr: 140.5, note: "Back to road running" },
+              { label: "MAY W3 (18–24)", sessions: 3, km: 19.32, hr: 138.3, note: "First long run since recovery, 7.9 km" },
+              { label: "MAY W4 (25–31)", sessions: 2, km: 14.13, hr: 139, note: "Long run extended to 9.38 km" },
+              { label: "JUN W1 (1–7)", sessions: 2, km: 8.67, hr: 140.5, note: "Still cautious" },
+              { label: "JUN W2 (8–14)", sessions: 3, km: 13.70, hr: 138, note: "Back to Bang Bua Thong road route" },
+              { label: "JUN W3 (15–21)", sessions: 2, km: 17.86, hr: 142.5, note: "First 12 km run since injury" },
+              { label: "JUN W4 (22–28)", sessions: 3, km: 23.05, hr: 139.7, note: "Weekly volume broke 23 km" },
+              { label: "JUL W1 (29 Jun–5 Jul)", sessions: 4, km: 24.28, hr: 135.75, note: "Highest volume in 3 months" },
+              { label: "JUL W2 (6–12)", sessions: 3, km: 27.00, hr: 143, note: "Long run 15.01 km, nearing old peak" },
+              { label: "JUL W3 (13–19)", sessions: 2, km: 9.96, hr: 145.5, note: "Natural down week" },
+              { label: "JUL W4 (20–26)", sessions: 4, km: 27.03, hr: 148.75, note: "Long run 16.01 km, good even split, HR spent 76% of time in Zone 3" },
+            ];
+
+            const weeks = window.PHASE6_WEEKS;
+            const peak = Math.max(...weeks.map((w) => w.km));
+            const chart = document.getElementById("vol-chart");
+            if (chart) {
+              chart.innerHTML = weeks.map((w) => {
+                const pct = Math.max(4, Math.round((w.km / peak) * 1000) / 10);
+                const isPeak = w.km === peak;
+                const shortLabel = w.label.split(" ")[1];
+                return `<div class="vol-bar${isPeak ? " is-peak" : ""}" title="${w.label}: ${w.km.toFixed(2)} km">
+                  <div class="vol-bar-track"><div class="vol-bar-fill" style="height:${pct}%"></div></div>
+                  <div class="vol-bar-label">${shortLabel}</div>
+                </div>`;
+              }).join("");
+            }
+
+            // Latest Session ring gauge: 16.01 / 21.0975 km = 75.9% of race distance
+            const ring = document.querySelector("#latest-ring .ring-gauge-fill");
+            const RING_PCT = 75.9;
+            const CIRC = 2 * Math.PI * 26;
+            if (ring) ring.style.strokeDashoffset = CIRC.toFixed(2);
+
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              chart?.querySelectorAll(".vol-bar-fill").forEach((el) => {
+                el.style.transform = "scaleY(1)";
+              });
+              if (ring) ring.style.strokeDashoffset = (CIRC * (1 - RING_PCT / 100)).toFixed(2);
+            }));
+          })();
+        </script>
+
         <div class="card open">
           <div class="card-header" onclick="toggleCard(this)">
             <div class="card-title">
@@ -2061,20 +2185,7 @@
             <div class="phase-week-list" id="phase6-week-list"></div>
             <script>
               (function () {
-                const PHASE6_WEEKS = [
-                  { label: "MAY W1 (4–10)", sessions: 1, km: 4.88, hr: 128, note: "First run back post-injury (treadmill)" },
-                  { label: "MAY W2 (11–17)", sessions: 2, km: 9.07, hr: 140.5, note: "Back to road running" },
-                  { label: "MAY W3 (18–24)", sessions: 3, km: 19.32, hr: 138.3, note: "First long run since recovery, 7.9 km" },
-                  { label: "MAY W4 (25–31)", sessions: 2, km: 14.13, hr: 139, note: "Long run extended to 9.38 km" },
-                  { label: "JUN W1 (1–7)", sessions: 2, km: 8.67, hr: 140.5, note: "Still cautious" },
-                  { label: "JUN W2 (8–14)", sessions: 3, km: 13.70, hr: 138, note: "Back to Bang Bua Thong road route" },
-                  { label: "JUN W3 (15–21)", sessions: 2, km: 17.86, hr: 142.5, note: "First 12 km run since injury" },
-                  { label: "JUN W4 (22–28)", sessions: 3, km: 23.05, hr: 139.7, note: "Weekly volume broke 23 km" },
-                  { label: "JUL W1 (29 Jun–5 Jul)", sessions: 4, km: 24.28, hr: 135.75, note: "Highest volume in 3 months" },
-                  { label: "JUL W2 (6–12)", sessions: 3, km: 27.00, hr: 143, note: "Long run 15.01 km, nearing old peak" },
-                  { label: "JUL W3 (13–19)", sessions: 2, km: 9.96, hr: 145.5, note: "Natural down week" },
-                  { label: "JUL W4 (20–26)", sessions: 4, km: 27.03, hr: 148.75, note: "Long run 16.01 km, good even split, HR spent 76% of time in Zone 3" },
-                ];
+                const PHASE6_WEEKS = window.PHASE6_WEEKS;
                 const peak = Math.max(...PHASE6_WEEKS.map((w) => w.km)); // 27.03 km, Latest Week Vol
                 const list = document.getElementById("phase6-week-list");
                 list.innerHTML = PHASE6_WEEKS.map((w) => {
@@ -2084,10 +2195,15 @@
                       <span class="phase-week-label">${w.label}</span>
                       <span class="phase-week-stats">${w.sessions} sessions &middot; ${w.km.toFixed(2)} km &middot; Avg HR ${w.hr}</span>
                     </div>
-                    <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${pct}%"></div></div>
+                    <div class="gauge-bar"><div class="gauge-bar-fill" style="width:0%" data-w="${pct}%"></div></div>
                     <div class="phase-week-note">${w.note}</div>
                   </div>`;
                 }).join("");
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                  list.querySelectorAll(".gauge-bar-fill").forEach((el) => {
+                    el.style.width = el.dataset.w;
+                  });
+                }));
               })();
             </script>
 
@@ -2415,102 +2531,102 @@
                 id="month-jan"
                 onclick="setScheduleMonth('JAN')"
               >
-                JAN 2026
+                Jan
               </div>
               <div
                 class="month-pill"
                 id="month-feb"
                 onclick="setScheduleMonth('FEB')"
               >
-                FEB 2026
+                Feb
               </div>
               <div
                 class="month-pill"
                 id="month-mar"
                 onclick="setScheduleMonth('MAR')"
               >
-                MAR 2026
+                Mar
               </div>
               <div
                 class="month-pill"
                 id="month-apr"
                 onclick="setScheduleMonth('APR')"
               >
-                APR 2026
+                Apr
               </div>
               <div
                 class="month-pill"
                 id="month-may"
                 onclick="setScheduleMonth('MAY')"
               >
-                MAY 2026
+                May
               </div>
               <div
                 class="month-pill"
                 id="month-jun"
                 onclick="setScheduleMonth('JUN')"
               >
-                JUN 2026
+                Jun
               </div>
               <div
                 class="month-pill active"
                 id="month-jul"
                 onclick="setScheduleMonth('JUL')"
               >
-                JUL 2026
+                Jul
               </div>
               <div
                 class="month-pill"
                 id="month-aug"
                 onclick="setScheduleMonth('AUG')"
               >
-                AUG 2026
+                Aug
               </div>
               <div
                 class="month-pill"
                 id="month-sep"
                 onclick="setScheduleMonth('SEP')"
               >
-                SEP 2026
+                Sep
               </div>
               <div
                 class="month-pill"
                 id="month-oct"
                 onclick="setScheduleMonth('OCT')"
               >
-                OCT 2026
+                Oct
               </div>
               <div
                 class="month-pill"
                 id="month-nov"
                 onclick="setScheduleMonth('NOV')"
               >
-                NOV 2026
+                Nov
               </div>
             </div>
 
             <div class="week-group">
               <div class="week-pill" id="wk1" onclick="renderWeek(1, this)">
-                WEEK 01
+                W1
               </div>
               <div class="week-pill" id="wk2" onclick="renderWeek(2, this)">
-                WEEK 02
+                W2
               </div>
               <div class="week-pill" id="wk3" onclick="renderWeek(3, this)">
-                WEEK 03
+                W3
               </div>
               <div
                 class="week-pill active"
                 id="wk4"
                 onclick="renderWeek(4, this)"
               >
-                WEEK 04
+                W4
               </div>
               <div class="week-pill" id="wk5" onclick="renderWeek(5, this)">
-                WEEK 05
+                W5
               </div>
               <div class="week-pill" id="wk6" onclick="renderWeek(6, this)">
-                WEEK 06
+                W6
               </div>
             </div>
           </div>
@@ -2972,17 +3088,17 @@
 
       // Number of week-pills shown per month, and the label text for each (wk1..wkN).
       const MONTH_WEEK_LABELS = {
-        JAN: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
-        FEB: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
-        MAR: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
-        APR: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
-        MAY: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
-        JUN: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
-        JUL: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
-        AUG: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05", "WEEK 06"],
-        SEP: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
-        OCT: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
-        NOV: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
+        JAN: ["W1", "W2", "W3", "W4"],
+        FEB: ["W1", "W2", "W3", "W4"],
+        MAR: ["W1", "W2", "W3", "W4"],
+        APR: ["W1", "W2", "W3", "W4"],
+        MAY: ["W1", "W2", "W3", "W4"],
+        JUN: ["W1", "W2", "W3", "W4"],
+        JUL: ["W1", "W2", "W3", "W4", "W5"],
+        AUG: ["W1", "W2", "W3", "W4", "W5", "W6"],
+        SEP: ["W1", "W2", "W3", "W4", "W5"],
+        OCT: ["W1", "W2", "W3", "W4", "W5"],
+        NOV: ["W1", "W2", "W3", "W4", "W5"],
       };
 
       const MONTH_STATUS = {
