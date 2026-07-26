@@ -1027,21 +1027,40 @@
         scroll-padding: 0 12px;
         scrollbar-width: none;
         -ms-overflow-style: none;
-        /* Soft fade at both ends so the strip reads as "more to scroll" */
+        /* Soft fade at both ends so the strip reads as "more to scroll".
+           Multi-stop easing avoids the hard edge a 2-stop ramp produces, and the
+           at-start / at-end classes drop the fade on whichever side has nothing
+           left to scroll, so the first/last pill is never dimmed for no reason. */
+        --fade-l: 34px;
+        --fade-r: 34px;
         -webkit-mask-image: linear-gradient(
           90deg,
           transparent 0,
-          #000 18px,
-          #000 calc(100% - 18px),
+          rgba(0, 0, 0, 0.45) calc(var(--fade-l) * 0.42),
+          rgba(0, 0, 0, 0.85) calc(var(--fade-l) * 0.75),
+          #000 var(--fade-l),
+          #000 calc(100% - var(--fade-r)),
+          rgba(0, 0, 0, 0.85) calc(100% - var(--fade-r) * 0.75),
+          rgba(0, 0, 0, 0.45) calc(100% - var(--fade-r) * 0.42),
           transparent 100%
         );
         mask-image: linear-gradient(
           90deg,
           transparent 0,
-          #000 18px,
-          #000 calc(100% - 18px),
+          rgba(0, 0, 0, 0.45) calc(var(--fade-l) * 0.42),
+          rgba(0, 0, 0, 0.85) calc(var(--fade-l) * 0.75),
+          #000 var(--fade-l),
+          #000 calc(100% - var(--fade-r)),
+          rgba(0, 0, 0, 0.85) calc(100% - var(--fade-r) * 0.75),
+          rgba(0, 0, 0, 0.45) calc(100% - var(--fade-r) * 0.42),
           transparent 100%
         );
+      }
+      .month-group.at-start {
+        --fade-l: 0px;
+      }
+      .month-group.at-end {
+        --fade-r: 0px;
       }
       .month-group::-webkit-scrollbar {
         display: none;
@@ -1610,18 +1629,36 @@
         margin-top: 6px;
       }
 
-      /* ---------- Enhanced week-pill (calendar day-picker feel) ---------- */
+      /* ---------- Enhanced week-pill (calendar day-picker feel) ----------
+         Day numbers get their own line as the dominant text, with the month on a
+         separate small line below. Keeping the month out of the number line is
+         what stops "4 MAY-10 MAY" from wrapping mid-range on narrow phones. */
       .week-pill .wp-range {
         display: block;
-        font-size: 12px;
+        font-size: 15px;
         font-weight: 700;
         color: var(--c-text-main);
-        letter-spacing: -0.1px;
-        margin-top: 4px;
+        letter-spacing: -0.3px;
+        margin-top: 3px;
         text-transform: none;
+        white-space: nowrap;
+        font-variant-numeric: tabular-nums;
+      }
+      .week-pill .wp-month {
+        display: block;
+        font-size: 8px;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        text-transform: uppercase;
+        color: var(--c-text-mute);
+        margin-top: 2px;
+        white-space: nowrap;
       }
       .week-pill.active .wp-range {
         color: #04140e;
+      }
+      .week-pill.active .wp-month {
+        color: rgba(4, 20, 14, 0.62);
       }
       /* "Today" marker. When a pill is *only* today it gets a quiet outlined
          badge; when it is also the selected week the badge goes solid so the
@@ -3169,6 +3206,16 @@
         return today >= start && today <= end;
       }
 
+      // Drop the edge fade on whichever side is already fully scrolled, so the
+      // first pill (Jan) isn't dimmed when there is nothing to its left.
+      function updateStripFade() {
+        const strip = document.getElementById("month-strip");
+        if (!strip) return;
+        const max = strip.scrollWidth - strip.clientWidth;
+        strip.classList.toggle("at-start", strip.scrollLeft <= 1);
+        strip.classList.toggle("at-end", strip.scrollLeft >= max - 1);
+      }
+
       // Scroll the month strip so the active month sits centred. Uses scrollLeft
       // (not scrollIntoView) so it can never scroll the page itself.
       function centerActiveMonth(smooth) {
@@ -3185,6 +3232,9 @@
         } else {
           strip.scrollLeft = left;
         }
+        updateStripFade();
+        // Smooth scrolling settles asynchronously; re-check once it lands.
+        setTimeout(updateStripFade, 420);
       }
 
       function setScheduleMonth(m) {
@@ -3207,7 +3257,15 @@
               const d = new Date(startISO + "T00:00:00");
               const endD = new Date(d);
               endD.setDate(endD.getDate() + 6);
-              html += `<span class="wp-range">${d.getDate()} ${MONTH_NAMES[d.getMonth()]}&ndash;${endD.getDate()} ${MONTH_NAMES[endD.getMonth()]}</span>`;
+              // Day numbers on one line, month(s) on a separate small line. A week
+              // that spans two months shows both, otherwise just the one.
+              const sameMonth = d.getMonth() === endD.getMonth();
+              const monthText = sameMonth
+                ? MONTH_NAMES[d.getMonth()]
+                : `${MONTH_NAMES[d.getMonth()]}&ndash;${MONTH_NAMES[endD.getMonth()]}`;
+              html +=
+                `<span class="wp-range">${d.getDate()}&ndash;${endD.getDate()}</span>` +
+                `<span class="wp-month">${monthText}</span>`;
             }
             pill.innerHTML = html;
             pill.classList.remove("disabled");
@@ -3248,6 +3306,11 @@
         document.fonts.ready.then(() => centerActiveMonth(false));
       }
       window.addEventListener("resize", () => centerActiveMonth(false));
+
+      document
+        .getElementById("month-strip")
+        ?.addEventListener("scroll", updateStripFade, { passive: true });
+      updateStripFade();
     </script>
   </body>
 </html>
