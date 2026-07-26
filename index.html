@@ -8,6 +8,32 @@
     />
     <title>RUNNER_001 | Performance Hub</title>
 
+    <script>
+      // Belt-and-braces zoom lock for iOS Safari, on top of the viewport meta tag above.
+      // Blocks pinch-zoom (gesturestart) and double-tap-zoom (two touchend events <300ms apart),
+      // without touching normal single taps, scrolling, or any click handler elsewhere in the app.
+      document.addEventListener(
+        "gesturestart",
+        function (e) {
+          e.preventDefault();
+        },
+        { passive: false },
+      );
+
+      let __lastTouchEnd = 0;
+      document.addEventListener(
+        "touchend",
+        function (e) {
+          const now = Date.now();
+          if (now - __lastTouchEnd <= 300) {
+            e.preventDefault();
+          }
+          __lastTouchEnd = now;
+        },
+        { passive: false },
+      );
+    </script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -44,7 +70,61 @@
         --c-text-sec: #a3a3a3;
         --c-text-mute: #525252;
 
-        /* ✅ Font system: TH primary + EN secondary */
+        /* ---------- Liquid-glass tokens ----------
+           The whole surface language is composed here so every glass component
+           (card / hero / tile / panel / pill / toolbar / nav) picks up the same
+           thickness, specular edge and inner depth from a handful of vars. */
+        --glass-blur: blur(32px) saturate(200%) brightness(1.06);
+        --glass-blur-sm: blur(22px) saturate(180%) brightness(1.04);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-highlight: rgba(255, 255, 255, 0.09);
+
+        /* Layered translucency: bright at the top edge, thinning down, with a
+           darker base so the panel reads as a slab with thickness. */
+        --glass-bg: linear-gradient(
+          177deg,
+          rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.045) 34%,
+          rgba(255, 255, 255, 0.022) 62%,
+          rgba(255, 255, 255, 0.012) 100%
+        );
+
+        /* Specular ring: bright top / upper-left edge fading around the rim. */
+        --glass-ring:
+          inset 0 1px 0 rgba(255, 255, 255, 0.28),
+          inset 1px 0 0 rgba(255, 255, 255, 0.13),
+          inset -1px 0 0 rgba(255, 255, 255, 0.05),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.05);
+        --glass-ring-sm:
+          inset 0 1px 0 rgba(255, 255, 255, 0.22),
+          inset 1px 0 0 rgba(255, 255, 255, 0.1),
+          inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+
+        /* Inner glow at the top, darker pooling at the base = visible depth. */
+        --glass-inner:
+          inset 0 16px 32px -20px rgba(255, 255, 255, 0.4),
+          inset 0 -30px 48px -34px rgba(0, 0, 0, 0.8);
+        --glass-inner-sm:
+          inset 0 12px 24px -18px rgba(255, 255, 255, 0.32),
+          inset 0 -18px 30px -24px rgba(0, 0, 0, 0.7);
+
+        --glass-drop:
+          0 26px 60px -20px rgba(0, 0, 0, 0.6), 0 3px 10px rgba(0, 0, 0, 0.3);
+        --glass-drop-sm:
+          0 14px 34px -14px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.26);
+
+        /* Composed elevations — this is what components actually use. */
+        --glass-elev: var(--glass-drop), var(--glass-ring), var(--glass-inner);
+        --glass-elev-sm:
+          var(--glass-drop-sm), var(--glass-ring-sm), var(--glass-inner-sm);
+
+        /* Softer, larger corner radii for the thick-glass feel */
+        --r-xl: 28px;
+        --r-lg: 24px;
+        --r-md: 20px;
+        --r-sm: 16px;
+
+        /* Font system: TH primary + EN secondary */
         --font-en:
           "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text",
           "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -63,6 +143,10 @@
         padding: 0;
         outline: none;
         -webkit-tap-highlight-color: transparent;
+      }
+      html,
+      body {
+        touch-action: manipulation;
       }
       body {
         background-color: var(--bg-body);
@@ -114,20 +198,27 @@
         background:
           radial-gradient(
             900px 500px at 16% 8%,
-            rgba(16, 185, 129, 0.09),
+            rgba(16, 185, 129, 0.18),
             transparent 58%
           ),
           radial-gradient(
             760px 520px at 85% 18%,
-            rgba(59, 130, 246, 0.07),
+            rgba(59, 130, 246, 0.14),
             transparent 56%
           ),
           radial-gradient(
             720px 520px at 72% 92%,
-            rgba(245, 158, 11, 0.06),
+            rgba(245, 158, 11, 0.12),
             transparent 56%
           ),
-          var(--bg-body);
+          linear-gradient(
+            135deg,
+            #0c1712 0%,
+            #081210 22%,
+            #060a09 46%,
+            #050505 72%,
+            #050505 100%
+          );
       }
 
       .section-view {
@@ -152,12 +243,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid var(--border-subtle);
+        border: 1px solid var(--glass-border);
         border-radius: 14px;
         cursor: pointer;
         transition: all 0.2s;
-        background: rgba(255, 255, 255, 0.02);
-        box-shadow: 0 0 18px rgba(16, 185, 129, 0.1);
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow:
+          0 0 18px rgba(16, 185, 129, 0.1),
+          inset 0 1px 0 var(--glass-highlight);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
       }
       .brand-logo:hover {
         transform: scale(1.05);
@@ -197,12 +292,21 @@
       }
       .nav-item.active {
         color: var(--c-green);
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.18);
-        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+        background: rgba(16, 185, 129, 0.14);
+        border: 1px solid rgba(16, 185, 129, 0.26);
+        box-shadow:
+          0 10px 26px rgba(0, 0, 0, 0.25),
+          inset 0 1px 0 rgba(255, 255, 255, 0.12);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
       }
       .nav-item i {
         font-size: 18px;
+      }
+      .nav-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       .nav-label {
         display: none;
@@ -218,20 +322,44 @@
         align-items: flex-end;
         gap: 16px;
       }
+      /* ---------- Type hierarchy ----------
+         Hierarchy comes from size / colour / tracking / opacity. Weight is used
+         sparingly: 600 for small labels, 700 for titles, never 800. */
       .page-label {
         font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 1.6px;
+        font-weight: 500;
+        letter-spacing: 1.8px;
         color: var(--c-text-mute);
         text-transform: uppercase;
-        margin-bottom: 8px;
+        margin-bottom: 9px;
       }
       .page-title {
-        font-size: 28px;
-        font-weight: 800;
-        letter-spacing: -0.6px;
-        color: var(--c-text-main);
-        line-height: 1;
+        font-size: 30px;
+        font-weight: 300;
+        letter-spacing: -0.7px;
+        line-height: 1.05;
+        color: #fff;
+      }
+      /* Weight contrast inside a heading: light lead-in + heavy keyword */
+      .page-title b {
+        font-weight: 700;
+        letter-spacing: -1px;
+      }
+
+      /* Gradient-text treatment for the 1-2 biggest hero numbers per view (used sparingly, not on data tables) */
+      .grad-num-green {
+        background: linear-gradient(120deg, #6ee7b7 0%, #10b981 55%, #22d3ee 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
+      }
+      .grad-num-purple {
+        background: linear-gradient(120deg, #c4b5fd 0%, #8b5cf6 55%, #3b82f6 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        -webkit-text-fill-color: transparent;
       }
       .page-date {
         font-size: 12px;
@@ -244,18 +372,40 @@
 
       /* Cards */
       .card {
-        background: linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.028),
-          rgba(255, 255, 255, 0.01)
-        );
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 16px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-lg);
         overflow: hidden;
         margin-bottom: 16px;
         position: relative;
-        box-shadow: 0 18px 48px rgba(0, 0, 0, 0.45);
-        backdrop-filter: blur(10px);
+        box-shadow: var(--glass-elev);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
+      }
+      /* Sheen across the top third of large surfaces + a bright specular crest
+         where the light first catches the glass. */
+      .card::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 34%;
+        background:
+          linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.55),
+            transparent
+          )
+          top / 100% 1px no-repeat,
+          linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.07) 0%,
+            rgba(255, 255, 255, 0.02) 45%,
+            transparent 100%
+          );
+        pointer-events: none;
       }
       .card::before {
         content: "";
@@ -291,11 +441,12 @@
       }
       .card-title {
         font-size: 14px;
-        font-weight: 800;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 10px;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.1px;
+        color: rgba(255, 255, 255, 0.92);
       }
       .card-body {
         padding: 0 20px;
@@ -319,15 +470,18 @@
       .hero {
         background: linear-gradient(
           180deg,
-          rgba(16, 185, 129, 0.1) 0%,
-          rgba(16, 185, 129, 0.03) 55%,
-          rgba(20, 20, 20, 1) 100%
+          rgba(16, 185, 129, 0.16) 0%,
+          rgba(16, 185, 129, 0.05) 55%,
+          rgba(20, 20, 20, 0.9) 100%
         );
-        border: 1px solid rgba(16, 185, 129, 0.14);
-        border-radius: 16px;
+        border: 1px solid rgba(16, 185, 129, 0.22);
+        border-radius: var(--r-lg);
         padding: 18px;
         position: relative;
         overflow: hidden;
+        box-shadow: var(--glass-elev);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
       }
       .hero::after {
         content: "";
@@ -353,15 +507,15 @@
       }
       .hero-kicker {
         font-size: 10px;
-        letter-spacing: 1.6px;
+        letter-spacing: 1.8px;
         text-transform: uppercase;
-        color: rgba(255, 255, 255, 0.55);
-        font-weight: 800;
-        margin-bottom: 8px;
+        color: rgba(255, 255, 255, 0.42);
+        font-weight: 500;
+        margin-bottom: 9px;
       }
       .hero-title {
-        font-size: 18px;
-        font-weight: 800;
+        font-size: 19px;
+        font-weight: 600;
         letter-spacing: -0.3px;
         line-height: 1.15;
         margin-bottom: 8px;
@@ -387,18 +541,24 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 10px;
+        padding: 8px 12px;
         border-radius: 999px;
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--glass-border);
+        background: linear-gradient(
+          177deg,
+          rgba(255, 255, 255, 0.11),
+          rgba(0, 0, 0, 0.22)
+        );
         font-size: 11px;
         color: var(--c-text-sec);
-        backdrop-filter: blur(10px);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+        box-shadow: var(--glass-elev-sm);
         white-space: nowrap;
       }
       .pill b {
         color: #fff;
-        font-weight: 800;
+        font-weight: 600;
       }
       .dot {
         width: 8px;
@@ -411,11 +571,11 @@
       .hero.blue {
         background: linear-gradient(
           180deg,
-          rgba(59, 130, 246, 0.1) 0%,
-          rgba(59, 130, 246, 0.03) 55%,
-          rgba(20, 20, 20, 1) 100%
+          rgba(59, 130, 246, 0.16) 0%,
+          rgba(59, 130, 246, 0.05) 55%,
+          rgba(20, 20, 20, 0.9) 100%
         );
-        border-color: rgba(59, 130, 246, 0.14);
+        border-color: rgba(59, 130, 246, 0.22);
       }
       .hero.blue::after {
         background: radial-gradient(
@@ -427,11 +587,11 @@
       .hero.yellow {
         background: linear-gradient(
           180deg,
-          rgba(245, 158, 11, 0.1) 0%,
-          rgba(245, 158, 11, 0.03) 55%,
-          rgba(20, 20, 20, 1) 100%
+          rgba(245, 158, 11, 0.16) 0%,
+          rgba(245, 158, 11, 0.05) 55%,
+          rgba(20, 20, 20, 0.9) 100%
         );
-        border-color: rgba(245, 158, 11, 0.14);
+        border-color: rgba(245, 158, 11, 0.22);
       }
       .hero.yellow::after {
         background: radial-gradient(
@@ -443,11 +603,11 @@
       .hero.red {
         background: linear-gradient(
           180deg,
-          rgba(239, 68, 68, 0.1) 0%,
-          rgba(239, 68, 68, 0.03) 55%,
-          rgba(20, 20, 20, 1) 100%
+          rgba(239, 68, 68, 0.16) 0%,
+          rgba(239, 68, 68, 0.05) 55%,
+          rgba(20, 20, 20, 0.9) 100%
         );
-        border-color: rgba(239, 68, 68, 0.14);
+        border-color: rgba(239, 68, 68, 0.22);
       }
       .hero.red::after {
         background: radial-gradient(
@@ -455,6 +615,65 @@
           rgba(239, 68, 68, 0.18) 0%,
           rgba(239, 68, 68, 0) 60%
         );
+      }
+
+      /* ---------- "Worth knowing" highlight strip (Log tab) — curated facts pulled from data already on the page ---------- */
+      .highlight-strip {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin: 14px 0 18px;
+      }
+      .highlight-chip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: var(--r-md);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-elev-sm);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+      }
+      .highlight-chip .hl-icon {
+        flex-shrink: 0;
+        width: 34px;
+        height: 34px;
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        background: rgba(0, 0, 0, 0.22);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .highlight-chip.hl-green .hl-icon {
+        color: var(--c-green);
+      }
+      .highlight-chip.hl-blue .hl-icon {
+        color: var(--c-blue);
+      }
+      .highlight-chip.hl-purple .hl-icon {
+        color: var(--c-purple);
+      }
+      .highlight-chip .hl-num {
+        display: block;
+        font-size: 16px;
+        font-weight: 600;
+        color: #fff;
+        letter-spacing: -0.2px;
+        line-height: 1.25;
+        font-family: var(--font-en);
+      }
+      .highlight-chip .hl-label {
+        display: block;
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--c-text-sec);
+        opacity: 0.72;
+        letter-spacing: 0.1px;
+        margin-top: 3px;
       }
 
       /* Tiles */
@@ -465,15 +684,16 @@
         margin: 12px 0 18px;
       }
       .tile {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 16px;
-        padding: 14px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-md);
+        padding: 16px;
         min-height: 92px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.35);
-        backdrop-filter: blur(10px);
+        box-shadow: var(--glass-elev);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
       }
       .tile::before {
         content: "";
@@ -490,6 +710,68 @@
       .tile:hover {
         background: rgba(255, 255, 255, 0.03);
       }
+      /* Color-coded insight tiles (Neural Focus / Protocol Change / Correction / Phase result) —
+         tinted glass, not flat blocks, so it stays inside the dark-glass visual system. */
+      .tile.tile-green {
+        border-color: rgba(16, 185, 129, 0.32);
+        background: linear-gradient(
+          160deg,
+          rgba(16, 185, 129, 0.2) 0%,
+          rgba(255, 255, 255, 0.04) 70%
+        );
+      }
+      .tile.tile-green::before {
+        background: radial-gradient(
+          360px 150px at 18% 20%,
+          rgba(16, 185, 129, 0.28),
+          transparent 62%
+        );
+      }
+      .tile.tile-blue {
+        border-color: rgba(59, 130, 246, 0.32);
+        background: linear-gradient(
+          160deg,
+          rgba(59, 130, 246, 0.2) 0%,
+          rgba(255, 255, 255, 0.04) 70%
+        );
+      }
+      .tile.tile-blue::before {
+        background: radial-gradient(
+          360px 150px at 18% 20%,
+          rgba(59, 130, 246, 0.28),
+          transparent 62%
+        );
+      }
+      .tile.tile-purple {
+        border-color: rgba(139, 92, 246, 0.32);
+        background: linear-gradient(
+          160deg,
+          rgba(139, 92, 246, 0.2) 0%,
+          rgba(255, 255, 255, 0.04) 70%
+        );
+      }
+      .tile.tile-purple::before {
+        background: radial-gradient(
+          360px 150px at 18% 20%,
+          rgba(139, 92, 246, 0.28),
+          transparent 62%
+        );
+      }
+      .tile.tile-yellow {
+        border-color: rgba(245, 158, 11, 0.32);
+        background: linear-gradient(
+          160deg,
+          rgba(245, 158, 11, 0.2) 0%,
+          rgba(255, 255, 255, 0.04) 70%
+        );
+      }
+      .tile.tile-yellow::before {
+        background: radial-gradient(
+          360px 150px at 18% 20%,
+          rgba(245, 158, 11, 0.28),
+          transparent 62%
+        );
+      }
       .tile .t-top {
         display: flex;
         align-items: center;
@@ -500,8 +782,8 @@
       }
       .t-label {
         font-size: 10px;
-        font-weight: 800;
-        letter-spacing: 1.4px;
+        font-weight: 500;
+        letter-spacing: 1.5px;
         text-transform: uppercase;
         color: var(--c-text-mute);
       }
@@ -517,9 +799,9 @@
         color: rgba(255, 255, 255, 0.75);
       }
       .t-value {
-        font-size: 18px;
-        font-weight: 800;
-        letter-spacing: -0.2px;
+        font-size: 19px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
         margin-bottom: 6px;
         position: relative;
         z-index: 1;
@@ -532,6 +814,53 @@
         position: relative;
         z-index: 1;
       }
+      /* ---------- Bento grid (Training Log summary region) ----------
+         Asymmetric 6-column grid: one large feature cell (the phase hero,
+         3 rows tall) beside a stack of small fact cells, then mixed
+         half/third/full-width metric cells. Collapses to a 2-column bento
+         on mobile. */
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-rows: minmax(0, auto);
+        gap: 12px;
+        margin: 16px 0 20px;
+      }
+      .bento > * {
+        min-width: 0;
+      }
+      .bd-2 {
+        grid-column: span 2;
+      }
+      .bd-3 {
+        grid-column: span 3;
+      }
+      .bd-4 {
+        grid-column: span 4;
+      }
+      .bd-6 {
+        grid-column: span 6;
+      }
+      .br-3 {
+        grid-row: span 3;
+      }
+      /* The wide banner cell reads as a summary strip, not another square */
+      .bento .bd-6.tile {
+        min-height: 0;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+      .bento .bd-6.tile .t-top {
+        margin-bottom: 0;
+        gap: 10px;
+        flex-direction: row-reverse;
+      }
+      .bento .bd-6.tile .t-value {
+        margin-bottom: 0;
+      }
+
       .span-12 {
         grid-column: span 12;
       }
@@ -544,12 +873,13 @@
 
       /* Panels */
       .panel {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 16px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-md);
         padding: 16px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-        backdrop-filter: blur(10px);
+        box-shadow: var(--glass-elev);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         overflow: hidden;
         position: relative;
       }
@@ -618,13 +948,13 @@
         font-size: 10px;
         text-transform: uppercase;
         color: var(--c-text-mute);
-        margin-bottom: 4px;
-        letter-spacing: 0.8px;
-        font-weight: 800;
+        margin-bottom: 5px;
+        letter-spacing: 1.1px;
+        font-weight: 500;
       }
       .stat-value {
-        font-size: 15px;
-        font-weight: 800;
+        font-size: 16px;
+        font-weight: 600;
         color: var(--c-text-main);
       }
       .stat-highlight {
@@ -656,88 +986,150 @@
         display: flex;
         flex-direction: column;
         gap: 10px;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 16px;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--r-md);
         padding: 8px;
         margin-bottom: 18px;
-        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
-        backdrop-filter: blur(10px);
+        box-shadow: var(--glass-elev);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
       }
+      /* The toolbar's two pill rows always stack full-width so the month strip
+         can be a single scrolling line at any viewport size. */
+      .toolbar-rows {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        min-width: 0;
+      }
+
+      /* ---------- Month selector: single-line, horizontally scrolling strip ---------- */
       .month-group {
         display: flex;
-        gap: 4px;
-        background: rgba(0, 0, 0, 0.18);
-        padding: 4px;
-        border-radius: 12px;
+        gap: 6px;
+        background: rgba(0, 0, 0, 0.22);
+        padding: 5px;
+        border-radius: 14px;
         border: 1px solid rgba(255, 255, 255, 0.07);
+        box-shadow: var(--glass-ring-sm);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        scroll-padding: 0 12px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        /* Soft fade at both ends so the strip reads as "more to scroll" */
+        -webkit-mask-image: linear-gradient(
+          90deg,
+          transparent 0,
+          #000 18px,
+          #000 calc(100% - 18px),
+          transparent 100%
+        );
+        mask-image: linear-gradient(
+          90deg,
+          transparent 0,
+          #000 18px,
+          #000 calc(100% - 18px),
+          transparent 100%
+        );
+      }
+      .month-group::-webkit-scrollbar {
+        display: none;
       }
       .month-pill {
-        padding: 7px 16px;
-        border-radius: 10px;
+        flex: 0 0 auto;
+        scroll-snap-align: center;
+        white-space: nowrap;
+        padding: 8px 15px;
+        border-radius: 11px;
         font-size: 11px;
-        font-weight: 800;
-        color: var(--c-text-mute);
+        font-weight: 600;
+        color: var(--c-text-sec);
         cursor: pointer;
-        transition: all 0.2s;
+        transition:
+          background 0.22s ease,
+          color 0.22s ease,
+          box-shadow 0.22s ease;
         border: 1px solid transparent;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.4px;
         user-select: none;
       }
       .month-pill:hover {
         color: var(--c-text-main);
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.05);
       }
       .month-pill.active {
-        background: var(--c-green);
-        color: #000;
-        box-shadow: 0 10px 24px rgba(16, 185, 129, 0.25);
-        border-color: var(--c-green);
+        font-weight: 700;
+        color: #04140e;
+        background: linear-gradient(
+          177deg,
+          rgba(110, 231, 183, 1) 0%,
+          var(--c-green) 100%
+        );
+        border-color: rgba(167, 243, 208, 0.55);
+        box-shadow:
+          0 8px 20px -6px rgba(16, 185, 129, 0.55),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
       }
 
       .week-group {
         display: flex;
         flex-grow: 1;
-        margin-left: 10px;
         gap: 2px;
-        background: rgba(0, 0, 0, 0.18);
-        padding: 4px;
-        border-radius: 12px;
+        background: rgba(0, 0, 0, 0.22);
+        padding: 5px;
+        border-radius: 14px;
         border: 1px solid rgba(255, 255, 255, 0.07);
+        box-shadow: var(--glass-ring-sm);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+        width: 100%;
+        min-width: 0;
       }
       .week-pill {
         flex: 1;
+        min-width: 0;
         text-align: center;
-        padding: 9px 0;
-        border-radius: 10px;
+        padding: 9px 2px;
+        border-radius: 11px;
         font-size: 11px;
-        font-weight: 800;
+        font-weight: 600;
         color: var(--c-text-sec);
         cursor: pointer;
-        transition: all 0.2s;
+        transition:
+          background 0.22s ease,
+          color 0.22s ease,
+          box-shadow 0.22s ease;
         position: relative;
         user-select: none;
         border: 1px solid rgba(255, 255, 255, 0);
       }
       .week-pill:hover {
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.04);
         color: #fff;
       }
       .week-pill.active {
-        background: rgba(255, 255, 255, 0.04);
-        color: var(--c-green);
-        border-color: rgba(16, 185, 129, 0.14);
-      }
-      .week-pill.active::after {
-        content: "";
-        position: absolute;
-        bottom: -4px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 4px;
-        background: var(--c-green);
-        border-radius: 50%;
+        font-weight: 700;
+        color: #eafff6;
+        background: linear-gradient(
+          177deg,
+          rgba(16, 185, 129, 0.34) 0%,
+          rgba(16, 185, 129, 0.12) 100%
+        );
+        border-color: rgba(16, 185, 129, 0.42);
+        box-shadow:
+          0 8px 20px -8px rgba(16, 185, 129, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.22);
       }
       .week-pill.disabled {
         opacity: 0.35;
@@ -759,7 +1151,7 @@
         padding: 12px 16px;
         border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         background: rgba(0, 0, 0, 0.18);
-        font-weight: 800;
+        font-weight: 500;
       }
       .schedule-table td {
         padding: 18px 16px;
@@ -782,7 +1174,7 @@
         padding: 3px 8px;
         border-radius: 8px;
         font-size: 9px;
-        font-weight: 800;
+        font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.6px;
         margin-bottom: 6px;
@@ -805,6 +1197,418 @@
         background: rgba(245, 158, 11, 0.06);
       }
 
+      /* ---------- Week list / day-row cards (replaces schedule-table rows) ---------- */
+      .week-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .plan-caption {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+        color: var(--c-text-mute);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        border-radius: 12px;
+        padding: 9px 14px;
+      }
+      .plan-note {
+        font-size: 10px;
+        color: var(--c-text-mute);
+        padding: 2px 4px 4px;
+      }
+
+      /* Plan-week totals as prominent pill tags (Reference-C "15 min / Evening / Relax" treatment),
+         replacing the old single muted caption line. Numbers are the same ones captionRow() already computes. */
+      .plan-caption-row {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 14px;
+        padding: 12px 14px;
+      }
+      .plan-caption-title {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.2px;
+        color: var(--c-text-sec);
+        opacity: 0.8;
+      }
+      .plan-caption-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .stat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 600;
+        font-family: var(--font-en);
+        padding: 6px 12px;
+        border-radius: 999px;
+        border: 1px solid transparent;
+        white-space: nowrap;
+      }
+      .stat-chip i {
+        font-size: 10px;
+      }
+      .stat-chip-green {
+        color: var(--c-green);
+        background: rgba(16, 185, 129, 0.12);
+        border-color: rgba(16, 185, 129, 0.24);
+      }
+      .stat-chip-yellow {
+        color: var(--c-yellow);
+        background: rgba(245, 158, 11, 0.12);
+        border-color: rgba(245, 158, 11, 0.24);
+      }
+      .stat-chip-purple {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.14);
+        border-color: rgba(139, 92, 246, 0.26);
+      }
+      .stat-chip-blue {
+        color: #93c5fd;
+        background: rgba(59, 130, 246, 0.14);
+        border-color: rgba(59, 130, 246, 0.26);
+      }
+
+      .day-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 14px 16px;
+        border-radius: var(--r-sm);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-elev-sm);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+        position: relative;
+        overflow: hidden;
+      }
+      .day-chip {
+        width: 48px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 8px 4px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        background: rgba(0, 0, 0, 0.18);
+      }
+      .day-chip i {
+        font-size: 13px;
+      }
+      .day-chip .day-name {
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.6px;
+        margin-top: 2px;
+      }
+      .day-chip .day-num {
+        font-size: 9px;
+        color: var(--c-text-mute);
+        font-weight: 500;
+      }
+      .day-chip.chip-run {
+        color: var(--c-green);
+        border-color: rgba(16, 185, 129, 0.22);
+        background: rgba(16, 185, 129, 0.08);
+      }
+      .day-chip.chip-long {
+        color: var(--c-yellow);
+        border-color: rgba(245, 158, 11, 0.22);
+        background: rgba(245, 158, 11, 0.08);
+      }
+      .day-chip.chip-rest {
+        color: rgba(255, 255, 255, 0.5);
+        border-color: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .day-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .day-title {
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 3px;
+      }
+      .day-sub {
+        font-size: 12px;
+        color: var(--c-text-sec);
+        font-family: inherit;
+        line-height: 1.55;
+        margin-bottom: 8px;
+      }
+      .day-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        font-family: inherit;
+        color: var(--c-text-sec);
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        padding: 4px 10px;
+        border-radius: 999px;
+      }
+      .meta-chip i {
+        font-size: 10px;
+        opacity: 0.85;
+      }
+      .day-pill {
+        flex-shrink: 0;
+        align-self: flex-start;
+        font-size: 11px;
+        font-weight: 600;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        padding: 6px 11px;
+        border-radius: 999px;
+        white-space: nowrap;
+        margin-top: 1px;
+      }
+
+      /* ---------- Narrative recap cards (JAN-APR + MAY-JUL weekly recaps) ---------- */
+      .recap-card {
+        display: flex;
+        gap: 14px;
+        padding: 16px;
+        border-radius: var(--r-sm);
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-elev-sm);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+      }
+      .recap-tag-col {
+        flex-shrink: 0;
+        width: 56px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .recap-body {
+        flex: 1;
+        min-width: 0;
+        font-size: 13px;
+        color: var(--c-text-sec);
+        line-height: 1.8;
+        font-family: inherit;
+      }
+      .recap-meta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 10px;
+      }
+
+      /* ---------- Week summary cards (big number, like Reference A) ---------- */
+      .week-stat-card {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: linear-gradient(
+          180deg,
+          rgba(16, 185, 129, 0.1) 0%,
+          rgba(255, 255, 255, 0.03) 100%
+        );
+        border: 1px solid rgba(16, 185, 129, 0.18);
+        box-shadow: var(--glass-elev-sm);
+        backdrop-filter: var(--glass-blur-sm);
+        -webkit-backdrop-filter: var(--glass-blur-sm);
+      }
+      .week-stat-big {
+        flex-shrink: 0;
+        text-align: center;
+        min-width: 84px;
+      }
+      .week-stat-big .num {
+        font-size: 27px;
+        font-weight: 600;
+        color: var(--c-green);
+        text-shadow: 0 0 22px rgba(16, 185, 129, 0.4);
+        letter-spacing: -0.5px;
+        line-height: 1;
+      }
+      .week-stat-big .unit {
+        font-size: 10px;
+        font-weight: 500;
+        color: var(--c-text-mute);
+        text-transform: uppercase;
+        letter-spacing: 1.1px;
+        margin-top: 4px;
+      }
+      .week-stat-body {
+        flex: 1;
+        min-width: 0;
+      }
+      .week-stat-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 1.4px;
+        color: var(--c-text-mute);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .week-stat-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .week-stat-caption {
+        font-size: 12px;
+        color: var(--c-text-sec);
+        font-family: inherit;
+        line-height: 1.5;
+      }
+
+      /* ---------- Thin gauge / progress bars (Reference A dot-slider motif) ---------- */
+      .gauge-bar {
+        width: 100%;
+        height: 5px;
+        border-radius: 99px;
+        background: rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+        position: relative;
+        margin-top: 8px;
+      }
+      .gauge-bar-fill {
+        height: 100%;
+        border-radius: 99px;
+        background: linear-gradient(90deg, var(--c-green), #34d399);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+      }
+      .gauge-bar.yellow .gauge-bar-fill {
+        background: linear-gradient(90deg, var(--c-yellow), #fbbf24);
+        box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+      }
+      .gauge-caption {
+        font-size: 10px;
+        color: var(--c-text-mute);
+        margin-top: 6px;
+        font-family: inherit;
+      }
+
+      /* ---------- Phase 6 weekly breakdown list (Log tab) ---------- */
+      .phase-week-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin: 4px 0 16px;
+      }
+      .phase-week-row {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+      }
+      .phase-week-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+      .phase-week-label {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.94);
+        letter-spacing: 0.1px;
+      }
+      .phase-week-stats {
+        font-size: 11px;
+        color: var(--c-text-sec);
+        font-family: inherit;
+      }
+      .phase-week-note {
+        font-size: 11px;
+        color: var(--c-text-mute);
+        font-family: inherit;
+        margin-top: 6px;
+      }
+
+      /* ---------- Enhanced week-pill (calendar day-picker feel) ---------- */
+      .week-pill .wp-range {
+        display: block;
+        font-size: 8px;
+        font-weight: 500;
+        color: var(--c-text-mute);
+        letter-spacing: 0.2px;
+        margin-top: 3px;
+        text-transform: none;
+      }
+      .week-pill.active .wp-range {
+        color: rgba(167, 243, 208, 0.8);
+      }
+      /* "Today" marker. When a pill is *only* today it gets a quiet outlined
+         badge; when it is also the selected week the badge goes solid so the
+         two states read as one deliberate "current week" pill, not a clash. */
+      .week-pill.pill-today {
+        box-shadow: inset 0 0 0 1px rgba(16, 185, 129, 0.4);
+      }
+      /* Badge sits in the pill's own flow (not floating above it) so the week
+         row can scroll horizontally without the badge being clipped. */
+      .week-pill.pill-today::before {
+        content: "TODAY";
+        display: block;
+        width: fit-content;
+        margin: 0 auto 5px;
+        font-size: 7px;
+        font-weight: 700;
+        letter-spacing: 0.6px;
+        color: var(--c-green);
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.5);
+        padding: 0 5px;
+        line-height: 12px;
+        border-radius: 6px;
+        white-space: nowrap;
+      }
+      /* Reserve the badge's height on every pill so the row stays level */
+      .week-pill::after {
+        content: "";
+        display: block;
+        height: 19px;
+      }
+      .week-pill.pill-today::after {
+        display: none;
+      }
+      .week-pill.active.pill-today {
+        box-shadow:
+          0 8px 20px -8px rgba(16, 185, 129, 0.5),
+          inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      }
+      .week-pill.active.pill-today::before {
+        color: #04140e;
+        background: var(--c-green);
+        border-color: rgba(167, 243, 208, 0.75);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.45);
+      }
+
       /* Mobile */
       @media (max-width: 768px) {
         body {
@@ -819,8 +1623,9 @@
           top: auto;
           border-right: none;
           border-top: 1px solid rgba(255, 255, 255, 0.06);
-          background: rgba(15, 15, 15, 0.88);
-          backdrop-filter: blur(14px);
+          background: rgba(15, 15, 15, 0.72);
+          backdrop-filter: var(--glass-blur);
+          -webkit-backdrop-filter: var(--glass-blur);
           justify-content: center;
           align-items: center;
         }
@@ -831,11 +1636,13 @@
           width: 100%;
           max-width: 520px;
           margin: 0 auto;
-          background: rgba(20, 20, 20, 0.66);
-          border: none;
-          border-radius: 18px;
+          background: var(--glass-bg);
+          border: 1px solid var(--glass-border);
+          border-radius: var(--r-lg);
           padding: 8px;
-          box-shadow: none;
+          box-shadow: var(--glass-elev);
+          backdrop-filter: var(--glass-blur);
+          -webkit-backdrop-filter: var(--glass-blur);
         }
         .nav-list {
           width: 100%;
@@ -868,8 +1675,8 @@
         .nav-label {
           display: inline;
           font-size: 11px;
-          font-weight: 800;
-          letter-spacing: 0.3px;
+          font-weight: 600;
+          letter-spacing: 0.2px;
           color: rgba(255, 255, 255, 0.7);
         }
         .nav-item.active .nav-label {
@@ -905,6 +1712,33 @@
         .span-4 {
           grid-column: span 12;
         }
+
+        /* Bento reflows to a 2-column arrangement; cells marked .bm-1 keep a
+           half-width slot so the grid still reads as a bento, not a stack. */
+        .bento {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 10px;
+          margin: 14px 0 18px;
+        }
+        .bento > * {
+          grid-column: span 2;
+          grid-row: auto;
+        }
+        .bento > .bm-1 {
+          grid-column: span 1;
+        }
+        .bento > .bm-1.highlight-chip {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+          padding: 13px 14px;
+        }
+        .bento > .bm-1.tile {
+          padding: 14px;
+        }
+        .bento .bd-6.tile {
+          gap: 12px;
+        }
         .stat-grid {
           grid-template-columns: repeat(2, 1fr);
         }
@@ -934,14 +1768,58 @@
         .schedule-table td:last-child {
           border-bottom: none;
         }
+        /* Month strip stays a single scrolling line on mobile — never wraps */
         .month-group {
           width: 100%;
-          justify-content: center;
-          flex-wrap: wrap;
+          flex-wrap: nowrap;
+          justify-content: flex-start;
+        }
+        .month-pill {
+          padding: 8px 14px;
         }
         .week-group {
           width: 100%;
           margin-left: 0;
+        }
+        .day-row {
+          flex-direction: column;
+          gap: 10px;
+          padding: 14px;
+        }
+        .day-chip {
+          flex-direction: row;
+          width: auto;
+          align-self: flex-start;
+          padding: 5px 10px;
+          gap: 6px;
+        }
+        .day-chip .day-name,
+        .day-chip .day-num {
+          margin-top: 0;
+        }
+        .day-pill {
+          align-self: flex-start;
+        }
+        .recap-card {
+          flex-direction: column;
+        }
+        .recap-tag-col {
+          flex-direction: row;
+          width: auto;
+          align-self: flex-start;
+        }
+        .week-stat-card {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .week-stat-big {
+          text-align: left;
+        }
+        .phase-week-top {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 2px;
         }
       }
     </style>
@@ -962,16 +1840,17 @@
           <li
             class="nav-item"
             onclick="nav('dashboard', this)"
-            title="Evolution Log"
+            title="Training Log"
           >
-            <i class="fas fa-stream"></i><span class="nav-label">Log</span>
+            <span class="nav-icon"><i class="fas fa-stream"></i></span
+            ><span class="nav-label">Log</span>
           </li>
           <li
             class="nav-item active"
             onclick="nav('schedule', this)"
             title="Schedule"
           >
-            <i class="far fa-calendar-alt"></i
+            <span class="nav-icon"><i class="far fa-calendar-alt"></i></span
             ><span class="nav-label">Plan</span>
           </li>
         </ul>
@@ -983,69 +1862,126 @@
         <div class="header-group">
           <div>
             <div class="page-label">PERFORMANCE HUB</div>
-            <div class="page-title">EVOLUTION LOG</div>
+            <div class="page-title">Training <b>Log</b></div>
           </div>
           <div class="page-date">
-            <i class="far fa-clock"></i> Updated: 26 Apr 2026
+            <i class="far fa-clock"></i> Updated: 26 Jul 2026
           </div>
         </div>
 
-        <div class="hero">
-          <div class="hero-top">
+        <!-- Bento summary region: large phase feature cell + fact cells + metric cells -->
+        <div class="bento">
+          <div class="hero bd-4 br-3">
+            <div class="hero-top">
+              <div>
+                <div class="hero-kicker">CURRENT PHASE</div>
+                <div class="hero-title">
+                  Phase 6: Return-to-Play Consolidation
+                </div>
+                <div class="hero-sub">
+                  Rebuilding weekly volume after the April right adductor
+                  strain — now training normally on real road surfaces again
+                  after a treadmill-only recovery period (May–Jul 2026)
+                </div>
+              </div>
+              <div class="hero-right">
+                <div class="pill">
+                  <span class="dot"></span><b>Status</b>&nbsp;Active
+                </div>
+                <div class="pill">
+                  <i
+                    class="fas fa-calendar-check"
+                    style="color: rgba(255, 255, 255, 0.75)"
+                  ></i
+                  ><b>Next Long</b>&nbsp;16.0K (Plan Wk 1)
+                </div>
+                <div class="pill">
+                  <i
+                    class="fas fa-flag-checkered"
+                    style="color: rgba(255, 255, 255, 0.75)"
+                  ></i
+                  ><b>Race Day</b>&nbsp;~125 days (28 Nov 2026)
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="highlight-chip hl-purple bd-2">
+            <div class="hl-icon"><i class="fas fa-route"></i></div>
             <div>
-              <div class="hero-kicker">CURRENT PHASE</div>
-              <div class="hero-title">
-                Phase 5: Peak Phase &amp; Race Simulation
-              </div>
-              <div class="hero-sub">
-                Testing limits under high stress and confirming race day
-                strategies (Half Marathon achieved)
-              </div>
-            </div>
-            <div class="hero-right">
-              <div class="pill">
-                <span class="dot"></span><b>Status</b>&nbsp;Active
-              </div>
-              <div class="pill">
-                <i
-                  class="fas fa-calendar-check"
-                  style="color: rgba(255, 255, 255, 0.75)"
-                ></i
-                ><b>Next Long</b>&nbsp;To be updated
-              </div>
+              <span class="hl-num">16.01 km</span>
+              <span class="hl-label">Longest run since injury</span>
             </div>
           </div>
-        </div>
+          <div class="highlight-chip hl-green bd-2 bm-1">
+            <div class="hl-icon"><i class="fas fa-chart-line"></i></div>
+            <div>
+              <span class="hl-num">5 &rarr; 27 km/wk</span>
+              <span class="hl-label">Weekly volume rebuilt</span>
+            </div>
+          </div>
+          <div class="highlight-chip hl-blue bd-2 bm-1">
+            <div class="hl-icon"><i class="fas fa-flag-checkered"></i></div>
+            <div>
+              <span class="hl-num">&sim;125 days</span>
+              <span class="hl-label">Until race day</span>
+            </div>
+          </div>
 
-        <div class="tile-grid">
           <div
-            class="tile span-6"
+            class="tile bd-3"
             style="border-color: rgba(16, 185, 129, 0.18)"
           >
             <div class="t-top">
-              <div class="t-label">Key Metrics</div>
+              <div class="t-label">PB Reference (Fixed)</div>
               <div class="t-icon"><i class="fas fa-tachometer-alt"></i></div>
             </div>
-            <div class="t-value" style="color: var(--c-green)">
+            <div class="t-value grad-num-green">
               8:14
               <span
                 style="
                   font-size: 12px;
-                  font-weight: 800;
+                  font-weight: 500;
                   color: rgba(255, 255, 255, 0.65);
                 "
                 >/km (HM)</span
               >
             </div>
             <div class="t-sub">
-              Reference: Long Run 21.1K • Time 2:52:47 • Avg HR 138
+              4 Apr 2026 • Long Run 21.01K • Time 2:52:47 • Avg HR 138
             </div>
           </div>
 
           <div
-            class="tile span-6"
-            style="border-color: rgba(59, 130, 246, 0.18)"
+            class="tile bd-3"
+            style="border-color: rgba(139, 92, 246, 0.18)"
           >
+            <div class="t-top">
+              <div class="t-label">Latest Session</div>
+              <div class="t-icon"><i class="fas fa-route"></i></div>
+            </div>
+            <div class="t-value grad-num-purple">
+              16.01
+              <span
+                style="
+                  font-size: 12px;
+                  font-weight: 500;
+                  color: rgba(255, 255, 255, 0.65);
+                "
+                >km (Long Run)</span
+              >
+            </div>
+            <div class="t-sub">
+              26 Jul 2026 • Even split pacing • HR spent 76% of time in Zone
+              3
+            </div>
+            <div class="gauge-bar">
+              <div class="gauge-bar-fill" style="width: 75.9%"></div>
+            </div>
+            <div class="gauge-caption">16.01 / 21.0975 km — 75.9% of race distance</div>
+          </div>
+
+          <div class="tile tile-blue bd-2">
             <div class="t-top">
               <div class="t-label">Neural Focus</div>
               <div class="t-icon"><i class="fas fa-bullseye"></i></div>
@@ -1056,10 +1992,7 @@
             </div>
           </div>
 
-          <div
-            class="tile span-4"
-            style="border-color: rgba(245, 158, 11, 0.18)"
-          >
+          <div class="tile tile-yellow bd-2 bm-1">
             <div class="t-top">
               <div class="t-label">Protocol Change</div>
               <div class="t-icon"><i class="fas fa-sliders-h"></i></div>
@@ -1070,10 +2003,7 @@
             </div>
           </div>
 
-          <div
-            class="tile span-4"
-            style="border-color: rgba(239, 68, 68, 0.18)"
-          >
+          <div class="tile tile-purple bd-2 bm-1">
             <div class="t-top">
               <div class="t-label">Correction</div>
               <div class="t-icon"><i class="fas fa-shoe-prints"></i></div>
@@ -1084,10 +2014,7 @@
             </div>
           </div>
 
-          <div
-            class="tile span-4"
-            style="border-color: rgba(16, 185, 129, 0.18)"
-          >
+          <div class="tile tile-green bd-6">
             <div class="t-top">
               <div class="t-label">Phase 4 Result</div>
               <div class="t-icon"><i class="fas fa-check-circle"></i></div>
@@ -1101,10 +2028,10 @@
           <div class="card-header" onclick="toggleCard(this)">
             <div class="card-title">
               <i class="fas fa-stream" style="color: var(--c-green)"></i>
-              PHASE 5: PEAK PHASE (CURRENT)
+              Phase 6: Return-to-Play Consolidation (Current)
             </div>
             <div style="display: flex; align-items: center; gap: 10px">
-              <span class="page-date">Updated: 26 Apr 2026</span>
+              <span class="page-date">Updated: 26 Jul 2026</span>
               <i
                 class="fas fa-chevron-down"
                 style="font-size: 12px; color: var(--c-text-mute)"
@@ -1114,12 +2041,224 @@
           <div class="card-body">
             <div class="stat-grid">
               <div class="stat-item">
+                <div class="stat-label">First Run Back</div>
+                <div class="stat-value stat-highlight">4.88 km</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Latest Week Vol</div>
+                <div class="stat-value">27.03 km</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Latest Long Run</div>
+                <div class="stat-value">16.01 km</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-label">Status</div>
+                <div class="stat-value">Active</div>
+              </div>
+            </div>
+
+            <div class="phase-week-list" id="phase6-week-list"></div>
+            <script>
+              (function () {
+                const PHASE6_WEEKS = [
+                  { label: "MAY W1 (4–10)", sessions: 1, km: 4.88, hr: 128, note: "First run back post-injury (treadmill)" },
+                  { label: "MAY W2 (11–17)", sessions: 2, km: 9.07, hr: 140.5, note: "Back to road running" },
+                  { label: "MAY W3 (18–24)", sessions: 3, km: 19.32, hr: 138.3, note: "First long run since recovery, 7.9 km" },
+                  { label: "MAY W4 (25–31)", sessions: 2, km: 14.13, hr: 139, note: "Long run extended to 9.38 km" },
+                  { label: "JUN W1 (1–7)", sessions: 2, km: 8.67, hr: 140.5, note: "Still cautious" },
+                  { label: "JUN W2 (8–14)", sessions: 3, km: 13.70, hr: 138, note: "Back to Bang Bua Thong road route" },
+                  { label: "JUN W3 (15–21)", sessions: 2, km: 17.86, hr: 142.5, note: "First 12 km run since injury" },
+                  { label: "JUN W4 (22–28)", sessions: 3, km: 23.05, hr: 139.7, note: "Weekly volume broke 23 km" },
+                  { label: "JUL W1 (29 Jun–5 Jul)", sessions: 4, km: 24.28, hr: 135.75, note: "Highest volume in 3 months" },
+                  { label: "JUL W2 (6–12)", sessions: 3, km: 27.00, hr: 143, note: "Long run 15.01 km, nearing old peak" },
+                  { label: "JUL W3 (13–19)", sessions: 2, km: 9.96, hr: 145.5, note: "Natural down week" },
+                  { label: "JUL W4 (20–26)", sessions: 4, km: 27.03, hr: 148.75, note: "Long run 16.01 km, good even split, HR spent 76% of time in Zone 3" },
+                ];
+                const peak = Math.max(...PHASE6_WEEKS.map((w) => w.km)); // 27.03 km, Latest Week Vol
+                const list = document.getElementById("phase6-week-list");
+                list.innerHTML = PHASE6_WEEKS.map((w) => {
+                  const pct = Math.round((w.km / peak) * 1000) / 10;
+                  return `<div class="phase-week-row">
+                    <div class="phase-week-top">
+                      <span class="phase-week-label">${w.label}</span>
+                      <span class="phase-week-stats">${w.sessions} sessions &middot; ${w.km.toFixed(2)} km &middot; Avg HR ${w.hr}</span>
+                    </div>
+                    <div class="gauge-bar"><div class="gauge-bar-fill" style="width:${pct}%"></div></div>
+                    <div class="phase-week-note">${w.note}</div>
+                  </div>`;
+                }).join("");
+              })();
+            </script>
+
+            <div class="panel green">
+              <div
+                class="page-label"
+                style="color: var(--c-green); margin-bottom: 10px"
+              >
+                PHASE MECHANISM
+              </div>
+              <div
+                style="
+                  font-size: 13px;
+                  color: var(--c-text-sec);
+                  line-height: 1.95;
+                  font-family: inherit;
+                "
+              >
+                <div style="margin-bottom: 12px">
+                  <strong style="color: #fff"
+                    >1) Rebuilt volume gradually</strong
+                  ><br />
+                  Weekly volume rebuilt from ~5 km/week in May to 27 km/week
+                  in July without symptom recurrence. Long run rebuilt back
+                  up to 16 km (week of 25–26 Jul).
+                </div>
+                <div>
+                  <strong style="color: #fff"
+                    >2) Back to real road surfaces</strong
+                  ><br />
+                  Now running on real road surfaces normally again, after an
+                  earlier treadmill-only recovery period (see "Return-to-Run"
+                  phase below) — real pavement impact forces were too high
+                  for the healing adductor at that earlier stage.
+                </div>
+              </div>
+            </div>
+
+            <div class="meta-rows">
+              <div class="meta-row">
+                <i
+                  class="fas fa-info-circle"
+                  style="color: var(--c-text-mute); margin-top: 2px"
+                ></i>
+                <span
+                  >Note: this log reflects personal training data only and
+                  is <strong>not medical advice</strong>. Any injury-related
+                  decisions were made with a medical professional.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <div class="card-title">
+              <i class="fas fa-check-circle" style="color: var(--c-blue)"></i>
+              Return-to-Run (Recovery) (Completed)
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span class="page-date">Apr 2026 W3–W4</span>
+              <i
+                class="fas fa-chevron-down"
+                style="font-size: 12px; color: var(--c-text-mute)"
+              ></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="hero blue">
+              <div class="hero-top">
+                <div>
+                  <div class="hero-kicker">COMPLETED PHASE</div>
+                  <div class="hero-title">Return-to-Run (Recovery)</div>
+                  <div class="hero-sub">
+                    Treadmill-based return-to-run protocol following the
+                    right adductor strain (Apr 2026, weeks 3–4)
+                  </div>
+                </div>
+                <div class="hero-right">
+                  <div class="pill">
+                    <span
+                      class="dot"
+                      style="
+                        background: var(--c-blue);
+                        box-shadow: 0 0 10px rgba(59, 130, 246, 0.35);
+                      "
+                    ></span
+                    ><b>Status</b>&nbsp;Completed
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel blue" style="margin-top: 14px">
+              <div
+                class="page-label"
+                style="color: var(--c-blue); margin-bottom: 10px"
+              >
+                PHASE MECHANISM
+              </div>
+              <div
+                style="
+                  font-size: 13px;
+                  color: var(--c-text-sec);
+                  line-height: 1.95;
+                  font-family: inherit;
+                "
+              >
+                The return-to-run protocol used the treadmill exclusively,
+                because real pavement impact forces were too high for the
+                healing adductor at that stage.
+              </div>
+            </div>
+
+            <div class="meta-rows">
+              <div class="meta-row">
+                <i
+                  class="fas fa-info-circle"
+                  style="color: var(--c-text-mute); margin-top: 2px"
+                ></i>
+                <span
+                  >Note: this log reflects personal training data only and
+                  is <strong>not medical advice</strong>. Any injury-related
+                  decisions were made with a medical professional.</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <div class="card-title">
+              <i class="fas fa-stream" style="color: var(--c-yellow)"></i>
+              Phase 5: Peak Phase &amp; Race Simulation (Interrupted)
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span class="page-date">Apr 2026 W1–W2</span>
+              <i
+                class="fas fa-chevron-down"
+                style="font-size: 12px; color: var(--c-text-mute)"
+              ></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="meta-rows" style="margin-top: 0">
+              <div class="meta-row">
+                <span
+                  class="dot"
+                  style="
+                    background: var(--c-yellow);
+                    box-shadow: 0 0 10px rgba(245, 158, 11, 0.35);
+                  "
+                ></span>
+                <span
+                  ><strong>Status: Interrupted</strong> — sustained a right
+                  adductor strain the following week, interrupting the
+                  phase.</span
+                >
+              </div>
+            </div>
+
+            <div class="stat-grid">
+              <div class="stat-item">
                 <div class="stat-label">HM Pace</div>
                 <div class="stat-value stat-highlight">8:14</div>
               </div>
               <div class="stat-item">
                 <div class="stat-label">HR Avg</div>
-                <div class="stat-value">138</div>
+                <div class="stat-value">145</div>
               </div>
               <div class="stat-item">
                 <div class="stat-label">SPM</div>
@@ -1131,10 +2270,10 @@
               </div>
             </div>
 
-            <div class="panel green">
+            <div class="panel yellow">
               <div
                 class="page-label"
-                style="color: var(--c-green); margin-bottom: 10px"
+                style="color: var(--c-yellow); margin-bottom: 10px"
               >
                 PHASE MECHANISM
               </div>
@@ -1164,6 +2303,20 @@
                 </div>
               </div>
             </div>
+
+            <div class="meta-rows">
+              <div class="meta-row">
+                <i
+                  class="fas fa-info-circle"
+                  style="color: var(--c-text-mute); margin-top: 2px"
+                ></i>
+                <span
+                  >Note: this log reflects personal training data only and
+                  is <strong>not medical advice</strong>. Any injury-related
+                  decisions were made with a medical professional.</span
+                >
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1171,10 +2324,10 @@
           <div class="card-header" onclick="toggleCard(this)">
             <div class="card-title">
               <i class="fas fa-check-circle" style="color: var(--c-green)"></i>
-              PHASE 4: THRESHOLD &amp; STRENGTH ENDURANCE (COMPLETED)
+              Phase 4: Threshold &amp; Strength Endurance (Completed)
             </div>
             <div style="display: flex; align-items: center; gap: 10px">
-              <span class="page-date">Mar 2026</span>
+              <span class="page-date">Feb–Mar 2026</span>
               <i
                 class="fas fa-chevron-down"
                 style="font-size: 12px; color: var(--c-text-mute)"
@@ -1190,7 +2343,8 @@
                     Phase 4: Threshold &amp; Strength Endurance
                   </div>
                   <div class="hero-sub">
-                    Introduction to threshold stress while preserving mechanics
+                    Began threshold-pace work and established in-race
+                    fueling/gel strategy, while preserving mechanics
                   </div>
                 </div>
                 <div class="hero-right">
@@ -1209,26 +2363,53 @@
             </div>
           </div>
         </div>
+
+        <div class="card">
+          <div class="card-header" onclick="toggleCard(this)">
+            <div class="card-title">
+              <i class="fas fa-check-circle" style="color: var(--c-green)"></i>
+              Phase 3: Neuromuscular (Completed)
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px">
+              <span class="page-date">Jan 2026</span>
+              <i
+                class="fas fa-chevron-down"
+                style="font-size: 12px; color: var(--c-text-mute)"
+              ></i>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="hero">
+              <div class="hero-top">
+                <div>
+                  <div class="hero-kicker">COMPLETED PHASE</div>
+                  <div class="hero-title">Phase 3: Neuromuscular</div>
+                  <div class="hero-sub">
+                    Neuromuscular calibration and aerobic consolidation
+                  </div>
+                </div>
+                <div class="hero-right">
+                  <div class="pill">
+                    <span class="dot"></span><b>Status</b>&nbsp;Completed
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <div id="schedule" class="section-view active">
         <div class="header-group">
           <div>
             <div class="page-label">TRAINING PLAN</div>
-            <div class="page-title">WEEKLY SCHEDULE</div>
+            <div class="page-title">Weekly <b>Schedule</b></div>
           </div>
         </div>
 
         <div class="schedule-toolbar">
-          <div
-            style="
-              display: flex;
-              flex-wrap: wrap;
-              gap: 10px;
-              align-items: center;
-            "
-          >
-            <div class="month-group">
+          <div class="toolbar-rows">
+            <div class="month-group" id="month-strip">
               <div
                 class="month-pill"
                 id="month-jan"
@@ -1251,11 +2432,60 @@
                 MAR 2026
               </div>
               <div
-                class="month-pill active"
+                class="month-pill"
                 id="month-apr"
                 onclick="setScheduleMonth('APR')"
               >
                 APR 2026
+              </div>
+              <div
+                class="month-pill"
+                id="month-may"
+                onclick="setScheduleMonth('MAY')"
+              >
+                MAY 2026
+              </div>
+              <div
+                class="month-pill"
+                id="month-jun"
+                onclick="setScheduleMonth('JUN')"
+              >
+                JUN 2026
+              </div>
+              <div
+                class="month-pill active"
+                id="month-jul"
+                onclick="setScheduleMonth('JUL')"
+              >
+                JUL 2026
+              </div>
+              <div
+                class="month-pill"
+                id="month-aug"
+                onclick="setScheduleMonth('AUG')"
+              >
+                AUG 2026
+              </div>
+              <div
+                class="month-pill"
+                id="month-sep"
+                onclick="setScheduleMonth('SEP')"
+              >
+                SEP 2026
+              </div>
+              <div
+                class="month-pill"
+                id="month-oct"
+                onclick="setScheduleMonth('OCT')"
+              >
+                OCT 2026
+              </div>
+              <div
+                class="month-pill"
+                id="month-nov"
+                onclick="setScheduleMonth('NOV')"
+              >
+                NOV 2026
               </div>
             </div>
 
@@ -1275,6 +2505,12 @@
                 onclick="renderWeek(4, this)"
               >
                 WEEK 04
+              </div>
+              <div class="week-pill" id="wk5" onclick="renderWeek(5, this)">
+                WEEK 05
+              </div>
+              <div class="week-pill" id="wk6" onclick="renderWeek(6, this)">
+                WEEK 06
               </div>
             </div>
           </div>
@@ -1312,17 +2548,9 @@
         </div>
 
         <div class="card open" style="margin-top: 10px">
-          <table class="schedule-table">
-            <thead>
-              <tr>
-                <th width="15%">DAY</th>
-                <th width="35%">PROGRAM &amp; HR</th>
-                <th width="25%">FOCUS</th>
-                <th width="25%">NUTRITION &amp; STRENGTH</th>
-              </tr>
-            </thead>
-            <tbody id="schedule-body"></tbody>
-          </table>
+          <div class="card-body" style="max-height: none; opacity: 1; padding: 18px 20px 20px">
+            <div class="week-list" id="schedule-body"></div>
+          </div>
         </div>
       </div>
     </main>
@@ -1345,82 +2573,191 @@
           .querySelectorAll(".nav-item")
           .forEach((n) => n.classList.remove("active"));
         if (el) el.classList.add("active");
+
+        // The month strip can only be measured once its tab is visible.
+        if (id === "schedule" && typeof centerActiveMonth === "function") {
+          requestAnimationFrame(() => centerActiveMonth(false));
+        }
+      }
+
+      // 18-week official training plan (week 1 starts Mon 27 Jul 2026).
+      // Each week is Mon(0)..Sun(6); "start" is that week's Monday.
+      const planWeeks = [
+        { n: 1, start: "2026-07-27", type: "Base", easy: 6.0, tempo: 6.0, long: 16.0, total: 28.0 },
+        { n: 2, start: "2026-08-03", type: "Base", easy: 6.0, tempo: 6.0, long: 16.0, total: 28.0 },
+        { n: 3, start: "2026-08-10", type: "Base", easy: 7.0, tempo: 7.0, long: 16.0, total: 30.0 },
+        { n: 4, start: "2026-08-17", type: "Cutback", easy: 5.0, tempo: 5.0, long: 10.0, total: 20.0 },
+        { n: 5, start: "2026-08-24", type: "Build", easy: 7.0, tempo: 8.0, long: 17.0, total: 32.0 },
+        { n: 6, start: "2026-08-31", type: "Build", easy: 7.0, tempo: 8.0, long: 17.0, total: 32.0 },
+        { n: 7, start: "2026-09-07", type: "Build", easy: 8.0, tempo: 9.0, long: 18.0, total: 35.0 },
+        { n: 8, start: "2026-09-14", type: "Cutback", easy: 6.0, tempo: 6.0, long: 12.0, total: 24.0 },
+        { n: 9, start: "2026-09-21", type: "Build", easy: 8.0, tempo: 9.0, long: 18.0, total: 35.0 },
+        { n: 10, start: "2026-09-28", type: "Build", easy: 8.0, tempo: 10.0, long: 19.0, total: 37.0 },
+        { n: 11, start: "2026-10-05", type: "Build", easy: 9.0, tempo: 10.0, long: 19.0, total: 38.0 },
+        { n: 12, start: "2026-10-12", type: "Cutback", easy: 6.0, tempo: 7.0, long: 14.0, total: 27.0 },
+        { n: 13, start: "2026-10-19", type: "Peak", easy: 9.0, tempo: 10.0, long: 19.0, total: 38.0 },
+        { n: 14, start: "2026-10-26", type: "Peak", easy: 8.0, tempo: 9.0, long: 18.0, total: 35.0 },
+        { n: 15, start: "2026-11-02", type: "Taper-prep", easy: 7.0, tempo: 8.0, long: 14.0, total: 29.0 },
+        { n: 16, start: "2026-11-09", type: "Taper", easy: 6.0, tempo: 6.0, long: 10.0, total: 22.0 },
+        { n: 17, start: "2026-11-16", type: "Taper", easy: 5.0, tempo: 5.0, long: 8.0, total: 18.0 },
+        { n: 18, start: "2026-11-23", type: "Race Week", easy: 3.0, tempo: 0.0, long: 21.0975, total: 24.1 },
+      ];
+
+      const DAY_NAMES = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+      const MONTH_NAMES = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+      function fmtKm(n) {
+        return (Math.round(n * 100) / 100).toString();
+      }
+
+      // Icon + chip-color for each session type, reusing the existing tag-run/tag-rest/tag-long color semantics.
+      const SESSION_ICON = {
+        rest: "fa-bed",
+        "active-recovery": "fa-person-walking",
+        easy: "fa-person-running",
+        tempo: "fa-gauge-high",
+        long: "fa-route",
+      };
+
+      // Builds one day-row card. `meta` chips are small icon+label bits (focus / nutrition), never a 4th table column.
+      function dayRow(dateLabelHtml, chipClass, sessionKey, title, sub, metaChips, rightPill) {
+        const metaHtml = metaChips && metaChips.length
+          ? `<div class="day-meta-row">${metaChips.map((m) => `<span class="meta-chip"><i class="fas ${m.icon}"></i>${m.text}</span>`).join("")}</div>`
+          : "";
+        const pillHtml = rightPill ? `<div class="day-pill">${rightPill}</div>` : "";
+        return `<div class="day-row">
+          <div class="day-chip ${chipClass}"><i class="fas ${SESSION_ICON[sessionKey]}"></i>${dateLabelHtml}</div>
+          <div class="day-main">
+            <div class="day-title">${title}</div>
+            ${sub ? `<div class="day-sub">${sub}</div>` : ""}
+            ${metaHtml}
+          </div>
+          ${pillHtml}
+        </div>`;
+      }
+
+      // One caption card documenting the underlying 18-week plan identity for a (possibly partial) week,
+      // rendered as prominent pill-tag stat chips (same numbers as before, just more visible).
+      function captionRow(week) {
+        return `<div class="plan-caption-row">
+          <div class="plan-caption-title">Plan week ${week.n} of 18 &middot; ${week.type}</div>
+          <div class="plan-caption-chips">
+            <span class="stat-chip stat-chip-green"><i class="fas fa-person-running"></i>Easy ${fmtKm(week.easy)} km</span>
+            <span class="stat-chip stat-chip-yellow"><i class="fas fa-gauge-high"></i>Tempo ${fmtKm(week.tempo)} km</span>
+            <span class="stat-chip stat-chip-purple"><i class="fas fa-route"></i>Long ${fmtKm(week.long)} km</span>
+            <span class="stat-chip stat-chip-blue"><i class="fas fa-chart-simple"></i>Total ${fmtKm(week.total)} km</span>
+          </div>
+        </div>`;
+      }
+
+      // A small connective note between weeks that span two months (was a colspan table row).
+      function noteRow(text) {
+        return `<div class="plan-note">${text}</div>`;
+      }
+
+      // A recap card for a completed week: left tag+label, right title/prose with optional focus/nutrition meta chips
+      // (never a 4-column grid). Used for JAN (title+focus+nutrition) and FEB/MAR/APR (title/prose only).
+      function recapNote(wkLabel, tagClass, bodyHtml, metaChips) {
+        const metaHtml = metaChips && metaChips.length
+          ? `<div class="recap-meta-row">${metaChips.map((m) => `<span class="meta-chip"><i class="fas ${m.icon}"></i>${m.text}</span>`).join("")}</div>`
+          : "";
+        return `<div class="recap-card">
+          <div class="recap-tag-col"><span class="tag ${tagClass}">${wkLabel}</span></div>
+          <div class="recap-body">${bodyHtml}${metaHtml}</div>
+        </div>`;
+      }
+
+      // A compact "week summary card" for completed narrative-recap weeks (MAY-JUL): big distance number,
+      // small stat chips for sessions/avg HR, and the existing highlight line as a caption.
+      function weekSummaryCard(wkLabel, dateRange, sessions, km, hr, highlight) {
+        return `<div class="week-stat-card">
+          <div class="week-stat-big"><div class="num">${km}</div><div class="unit">KM</div></div>
+          <div class="week-stat-body">
+            <div class="week-stat-label">${wkLabel} &middot; ${dateRange}</div>
+            <div class="week-stat-chips">
+              <span class="meta-chip"><i class="fas fa-shoe-prints"></i>${sessions} session${sessions == 1 ? "" : "s"}</span>
+              <span class="meta-chip"><i class="fas fa-heart-pulse"></i>Avg HR ${hr}</span>
+            </div>
+            <div class="week-stat-caption">${highlight}</div>
+          </div>
+        </div>`;
+      }
+
+      // Renders planned daily rows (Mon=0..Sun=6) for a non-race week, for the given inclusive day-index range.
+      // This is future/planned content — every row stays in planning tone, never past-tense achievement language.
+      function buildWeekRows(week, startIdx, endIdx) {
+        const start = new Date(week.start + "T00:00:00");
+        let rows = "";
+        for (let i = startIdx; i <= endIdx; i++) {
+          const d = new Date(start);
+          d.setDate(d.getDate() + i);
+          const dateLabel = `<span class="day-name">${DAY_NAMES[i]}</span><span class="day-num">${d.getDate()} ${MONTH_NAMES[d.getMonth()]}</span>`;
+          if (i === 0) {
+            rows += dayRow(dateLabel, "chip-rest", "rest", "Rest", "Full recovery", []);
+          } else if (i === 1) {
+            rows += dayRow(dateLabel, "chip-run", "easy", "Easy Run", `Planned ${fmtKm(week.easy)} km &middot; Target Zone 2 (126-148 bpm)`, [
+              { icon: "fa-heart-pulse", text: "Aerobic base, relaxed effort" },
+              { icon: "fa-tint", text: "Standard hydration; light mobility" },
+            ], `${fmtKm(week.easy)} KM`);
+          } else if (i === 2) {
+            rows += dayRow(dateLabel, "chip-rest", "active-recovery", "Active Recovery", "Light mobility / walk", []);
+          } else if (i === 3) {
+            rows += dayRow(dateLabel, "chip-run", "tempo", "Tempo Run", `Planned ${fmtKm(week.tempo)} km &middot; Zone 2 warm-up + continuous Zone 3 tempo (149-163 bpm) + cooldown`, [
+              { icon: "fa-dumbbell", text: "Strength/core work" },
+              { icon: "fa-capsules", text: "Gel practice optional" },
+            ], `${fmtKm(week.tempo)} KM`);
+          } else if (i === 4) {
+            rows += dayRow(dateLabel, "chip-rest", "rest", "Rest", "Full recovery", []);
+          } else if (i === 5) {
+            rows += dayRow(dateLabel, "chip-long", "long", "Long Run", `Planned ${fmtKm(week.long)} km &middot; Start Zone 2, natural drift into Zone 3 allowed (must not touch Zone 4)`, [
+              { icon: "fa-shoe-prints", text: "Endurance, pacing discipline" },
+              { icon: "fa-capsules", text: "Gel strategy practice; post-run refuel" },
+            ], `${fmtKm(week.long)} KM`);
+          } else if (i === 6) {
+            rows += dayRow(dateLabel, "chip-rest", "active-recovery", "Active Recovery", "Light mobility / walk", []);
+          }
+        }
+        return rows;
       }
 
       const scheduleData = {
         JAN: {
-          1: `<tr>
-              <td><span class="tag tag-rest">W1</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Neuromuscular calibration and aerobic consolidation</td>
-              <td>Form awareness, cadence stability, hip drive foundations</td>
-              <td>Consistency, recovery discipline, long-run readiness</td>
-            </tr>`,
-          2: `<tr>
-              <td><span class="tag tag-rest">W2</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Repeatability under fatigue and form retention</td>
-              <td>Maintain technique under load; reduce wasted motion</td>
-              <td>Simple fueling practice; post-run protein consistency</td>
-            </tr>`,
-          3: `<tr>
-              <td><span class="tag tag-rest">W3</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Neural efficiency and stride economy</td>
-              <td>Lock in cues; smoother transitions between paces</td>
-              <td>Recovery priority; mobility and soft-tissue maintenance</td>
-            </tr>`,
-          4: `<tr>
-              <td><span class="tag tag-rest">W4</span></td>
-              <td><strong>PHASE 3 SUMMARY</strong><br>Long run completion and graduation preparation</td>
-              <td>Glute activation cue stability; late-run form control</td>
-              <td>Final long-run execution; readiness for Phase 4 threshold</td>
-            </tr>`,
+          1: recapNote("W1", "tag-rest", `<strong style="color:#fff">PHASE 3 SUMMARY</strong><br>Neuromuscular calibration and aerobic consolidation`, [
+            { icon: "fa-bullseye", text: "Form awareness, cadence stability, hip drive foundations" },
+            { icon: "fa-leaf", text: "Consistency, recovery discipline, long-run readiness" },
+          ]),
+          2: recapNote("W2", "tag-rest", `<strong style="color:#fff">PHASE 3 SUMMARY</strong><br>Repeatability under fatigue and form retention`, [
+            { icon: "fa-bullseye", text: "Maintain technique under load; reduce wasted motion" },
+            { icon: "fa-leaf", text: "Simple fueling practice; post-run protein consistency" },
+          ]),
+          3: recapNote("W3", "tag-rest", `<strong style="color:#fff">PHASE 3 SUMMARY</strong><br>Neural efficiency and stride economy`, [
+            { icon: "fa-bullseye", text: "Lock in cues; smoother transitions between paces" },
+            { icon: "fa-leaf", text: "Recovery priority; mobility and soft-tissue maintenance" },
+          ]),
+          4: recapNote("W4", "tag-rest", `<strong style="color:#fff">PHASE 3 SUMMARY</strong><br>Long run completion and graduation preparation`, [
+            { icon: "fa-bullseye", text: "Glute activation cue stability; late-run form control" },
+            { icon: "fa-leaf", text: "Final long-run execution; readiness for Phase 4 threshold" },
+          ]),
         },
 
         FEB: {
-          1: `<tr>
-              <td width="15%"><span class="tag tag-run">W1</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">การปรับตัวเข้าสู่ความเข้มข้นใหม่ (Adaptation)</strong><br>
-                สัปดาห์เปิดหัวของเดือน เป็นช่วงเวลาแห่งการปรับจูนร่างกายให้รับมือกับปริมาณการซ้อมของเฟส 3 กล้ามเนื้อและระบบหายใจเริ่มเรียนรู้ที่จะทำงานประสานกันภายใต้ความเหนื่อยล้าที่เพิ่มขึ้น
-              </td>
-            </tr>`,
+          1: recapNote("W1", "tag-run", `<strong style="color: #fff; font-size: 14px;">การปรับตัวเข้าสู่ความเข้มข้นใหม่ (Adaptation)</strong><br>
+                สัปดาห์เปิดหัวของเดือน เป็นช่วงเวลาแห่งการปรับจูนร่างกายให้รับมือกับปริมาณการซ้อมของเฟส 3 กล้ามเนื้อและระบบหายใจเริ่มเรียนรู้ที่จะทำงานประสานกันภายใต้ความเหนื่อยล้าที่เพิ่มขึ้น`),
 
-          2: `<tr>
-              <td width="15%"><span class="tag tag-run">W2</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">ปลดล็อกกลศาสตร์ท่าวิ่ง (Biomechanics Breakthrough)</strong><br>
-                ไฮไลต์ของสัปดาห์นี้คือการค้นพบ "จังหวะที่ใช่" ของร่างกายตัวเอง! ผลลัพธ์ที่ได้คือพลังในการส่งตัวไปข้างหน้า (Push-off) ทรงพลังขึ้นอย่างชัดเจน ทำให้ฟอร์มการวิ่งเสถียร แข็งแรง และประหยัดพลังงาน
-              </td>
-            </tr>`,
+          2: recapNote("W2", "tag-run", `<strong style="color: #fff; font-size: 14px;">ปลดล็อกกลศาสตร์ท่าวิ่ง (Biomechanics Breakthrough)</strong><br>
+                ไฮไลต์ของสัปดาห์นี้คือการค้นพบ "จังหวะที่ใช่" ของร่างกายตัวเอง! ผลลัพธ์ที่ได้คือพลังในการส่งตัวไปข้างหน้า (Push-off) ทรงพลังขึ้นอย่างชัดเจน ทำให้ฟอร์มการวิ่งเสถียร แข็งแรง และประหยัดพลังงาน`),
 
-          3: `<tr>
-              <td width="15%"><span class="tag tag-run">W3</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">ก้าวข้ามขีดจำกัดความเร็วและหัวใจ (System Upgrade)</strong><br>
-                ร่างกายฟิตขึ้นกว่าสัปดาห์ก่อนหน้าอย่างเห็นได้ชัด! ตัดสินใจปรับ Mindset ครั้งใหญ่ ด้วยการ "ยึดอัตราการเต้นของหัวใจ (HR) เป็นหลัก" ในวัน Easy Run และ Long Run
-              </td>
-            </tr>`,
+          3: recapNote("W3", "tag-run", `<strong style="color: #fff; font-size: 14px;">ก้าวข้ามขีดจำกัดความเร็วและหัวใจ (System Upgrade)</strong><br>
+                ร่างกายฟิตขึ้นกว่าสัปดาห์ก่อนหน้าอย่างเห็นได้ชัด! ตัดสินใจปรับ Mindset ครั้งใหญ่ ด้วยการ "ยึดอัตราการเต้นของหัวใจ (HR) เป็นหลัก" ในวัน Easy Run และ Long Run`),
 
-          4: `<tr>
-              <td width="15%"><span class="tag tag-run">W4</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">บททดสอบความอึดและโภชนาการ (The Masterpiece)</strong><br>
-                ปิดท้ายเดือนกุมภาพันธ์ด้วยผลงานชิ้นโบแดง! สามารถพิชิตการซ้อม Long Run ระยะทาง 15 กิโลเมตร ทำเพซเฉลี่ย 7:46 โดยที่หัวใจเฉลี่ยนิ่งอยู่ที่ 147 bpm ได้ค้นพบอาวุธลับทางโภชนาการคือเจล Amino Vital Red Shot
-              </td>
-            </tr>`,
+          4: recapNote("W4", "tag-run", `<strong style="color: #fff; font-size: 14px;">บททดสอบความอึดและโภชนาการ (The Masterpiece)</strong><br>
+                ปิดท้ายเดือนกุมภาพันธ์ด้วยผลงานชิ้นโบแดง! สามารถพิชิตการซ้อม Long Run ระยะทาง 15 กิโลเมตร ทำเพซเฉลี่ย 7:46 โดยที่หัวใจเฉลี่ยนิ่งอยู่ที่ 147 bpm ได้ค้นพบอาวุธลับทางโภชนาการคือเจล Amino Vital Red Shot`),
         },
 
         MAR: {
-          1: `<tr>
-              <td width="15%"><span class="tag tag-run">W1</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🏆 สรุปผลงานรายสัปดาห์ (Build Phase - สัปดาห์ที่ 1)</strong><br>
-                สัปดาห์นี้คือสัปดาห์แห่งการ "ยกระดับเครื่องยนต์" อย่างแท้จริงครับ ร่างกายของคุณตอบสนองต่อตารางซ้อมได้ทะลุเป้าหมายทุกมิติ! ทนทานความร้อนดีขึ้น ระบบย่อยอาหารดีเยี่ยมจากการซ้อม 16K
-              </td>
-            </tr>`,
-          2: `<tr>
-              <td width="15%"><span class="tag tag-run">W2</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🚀 สรุปผลงานรายสัปดาห์ (Breakthrough Week - สัปดาห์ที่ 2)</strong><br>
+          1: recapNote("W1", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลงานรายสัปดาห์ (Build Phase - สัปดาห์ที่ 1)</strong><br>
+                สัปดาห์นี้คือสัปดาห์แห่งการ "ยกระดับเครื่องยนต์" อย่างแท้จริงครับ ร่างกายของคุณตอบสนองต่อตารางซ้อมได้ทะลุเป้าหมายทุกมิติ! ทนทานความร้อนดีขึ้น ระบบย่อยอาหารดีเยี่ยมจากการซ้อม 16K`),
+          2: recapNote("W2", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลงานรายสัปดาห์ (Breakthrough Week - สัปดาห์ที่ 2)</strong><br>
                 สัปดาห์ที่ 2 ของเฟส Build (9 - 15 มีนาคม) กราฟความฟิตและความอึดพุ่งทะยานขึ้นแบบก้าวกระโดด!<br><br>
 
                 <strong style="color: var(--c-green);"><i class="fas fa-tachometer-alt" style="margin-right:6px;"></i> 1. ระบบเกียร์สูงสุดถูกปลดล็อก (Speed & Lactate Clearance)</strong><br>
@@ -1433,13 +2770,8 @@
                 Tempo Run: วิ่ง 45 นาทีลุยฝน เพซเฉลี่ย 6:27 เรียนรู้ภาวะ "Lactate Drift" จากการกระชากเพซไป 6:18 ทำให้รู้ว่าต้องคุมความเร็วให้นิ่งที่สุด<br><br>
 
                 <strong style="color: var(--c-purple);"><i class="fas fa-flag-checkered" style="margin-right:6px;"></i> 4. การจำลองวันแข่งจริง (Race Simulation & Sub-2 Strategy)</strong><br>
-                Long Run: พิชิต 18K แรกในชีวิต เพซเฉลี่ย 7:39 หัวใจชิลล์ที่ 146 bpm ทำ Negative Split สวยงาม และได้ข้อสรุปแผนโภชนาการ Half-Marathon Sub-2 ว่าใช้เจล <strong>Amino Vital Red Shot (110 kcal) แค่ 2 ซอง</strong> ระหว่างวิ่งก็เพียงพอ
-              </td>
-            </tr>`,
-          3: `<tr>
-              <td width="15%"><span class="tag tag-run">W3</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🔥 สรุปผลงานรายสัปดาห์ (Survival & Limits - สัปดาห์ที่ 3)</strong><br>
+                Long Run: พิชิต 18K แรกในชีวิต เพซเฉลี่ย 7:39 หัวใจชิลล์ที่ 146 bpm ทำ Negative Split สวยงาม และได้ข้อสรุปแผนโภชนาการ Half-Marathon Sub-2 ว่าใช้เจล <strong>Amino Vital Red Shot (110 kcal) แค่ 2 ซอง</strong> ระหว่างวิ่งก็เพียงพอ`),
+          3: recapNote("W3", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลงานรายสัปดาห์ (Survival & Limits - สัปดาห์ที่ 3)</strong><br>
                 จบสัปดาห์ที่ 3 (16-22 มีนาคม) อย่างดุเดือด! สัปดาห์แห่งการก้าวข้ามขีดจำกัดและทดสอบสัญชาตญาณเอาตัวรอด คุณก้าวข้ามจาก "คนที่ซ้อมวิ่ง" กลายเป็น "นักวิ่งมาราธอน" เต็มตัวแล้วครับ<br><br>
 
                 <strong style="color: var(--c-green);"><i class="fas fa-rocket" style="margin-right:6px;"></i> 1. มิติความฟิตและสมรรถนะ (Performance Breakthrough)</strong><br>
@@ -1456,13 +2788,8 @@
 
                 <strong style="color: var(--c-red);"><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i> 4. บทเรียนราคาแพง (Lessons Learned)</strong><br>
                 • <strong>อย่าเบรกรองเท้าใหม่ในวันทำความเร็ว:</strong> ต้นเหตุของอาการบาดเจ็บฝ่าเท้าตึงในสัปดาห์นี้<br>
-                • <strong>อย่าหลุดเป้าหมายความเร็ว:</strong> วิ่งเร็วกว่าตารางแลกมากับความเสี่ยง ในระยะไกล "ความสม่ำเสมอ" สำคัญกว่า "ความเร็วชั่วคราว"
-              </td>
-            </tr>`,
-          4: `<tr>
-              <td width="15%"><span class="tag tag-run">W4</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🏆 สรุปผลงานรายสัปดาห์ (Step-back Week - สัปดาห์ที่ 4)</strong><br>
+                • <strong>อย่าหลุดเป้าหมายความเร็ว:</strong> วิ่งเร็วกว่าตารางแลกมากับความเสี่ยง ในระยะไกล "ความสม่ำเสมอ" สำคัญกว่า "ความเร็วชั่วคราว"`),
+          4: recapNote("W4", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลงานรายสัปดาห์ (Step-back Week - สัปดาห์ที่ 4)</strong><br>
                 จบสัปดาห์ที่ 4 (23 - 29 มีนาคม) อย่างสมบูรณ์แบบ โชว์ศักยภาพการเป็น "นักวิ่งที่ชาญฉลาด (Smart Runner)" อย่างแท้จริง ปิดฉาก Phase 2: Build Phase ได้สวยงาม ร่างกายและจิตใจฟิตเต็ม 100%!<br><br>
 
                 <strong style="color: var(--c-green);"><i class="fas fa-brain" style="margin-right:6px;"></i> 1. ชัยชนะเหนือ "อีโก้" และกลยุทธ์ (Mental & Strategic Mastery)</strong><br>
@@ -1475,54 +2802,44 @@
 
                 <strong style="color: var(--c-yellow);"><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i> 3. บทเรียนราคาแพง (Key Lessons Learned)</strong><br>
                 • <strong>โภชนาการวัน Interval:</strong> กินข้าวแค่มื้อเดียวแล้วไปซัดคอร์สความเร็ว ทำให้น้ำตาลตก เกิดอาการหาวและเหนื่อยแทบขาดใจ ย้ำเตือนว่าโภชนาการสำคัญเท่ากับการซ้อม<br>
-                • <strong>ระวัง Overstriding:</strong> วิ่งเร็ว Pace 5 ต้นๆ แต่รอบขา (Cadence) ตกเหลือ 153 spm เสี่ยงกระแทกข้อต่อ ในอนาคตต้องโฟกัสซอยเท้าให้ถี่ขึ้น (165-170 spm)
-              </td>
-            </tr>`,
+                • <strong>ระวัง Overstriding:</strong> วิ่งเร็ว Pace 5 ต้นๆ แต่รอบขา (Cadence) ตกเหลือ 153 spm เสี่ยงกระแทกข้อต่อ ในอนาคตต้องโฟกัสซอยเท้าให้ถี่ขึ้น (165-170 spm)`),
         },
 
         APR: {
-          1: `<tr>
-              <td width="15%"><span class="tag tag-run">W1</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🔥 สรุปผลงานรายสัปดาห์ (Peak Phase – สัปดาห์ที่ 1)</strong><br>
+          1: recapNote("W1", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลงานรายสัปดาห์ (Peak Phase – สัปดาห์ที่ 1)</strong><br>
                 สัปดาห์นี้คือสัปดาห์ที่ได้ลองของจริงทั้ง "อากาศร้อนระดับเตาอบ" และ "ระยะฮาล์ฟมาราธอนครั้งแรก" แต่สิ่งที่ชัดที่สุดไม่ใช่แค่ระยะหรือความเร็ว... คือการที่เริ่ม <strong>"เข้าใจร่างกายตัวเองจริง ๆ"</strong> มากขึ้น<br><br>
 
                 <strong style="color: var(--c-red);"><i class="fas fa-cog" style="margin-right:6px;"></i> 1. Interval Run – คุมเกมในวันที่โหด</strong><br>
                 วันนี้อากาศไม่เป็นใจ แต่สิ่งที่ทำได้ดีมากคือการ "ไม่วิ่งตามอารมณ์" เพซอยู่ในช่วง 5:18 – 5:36 ค่อนข้างนิ่ง และที่สำคัญคือหัวใจขึ้นไปแค่ประมาณ 174 bpm โดยไม่หลุดโซน 5 เลย แปลว่าไม่ได้วิ่งแบบใส่หมด แต่เป็นการ "คุม effort ได้" รอบขาก็อยู่ประมาณ 165–170 spm ตลอดช่วงวิ่งจริง ฟอร์มยังนิ่ง ไม่มีหลุด<br>
-                <span style="color:var(--c-green);">👉 สิ่งที่ได้จากวันนี้ไม่ใช่แค่ความเร็ว แต่คือการรู้ว่าตัวเองสามารถ "เหนื่อยได้ แต่ยังควบคุมได้"</span><br><br>
+                <span style="color:var(--c-green);">สิ่งที่ได้จากวันนี้ไม่ใช่แค่ความเร็ว แต่คือการรู้ว่าตัวเองสามารถ "เหนื่อยได้ แต่ยังควบคุมได้"</span><br><br>
 
                 <strong style="color: var(--c-blue);"><i class="fas fa-bed" style="margin-right:6px;"></i> 2. Easy Run – วันที่ปล่อยจริง</strong><br>
                 วันพุธเป็นวันที่วิ่งแบบ "ไม่ต้องพิสูจน์อะไร" คุมหัวใจเฉลี่ยประมาณ 138 bpm อยู่โซน 2 เกือบทั้งหมด มีหลุดโซน 3 แค่เล็กน้อยเท่านั้น เพซจะ 8 ต้นหรือปลายไม่สำคัญเลย เพราะเป้าหมายคือ "ฟื้น" และวันนี้ทำได้สมบูรณ์แบบ<br>
-                <span style="color:var(--c-green);">👉 นี่คือวันที่ทำให้วันหนัก "มีคุณภาพ" เพราะคุณยอมเบาในวันที่ต้องเบา</span><br><br>
+                <span style="color:var(--c-green);">นี่คือวันที่ทำให้วันหนัก "มีคุณภาพ" เพราะคุณยอมเบาในวันที่ต้องเบา</span><br><br>
 
                 <strong style="color: var(--c-yellow);"><i class="fas fa-fire" style="margin-right:6px;"></i> 3. Tempo Run – เกมของสติล้วน ๆ</strong><br>
                 วันนี้คือวันที่ต้องสู้กับ "หัวตัวเอง" มากกว่าร่างกาย อากาศประมาณ 36°C แต่ยังคุมเพซได้ที่ 6:23–6:29 ตลอด 50 นาที หัวใจเฉลี่ยประมาณ 144 bpm อยู่โซน 3 เป็นหลัก ไม่พุ่ง ไม่หลุด นี่คือ tempo ที่ "ถูกต้อง" เพราะไม่ได้เร็วเกิน แต่ก็ไม่เบาเกิน มีจุดที่น่าสนใจคือ VMO ซ้ายยังตื่นช้า ต้องใช้เวลา 3–4 กม. กว่าจะเข้าที่ แต่พอผ่านช่วงนั้น ทุกอย่างนิ่งขึ้นชัดเจน<br>
-                <span style="color:var(--c-green);">👉 Insight ของวันนี้คือ ร่างกายยังไหว แต่สมองพยายามให้หยุด — และคุณไม่หยุด</span><br><br>
+                <span style="color:var(--c-green);">Insight ของวันนี้คือ ร่างกายยังไหว แต่สมองพยายามให้หยุด — และคุณไม่หยุด</span><br><br>
 
                 <strong style="color: var(--c-purple);"><i class="fas fa-flag-checkered" style="margin-right:6px;"></i> 4. Long Run 21K แรก – จาก “ระยะไกล” กลายเป็น “ควบคุมได้”</strong><br>
                 นี่คือ 21K แรกในชีวิต และสิ่งที่ทำได้ดีมากคือ "ไม่รีบ" เริ่มด้วยเพซ 8+ คุมหัวใจให้อยู่ประมาณ 145 bpm ในช่วงต้น และปล่อยให้ร่างกายทำงานไปตามธรรมชาติ สุดท้ายจบที่: <strong>21.01 km | 2:52:47 | เพซเฉลี่ย 8:14 | HR เฉลี่ย 145 bpm</strong> หัวใจอยู่โซน 2 เป็นหลัก (~80%) มีไหลขึ้นโซน 3 ช่วงท้ายตามธรรมชาติ เรื่องเจลกิน 2 ซอง (~นาที 50 และ 1:50) พลังงาน "พอ" ไม่มีอาการหมดหรือวูบ<br>
-                <span style="color:var(--c-green);">👉 สิ่งที่น่าสนใจคือ "ไม่รู้สึกหิว" แปลว่าร่างกายเริ่มใช้พลังงานได้มีประสิทธิภาพขึ้น และ 21K วันนี้ไม่ได้รู้สึกว่ายากเกินไปแล้ว</span><br><br>
+                <span style="color:var(--c-green);">สิ่งที่น่าสนใจคือ "ไม่รู้สึกหิว" แปลว่าร่างกายเริ่มใช้พลังงานได้มีประสิทธิภาพขึ้น และ 21K วันนี้ไม่ได้รู้สึกว่ายากเกินไปแล้ว</span><br><br>
 
                 <strong style="color: var(--c-text-main);"><i class="fas fa-shoe-prints" style="margin-right:6px;"></i> 5. จุดค้นพบสำคัญ – เรื่องกล้ามเนื้อ</strong><br>
                 สัปดาห์นี้มี discovery ดีมากคือเรื่อง VMO ซ้าย จากการสังเกต: ปลายเท้ามีแนวเอียง -> ลงน้ำหนักไม่สมดุล -> VMO ทำงานช้า พอเริ่มปรับ alignment + activation ก่อนวิ่ง กล้ามเนื้อเริ่ม "ตื่นเร็วขึ้น" และอาการก็ดีขึ้นจริง<br>
-                <span style="color:var(--c-green);">👉 นี่ไม่ใช่แค่แก้อาการ แต่คือเริ่มเข้าใจ "ระบบการเคลื่อนไหวของตัวเอง"</span>
-              </td>
-            </tr>`,
-          2: `<tr>
-              <td width="15%"><span class="tag tag-rest">W2</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🔥 สรุปผลงานรายสัปดาห์: Peak Phase สัปดาห์ที่ 2 (สัปดาห์แห่งการเรียนรู้และจัดการวิกฤต)</strong><br>
+                <span style="color:var(--c-green);">นี่ไม่ใช่แค่แก้อาการ แต่คือเริ่มเข้าใจ "ระบบการเคลื่อนไหวของตัวเอง"</span>`),
+          2: recapNote("W2", "tag-rest", `<strong style="color: #fff; font-size: 14px;">สรุปผลงานรายสัปดาห์: Peak Phase สัปดาห์ที่ 2 (สัปดาห์แห่งการเรียนรู้และจัดการวิกฤต)</strong><br>
                 สัปดาห์นี้เริ่มต้นด้วยความดุดัน แต่จบลงด้วยบททดสอบเรื่อง "สติและการตัดสินใจ" อย่างแท้จริง<br><br>
 
                 <strong style="color: var(--c-red);"><i class="fas fa-fire" style="margin-right:6px;"></i> อังคาร: Interval Run 8 เซ็ต (ขีดจำกัดของกล้ามเนื้อในวันที่เตาอบทำงาน)</strong><br>
                 • <strong>ผลงาน:</strong> ลากจนจบ 8 เซ็ต (รวมระยะ 4.26 กม. เวลา 24 นาที)<br>
                 • <strong>สถานการณ์จริง:</strong> อากาศร้อนจัดทำให้เครื่องยนต์รวน เซ็ตที่ 4-5 กดเพซไปถึง 5:27-5:29 ทำให้กรดแลคเตทท่วมขาอย่างรวดเร็ว<br>
-                <span style="color:var(--c-green);">👉 สิ่งที่ได้เรียนรู้ (Insight): ค้นพบภาวะ "ขาล้าก่อนหัวใจ (Peripheral Fatigue)" อย่างชัดเจน แม้หัวใจจะไปถึงแค่ 173 bpm (ไม่หลุดโซน 4) แต่กล้ามเนื้อขาปฏิเสธความเร็ว จนเพซร่วงไปแตะ 5:45 ในรอบที่ 7 ก่อนจะใช้ "พลังใจ" ล้วนๆ งัดฟอร์มกลับมาสับเพซ 5:29 ได้ในรอบสุดท้าย เป็นการต่อสู้กับ Mental Block ที่ยอดเยี่ยมมาก</span><br><br>
+                <span style="color:var(--c-green);">สิ่งที่ได้เรียนรู้ (Insight): ค้นพบภาวะ "ขาล้าก่อนหัวใจ (Peripheral Fatigue)" อย่างชัดเจน แม้หัวใจจะไปถึงแค่ 173 bpm (ไม่หลุดโซน 4) แต่กล้ามเนื้อขาปฏิเสธความเร็ว จนเพซร่วงไปแตะ 5:45 ในรอบที่ 7 ก่อนจะใช้ "พลังใจ" ล้วนๆ งัดฟอร์มกลับมาสับเพซ 5:29 ได้ในรอบสุดท้าย เป็นการต่อสู้กับ Mental Block ที่ยอดเยี่ยมมาก</span><br><br>
 
                 <strong style="color: var(--c-yellow);"><i class="fas fa-exclamation-triangle" style="margin-right:6px;"></i> พุธ: วันแห่งสัญญาณเตือน (เมื่อร่างกายแจกใบเหลือง)</strong><br>
                 • <strong>สถานการณ์จริง:</strong> ตื่นเช้ามาพร้อมอาการเจ็บแปล๊บที่ขาหนีบ (Adductor) ฝั่งขวา ลึกจนลงน้ำหนักเดินลำบาก<br>
                 • <strong>ความผิดพลาดที่กลายเป็นบทเรียน:</strong> ด้วยสัญชาตญาณ ได้ทำการยืดเส้นและใช้โฟมโรลเลอร์กลิ้งทับจุดที่เจ็บ ซึ่งทำให้แผลที่ฉีกขาดระดับไมโคร (Micro-tear) อักเสบเพิ่มขึ้น<br>
-                <span style="color:var(--c-green);">👉 สิ่งที่ได้เรียนรู้ (Insight): กฎเหล็กข้อใหม่ถูกจารึกไว้ — "ถ้าเจ็บแปล๊บเฉียบพลัน ห้ามยืด ห้ามกลิ้งโฟมเด็ดขาด ให้ใช้น้ำแข็งประคบเท่านั้น" และเข้าใจกลไกการชดเชยน้ำหนัก (Compensation) ว่าเมื่อ VMO ซ้ายไม่ทำงาน ภาระทั้งหมดจะถูกโยนไปที่ขาหนีบขวาตอนที่สับความเร็ว</span><br><br>
+                <span style="color:var(--c-green);">สิ่งที่ได้เรียนรู้ (Insight): กฎเหล็กข้อใหม่ถูกจารึกไว้ — "ถ้าเจ็บแปล๊บเฉียบพลัน ห้ามยืด ห้ามกลิ้งโฟมเด็ดขาด ให้ใช้น้ำแข็งประคบเท่านั้น" และเข้าใจกลไกการชดเชยน้ำหนัก (Compensation) ว่าเมื่อ VMO ซ้ายไม่ทำงาน ภาระทั้งหมดจะถูกโยนไปที่ขาหนีบขวาตอนที่สับความเร็ว</span><br><br>
 
                 <strong style="color: var(--c-blue);"><i class="fas fa-hospital-user" style="margin-right:6px;"></i> พฤหัสบดี - ศุกร์: การจัดการวิกฤตแบบมืออาชีพ</strong><br>
                 • <strong>การตัดสินใจ:</strong> ยกเลิก Tempo Run และ Strength ทิ้งทั้งหมด แล้วพาร่างกายไปพบแพทย์ทันที<br>
@@ -1531,16 +2848,11 @@
                 <strong style="color: var(--c-purple);"><i class="fas fa-shield-alt" style="margin-right:6px;"></i> เสาร์ - อาทิตย์: ชัยชนะของอีโก้</strong><br>
                 • <strong>สถานการณ์จริง:</strong> ยกเลิก Long Run 18 กม. แบบไม่มีความเสียดาย<br>
                 • <strong>ผลลัพธ์:</strong> การพักผ่อนเต็มที่และการกินยาอย่างมีวินัย ทำให้เช้าวันจันทร์ อาการปวดแปล๊บหายไปทั้งหมด เหลือเพียงความรู้สึก "เตือนๆ" (สัญญาณของพังผืดที่กำลังสมานแผล)<br>
-                <span style="color:var(--c-green);">👉 สิ่งที่ได้เรียนรู้ (Insight): การถอย 1 ก้าวในวันนี้ เพื่อรักษาพื้นฐานความฟิต (Aerobic Base) จากระยะ 21 กม. ของสัปดาห์ก่อนเอาไว้ ถือเป็นความสำเร็จเชิงกลยุทธ์ที่สำคัญที่สุด</span><br><br>
+                <span style="color:var(--c-green);">สิ่งที่ได้เรียนรู้ (Insight): การถอย 1 ก้าวในวันนี้ เพื่อรักษาพื้นฐานความฟิต (Aerobic Base) จากระยะ 21 กม. ของสัปดาห์ก่อนเอาไว้ ถือเป็นความสำเร็จเชิงกลยุทธ์ที่สำคัญที่สุด</span><br><br>
 
                 <strong style="color: var(--c-text-main);"><i class="fas fa-brain" style="margin-right:6px;"></i> บทสรุปภาพรวมของสัปดาห์นี้:</strong><br>
-                นี่ไม่ใช่สัปดาห์ที่ล้มเหลวครับ แต่มันคือ "มาสเตอร์คลาสของการฟังเสียงร่างกาย" คุณได้เข้าใจรอยต่อระหว่างความล้ากับการบาดเจ็บ ได้เรียนรู้ว่าเมื่อไหร่ควรสู้ (ในรอบที่ 8 ของ Interval) และเมื่อไหร่ควรหยุด (การไปหาหมอและยกเลิก Long Run) ร่างกายส่งสัญญาณเตือนถูกเวลาที่สุดแล้วครับ เพื่อให้เราอุดรอยรั่วนี้ก่อนจะถึงวันแข่งจริง
-              </td>
-            </tr>`,
-          3: `<tr>
-              <td width="15%"><span class="tag tag-run">W3</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🛠️ สรุปผลการฝึกซ้อมรายสัปดาห์: Recovery & Return to Run (13 - 19 เม.ย. 2026)</strong><br>
+                นี่ไม่ใช่สัปดาห์ที่ล้มเหลวครับ แต่มันคือ "มาสเตอร์คลาสของการฟังเสียงร่างกาย" คุณได้เข้าใจรอยต่อระหว่างความล้ากับการบาดเจ็บ ได้เรียนรู้ว่าเมื่อไหร่ควรสู้ (ในรอบที่ 8 ของ Interval) และเมื่อไหร่ควรหยุด (การไปหาหมอและยกเลิก Long Run) ร่างกายส่งสัญญาณเตือนถูกเวลาที่สุดแล้วครับ เพื่อให้เราอุดรอยรั่วนี้ก่อนจะถึงวันแข่งจริง`),
+          3: recapNote("W3", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลการฝึกซ้อมรายสัปดาห์: Recovery & Return to Run (13 - 19 เม.ย. 2026)</strong><br>
                 สัปดาห์แห่งการซ่อมแซม เชื่อมต่อระบบประสาท และเอาชนะกำแพงความกลัว แม้จะไม่มีเพซหวือหวา แต่นี่คือสัปดาห์ที่สำคัญที่สุดในการดึงสติกลับมาโฟกัสร่างกาย และฟื้นฟูกล้ามเนื้อขาหนีบขวา (Adductor)<br><br>
 
                 <strong style="color: var(--c-blue);"><i class="fas fa-calendar-check" style="margin-right:6px;"></i> บันทึกการฝึกซ้อมรายวัน (Day-by-Day)</strong><br>
@@ -1557,13 +2869,8 @@
                 • <strong>แยกแยะสัญญาณเตือน:</strong> แยกออกระหว่าง "เจ็บแปล๊บ (ต้องหยุด)" กับ "หวิวๆ/ร้อนตุบๆ (กำลังซ่อมแซม)" ทำให้ตัดสินใจได้อย่างแม่นยำ<br>
                 • <strong>พลังของการทำ Rehab:</strong> การกระตุ้นหน้าขาและสะโพก ช่วยแบ่งเบาภาระจากจุดบาดเจ็บ ทำให้ลงน้ำหนักสมดุลขึ้น<br><br>
 
-                <span style="color:var(--c-green);">👉 <strong>สรุปภาพรวม:</strong> ร่างกายสอบผ่านการทดสอบทุกระดับ ระบบหัวใจยังแกร่ง อาการบาดเจ็บถูกควบคุมอย่างถูกวิธี พร้อมนำโปรแกรม Rehab มาผนวกเข้ากับการวิ่งเพื่อสร้างรากฐานที่แข็งแกร่งในสัปดาห์ต่อไป</span>
-              </td>
-            </tr>`,
-          4: `<tr>
-              <td width="15%"><span class="tag tag-run">W4</span></td>
-              <td colspan="3" style="line-height: 1.8;">
-                <strong style="color: #fff; font-size: 14px;">🛠️ สรุปผลการฝึกซ้อมรายสัปดาห์: Building & Strengthening (20 - 26 เม.ย. 2026)</strong><br>
+                <span style="color:var(--c-green);"><strong>สรุปภาพรวม:</strong> ร่างกายสอบผ่านการทดสอบทุกระดับ ระบบหัวใจยังแกร่ง อาการบาดเจ็บถูกควบคุมอย่างถูกวิธี พร้อมนำโปรแกรม Rehab มาผนวกเข้ากับการวิ่งเพื่อสร้างรากฐานที่แข็งแกร่งในสัปดาห์ต่อไป</span>`),
+          4: recapNote("W4", "tag-run", `<strong style="color: #fff; font-size: 14px;">สรุปผลการฝึกซ้อมรายสัปดาห์: Building & Strengthening (20 - 26 เม.ย. 2026)</strong><br>
                 บททดสอบพื้นสนามจริง, โดมิโนเอฟเฟกต์ และก้าวข้ามระยะอักเสบ สัปดาห์แห่งการปรับตัวทางชีวกลศาสตร์ (Biomechanics) ที่ล้ำค่า ทำให้รู้จุดตัดระหว่างความพร้อมของหัวใจกับเส้นเอ็น<br><br>
 
                 <strong style="color: var(--c-blue);"><i class="fas fa-calendar-check" style="margin-right:6px;"></i> บันทึกการฝึกซ้อมรายวัน (Day-by-Day)</strong><br>
@@ -1578,80 +2885,227 @@
                 <strong style="color: var(--c-yellow);"><i class="fas fa-lightbulb" style="margin-right:6px;"></i> บทเรียนและก้าวสำคัญ (Key Milestones & Insights)</strong><br>
                 • <strong>จบสิ้น "ระยะอักเสบ" (End of Inflammation Phase):</strong> วิ่ง 60m จบไม่มีอาการร้อน ยืนยันว่า "พังผืด" หยุดฉีกขาดระดับไมโคร เข้าสู่โหมดจัดระเบียบเส้นใย<br>
                 • <strong>ความตระหนักรู้การซิงก์ของกล้ามเนื้อ (Neuromuscular Awareness):</strong> อาการฝ่าเท้าจี๊ดหรือตัวบิด คือหลักฐานว่าสมองหน่วงสัญญาณประสาทไม่ให้ Adductor & VMO หดตัวพร้อมกัน 100% เพื่อป้องกันตัว<br>
-                • <strong>รู้เขารู้เรา (Treadmill vs. Ground):</strong> ข้อสรุปชัดเจน พื้นสนามจริงแรงกระแทกสูง (Ground Reaction Force) เป็นศัตรู กลยุทธ์ขออยู่บน "ลู่วิ่งไฟฟ้า" ต่อคือทางที่ปลอดภัยที่สุด<br>
-              </td>
-            </tr>`,
+                • <strong>รู้เขารู้เรา (Treadmill vs. Ground):</strong> ข้อสรุปชัดเจน พื้นสนามจริงแรงกระแทกสูง (Ground Reaction Force) เป็นศัตรู กลยุทธ์ขออยู่บน "ลู่วิ่งไฟฟ้า" ต่อคือทางที่ปลอดภัยที่สุด<br>`),
+        },
+
+        MAY: {
+          1: weekSummaryCard("W1", "4&ndash;10 MAY", 1, "4.88", 128, "First run back post-injury (treadmill)."),
+          2: weekSummaryCard("W2", "11&ndash;17 MAY", 2, "9.07", 140.5, "Back to road running."),
+          3: weekSummaryCard("W3", "18&ndash;24 MAY", 3, "19.32", 138.3, "First long run since recovery, 7.9 km."),
+          4: weekSummaryCard("W4", "25&ndash;31 MAY", 2, "14.13", 139, "Long run extended to 9.38 km."),
+        },
+
+        JUN: {
+          1: weekSummaryCard("W1", "1&ndash;7 JUN", 2, "8.67", 140.5, "Still cautious."),
+          2: weekSummaryCard("W2", "8&ndash;14 JUN", 3, "13.70", 138, "Back to Bang Bua Thong road route."),
+          3: weekSummaryCard("W3", "15&ndash;21 JUN", 2, "17.86", 142.5, "First 12 km run since injury."),
+          4: weekSummaryCard("W4", "22&ndash;28 JUN", 3, "23.05", 139.7, "Weekly volume broke 23 km."),
+        },
+
+        JUL: {
+          1: weekSummaryCard("W1", "29 JUN&ndash;5 JUL", 4, "24.28", 135.75, "Highest volume in 3 months."),
+          2: weekSummaryCard("W2", "6&ndash;12 JUL", 3, "27.00", 143, "Long run 15.01 km, nearing old peak."),
+          3: weekSummaryCard("W3", "13&ndash;19 JUL", 2, "9.96", 145.5, "Natural down week."),
+          4: weekSummaryCard("W4", "20&ndash;26 JUL", 4, "27.03", 148.75, "Long run 16.01 km, good even split, HR spent 76% of time in Zone 3."),
+          5:
+            noteRow("18-week plan begins &mdash; planned, not yet completed") +
+            captionRow(planWeeks[0]) +
+            buildWeekRows(planWeeks[0], 0, 4),
+        },
+
+        AUG: {
+          1: captionRow(planWeeks[0]) + noteRow("(continued from JUL &middot; Week 5)") + buildWeekRows(planWeeks[0], 5, 6),
+          2: captionRow(planWeeks[1]) + buildWeekRows(planWeeks[1], 0, 6),
+          3: captionRow(planWeeks[2]) + buildWeekRows(planWeeks[2], 0, 6),
+          4: captionRow(planWeeks[3]) + buildWeekRows(planWeeks[3], 0, 6),
+          5: captionRow(planWeeks[4]) + buildWeekRows(planWeeks[4], 0, 6),
+          6: captionRow(planWeeks[5]) + noteRow("(continues in SEP &middot; Week 1)") + buildWeekRows(planWeeks[5], 0, 0),
+        },
+
+        SEP: {
+          1: captionRow(planWeeks[5]) + noteRow("(continued from AUG &middot; Week 6)") + buildWeekRows(planWeeks[5], 1, 6),
+          2: captionRow(planWeeks[6]) + buildWeekRows(planWeeks[6], 0, 6),
+          3: captionRow(planWeeks[7]) + buildWeekRows(planWeeks[7], 0, 6),
+          4: captionRow(planWeeks[8]) + buildWeekRows(planWeeks[8], 0, 6),
+          5: captionRow(planWeeks[9]) + noteRow("(continues in OCT &middot; Week 1)") + buildWeekRows(planWeeks[9], 0, 2),
+        },
+
+        OCT: {
+          1: captionRow(planWeeks[9]) + noteRow("(continued from SEP &middot; Week 5)") + buildWeekRows(planWeeks[9], 3, 6),
+          2: captionRow(planWeeks[10]) + buildWeekRows(planWeeks[10], 0, 6),
+          3: captionRow(planWeeks[11]) + buildWeekRows(planWeeks[11], 0, 6),
+          4: captionRow(planWeeks[12]) + buildWeekRows(planWeeks[12], 0, 6),
+          5: captionRow(planWeeks[13]) + noteRow("(continues in NOV &middot; Week 1)") + buildWeekRows(planWeeks[13], 0, 5),
+        },
+
+        NOV: {
+          1: captionRow(planWeeks[13]) + noteRow("(continued from OCT &middot; Week 5)") + buildWeekRows(planWeeks[13], 6, 6),
+          2: captionRow(planWeeks[14]) + buildWeekRows(planWeeks[14], 0, 6),
+          3: captionRow(planWeeks[15]) + buildWeekRows(planWeeks[15], 0, 6),
+          4: captionRow(planWeeks[16]) + buildWeekRows(planWeeks[16], 0, 6),
+          5:
+            captionRow(planWeeks[17]) +
+            dayRow(`<span class="day-name">MON</span><span class="day-num">23 NOV</span>`, "chip-rest", "rest", "Rest", "Full recovery", []) +
+            dayRow(`<span class="day-name">TUE</span><span class="day-num">24 NOV</span>`, "chip-run", "easy", "Easy Shakeout", "Planned 1.5 km &middot; Target Zone 2 (126-148 bpm)", [
+              { icon: "fa-heart-pulse", text: "Loosen up, stay relaxed" },
+              { icon: "fa-tint", text: "Normal hydration" },
+            ], "1.5 KM") +
+            dayRow(`<span class="day-name">WED</span><span class="day-num">25 NOV</span>`, "chip-rest", "active-recovery", "Active Recovery", "Light mobility / walk", []) +
+            dayRow(`<span class="day-name">THU</span><span class="day-num">26 NOV</span>`, "chip-run", "easy", "Easy Shakeout", "Planned 1.5 km &middot; Target Zone 2 (126-148 bpm)", [
+              { icon: "fa-heart-pulse", text: "Loosen up, stay relaxed" },
+              { icon: "fa-utensils", text: "Carb-focused meals begin" },
+            ], "1.5 KM") +
+            dayRow(`<span class="day-name">FRI</span><span class="day-num">27 NOV</span>`, "chip-rest", "rest", "Rest", "Full recovery, pre-race", [
+              { icon: "fa-list-check", text: "Race-day gel/kit check" },
+            ]) +
+            dayRow(`<span class="day-name">SAT</span><span class="day-num">28 NOV</span>`, "chip-long", "long", "RACE DAY &mdash; Half Marathon", "21.0975 km &middot; Amazing Thailand Marathon Bangkok 2026 &middot; Goal: beat PB of 2:52:47 as much as safely possible", [
+              { icon: "fa-flag-checkered", text: "Execute race plan; controlled even effort" },
+              { icon: "fa-capsules", text: "Pre-race breakfast; planned gels per race strategy" },
+            ], "21.0975 KM") +
+            dayRow(`<span class="day-name">SUN</span><span class="day-num">29 NOV</span>`, "chip-rest", "active-recovery", "Recovery", "Easy walk, legs up", [
+              { icon: "fa-utensils", text: "Refuel, rehydrate" },
+            ]),
         },
       };
 
-      let currentScheduleMonth = "APR";
+      let currentScheduleMonth = "JUL";
+
+      // Number of week-pills shown per month, and the label text for each (wk1..wkN).
+      const MONTH_WEEK_LABELS = {
+        JAN: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
+        FEB: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
+        MAR: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
+        APR: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
+        MAY: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
+        JUN: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04"],
+        JUL: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
+        AUG: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05", "WEEK 06"],
+        SEP: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
+        OCT: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
+        NOV: ["WEEK 01", "WEEK 02", "WEEK 03", "WEEK 04", "WEEK 05"],
+      };
+
+      const MONTH_STATUS = {
+        JAN: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 3: Neuromuscular</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Form consolidation</span>`,
+        FEB: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`,
+        MAR: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Build Phase</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Sub-2 Speed & 21.1K Target</span>`,
+        APR: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-purple); margin-right:4px;"></i> Peak / Recovery Phase</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Rehab & Base Maintenance</span>`,
+        MAY: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Phase 6: Return-to-Play Consolidation</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Volume rebuild, treadmill &rarr; road</span>`,
+        JUN: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Phase 6: Return-to-Play Consolidation</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Steady volume rebuild</span>`,
+        JUL: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Phase 6: Return-to-Play Consolidation</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: 18-week race plan begins 27 Jul</span>`,
+        AUG: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> 18-Week Plan &middot; Base/Build</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Planned &mdash; not yet completed</span>`,
+        SEP: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> 18-Week Plan &middot; Build</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Planned &mdash; not yet completed</span>`,
+        OCT: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-yellow); margin-right:4px;"></i> 18-Week Plan &middot; Peak</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Planned &mdash; not yet completed</span>`,
+        NOV: `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-red); margin-right:4px;"></i> 18-Week Plan &middot; Taper &amp; Race</span>
+           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Race day 28 Nov &mdash; planned, not yet run</span>`,
+      };
+
+      const MONTH_DEFAULT_WEEK = {
+        JAN: 1, FEB: 4, MAR: 4, APR: 4, MAY: 4, JUN: 4, JUL: 4,
+        AUG: 1, SEP: 1, OCT: 1, NOV: 5,
+      };
+
+      // Real Monday start-dates for each week-pill, so the pill row reads as a calendar day-picker
+      // (bigger date range + a ring on "today"), not a plain tab bar. Only months with real date data
+      // in the file get a range: MAY-JUL recap dates (already printed in the old table) and AUG-NOV
+      // (derived straight from planWeeks[].start, same indices scheduleData already uses per month).
+      const RECAP_WEEK_STARTS = {
+        MAY: ["2026-05-04", "2026-05-11", "2026-05-18", "2026-05-25"],
+        JUN: ["2026-06-01", "2026-06-08", "2026-06-15", "2026-06-22"],
+        JUL: ["2026-06-29", "2026-07-06", "2026-07-13", "2026-07-20"],
+      };
+      const PLAN_WEEK_BY_MONTH_WEEK = {
+        AUG: [0, 1, 2, 3, 4, 5],
+        SEP: [5, 6, 7, 8, 9],
+        OCT: [9, 10, 11, 12, 13],
+        NOV: [13, 14, 15, 16, 17],
+      };
+      const TODAY_ISO = "2026-07-26";
+
+      function getWeekStartISO(m, weekNum) {
+        if (RECAP_WEEK_STARTS[m] && weekNum <= RECAP_WEEK_STARTS[m].length) {
+          return RECAP_WEEK_STARTS[m][weekNum - 1];
+        }
+        if (m === "JUL" && weekNum === 5) return planWeeks[0].start;
+        if (PLAN_WEEK_BY_MONTH_WEEK[m]) {
+          const idx = PLAN_WEEK_BY_MONTH_WEEK[m][weekNum - 1];
+          if (idx !== undefined) return planWeeks[idx].start;
+        }
+        return null;
+      }
+
+      function isTodayInWeek(startISO) {
+        if (!startISO) return false;
+        const start = new Date(startISO + "T00:00:00");
+        const end = new Date(start);
+        end.setDate(end.getDate() + 6);
+        const today = new Date(TODAY_ISO + "T00:00:00");
+        return today >= start && today <= end;
+      }
+
+      // Scroll the month strip so the active month sits centred. Uses scrollLeft
+      // (not scrollIntoView) so it can never scroll the page itself.
+      function centerActiveMonth(smooth) {
+        const strip = document.getElementById("month-strip");
+        if (!strip) return;
+        const active = strip.querySelector(".month-pill.active");
+        if (!active) return;
+        const target =
+          active.offsetLeft - (strip.clientWidth - active.offsetWidth) / 2;
+        const max = strip.scrollWidth - strip.clientWidth;
+        const left = Math.max(0, Math.min(target, max));
+        if (typeof strip.scrollTo === "function") {
+          strip.scrollTo({ left, behavior: smooth ? "smooth" : "auto" });
+        } else {
+          strip.scrollLeft = left;
+        }
+      }
 
       function setScheduleMonth(m) {
         currentScheduleMonth = m;
 
-        document
-          .getElementById("month-jan")
-          .classList.toggle("active", m === "JAN");
-        document
-          .getElementById("month-feb")
-          .classList.toggle("active", m === "FEB");
-        document
-          .getElementById("month-mar")
-          .classList.toggle("active", m === "MAR");
-        document
-          .getElementById("month-apr")
-          .classList.toggle("active", m === "APR");
+        document.querySelectorAll(".month-pill").forEach((p) => {
+          p.classList.toggle("active", p.id === "month-" + m.toLowerCase());
+        });
+        centerActiveMonth(true);
 
-        const wk1 = document.getElementById("wk1");
-        const wk2 = document.getElementById("wk2");
-        const wk3 = document.getElementById("wk3");
-        const wk4 = document.getElementById("wk4");
-
-        if (m === "APR") {
-          wk1.classList.remove("disabled");
-          wk2.classList.remove("disabled");
-          wk3.classList.remove("disabled");
-          wk4.classList.remove("disabled");
-
-          document.getElementById("schedule-status").innerHTML =
-            `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-purple); margin-right:4px;"></i> Peak / Recovery Phase</span>
-           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Rehab & Base Maintenance</span>`;
-
-          renderWeek(4, document.getElementById("wk4"));
-        } else if (m === "MAR") {
-          wk1.classList.remove("disabled");
-          wk2.classList.remove("disabled");
-          wk3.classList.remove("disabled");
-          wk4.classList.remove("disabled");
-
-          document.getElementById("schedule-status").innerHTML =
-            `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-blue); margin-right:4px;"></i> Build Phase</span>
-           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Sub-2 Speed & 21.1K Target</span>`;
-
-          renderWeek(4, document.getElementById("wk4"));
-        } else if (m === "FEB") {
-          wk1.classList.remove("disabled");
-          wk2.classList.remove("disabled");
-          wk3.classList.remove("disabled");
-          wk4.classList.remove("disabled");
-
-          document.getElementById("schedule-status").innerHTML =
-            `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 4: Threshold &amp; Strength Endurance</span>
-           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Threshold Intro + Gel Strategy</span>`;
-
-          renderWeek(4, document.getElementById("wk4"));
-        } else {
-          wk1.classList.remove("disabled");
-          wk2.classList.remove("disabled");
-          wk3.classList.remove("disabled");
-          wk4.classList.remove("disabled");
-
-          document.getElementById("schedule-status").innerHTML =
-            `<span><i class="fas fa-circle" style="font-size:6px; color:var(--c-green); margin-right:4px;"></i> Phase 3: Neuromuscular</span>
-           <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Form consolidation</span>`;
-
-          renderWeek(1, document.getElementById("wk1"));
+        const labels = MONTH_WEEK_LABELS[m] || [];
+        for (let i = 1; i <= 6; i++) {
+          const pill = document.getElementById("wk" + i);
+          if (!pill) continue;
+          if (i <= labels.length) {
+            pill.style.display = "";
+            const startISO = getWeekStartISO(m, i);
+            let html = labels[i - 1];
+            if (startISO) {
+              const d = new Date(startISO + "T00:00:00");
+              const endD = new Date(d);
+              endD.setDate(endD.getDate() + 6);
+              html += `<span class="wp-range">${d.getDate()} ${MONTH_NAMES[d.getMonth()]}&ndash;${endD.getDate()} ${MONTH_NAMES[endD.getMonth()]}</span>`;
+            }
+            pill.innerHTML = html;
+            pill.classList.remove("disabled");
+            pill.classList.toggle("pill-today", isTodayInWeek(startISO));
+          } else {
+            pill.style.display = "none";
+          }
         }
+
+        document.getElementById("schedule-status").innerHTML =
+          MONTH_STATUS[m] || "";
+
+        const defaultWeek = MONTH_DEFAULT_WEEK[m] || 1;
+        renderWeek(defaultWeek, document.getElementById("wk" + defaultWeek));
       }
 
       function renderWeek(weekNum, btn) {
@@ -1667,8 +3121,17 @@
         tbody.innerHTML = block || "";
       }
 
-      // Init: เปิดหน้ามาเริ่มที่เดือนเมษายน สัปดาห์ที่ 4
-      setScheduleMonth("APR");
+      // Init: opens on July 2026, week 4 — the week containing today (20-26 Jul 2026),
+      // which is the pill carrying the TODAY badge.
+      setScheduleMonth("JUL");
+
+      // Re-centre once webfonts/layout have settled (pill widths shift on font swap).
+      requestAnimationFrame(() => centerActiveMonth(false));
+      window.addEventListener("load", () => centerActiveMonth(false));
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => centerActiveMonth(false));
+      }
+      window.addEventListener("resize", () => centerActiveMonth(false));
     </script>
   </body>
 </html>
