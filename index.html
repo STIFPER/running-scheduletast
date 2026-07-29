@@ -1996,7 +1996,10 @@
                     class="fas fa-flag-checkered"
                     style="color: rgba(255, 255, 255, 0.75)"
                   ></i
-                  ><b>Race Day</b>&nbsp;~125 days (28 Nov 2026)
+                  ><b>Race Day</b>&nbsp;<span data-race-countdown
+                    >&sim;125 days</span
+                  >
+                  (28 Nov 2026)
                 </div>
               </div>
             </div>
@@ -2019,7 +2022,7 @@
           <div class="highlight-chip hl-blue bd-2 bm-1">
             <div class="hl-icon"><i class="fas fa-flag-checkered"></i></div>
             <div>
-              <span class="hl-num">&sim;125 days</span>
+              <span class="hl-num" data-race-countdown>&sim;125 days</span>
               <span class="hl-label">Until race day</span>
             </div>
           </div>
@@ -2064,7 +2067,7 @@
             style="border-color: rgba(139, 92, 246, 0.18)"
           >
             <div class="t-top">
-              <div class="t-label">Latest Session</div>
+              <div class="t-label">Latest Long Run</div>
               <div class="t-icon"><i class="fas fa-route"></i></div>
             </div>
             <div style="display: flex; align-items: center; gap: 14px">
@@ -2088,7 +2091,7 @@
               </div>
             </div>
             <div class="t-sub" style="margin-top: 10px">
-              26 Jul 2026 • Even split pacing • HR spent 76% of time in Zone
+              25 Jul 2026 • Even split pacing • HR spent 76% of time in Zone
               3
             </div>
           </div>
@@ -3163,6 +3166,9 @@
            <span><i class="fas fa-bolt" style="color:var(--c-yellow); margin-right:4px;"></i> Focus: Race day 28 Nov &mdash; planned, not yet run</span>`,
       };
 
+      // Fallback week per month, used only when the real current date isn't inside
+      // that month (e.g. you tap back to a past month). The live "today" logic below
+      // always wins when today actually falls in the month being shown.
       const MONTH_DEFAULT_WEEK = {
         JAN: 1, FEB: 4, MAR: 4, APR: 4, MAY: 4, JUN: 4, JUL: 4,
         AUG: 1, SEP: 1, OCT: 1, NOV: 5,
@@ -3183,7 +3189,44 @@
         OCT: [9, 10, 11, 12, 13],
         NOV: [13, 14, 15, 16, 17],
       };
-      const TODAY_ISO = "2026-07-26";
+      // Live "today", read from the device clock on every page load rather than
+      // pinned to a build-time constant, so the TODAY badge and the month/week the
+      // app opens on follow the real calendar as the training block progresses.
+      // Local date parts (not toISOString) so a UTC+7 evening doesn't roll to tomorrow.
+      function todayISO() {
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+      }
+      const TODAY_ISO = todayISO();
+
+      // Months this log actually covers. Today outside that span clamps to the
+      // nearest end so the app still opens somewhere sensible.
+      const MONTH_ORDER = [
+        "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+        "JUL", "AUG", "SEP", "OCT", "NOV",
+      ];
+      const LOG_YEAR = 2026;
+
+      function currentMonthKey() {
+        const d = new Date(TODAY_ISO + "T00:00:00");
+        const y = d.getFullYear();
+        if (y < LOG_YEAR) return MONTH_ORDER[0];
+        if (y > LOG_YEAR) return MONTH_ORDER[MONTH_ORDER.length - 1];
+        const idx = d.getMonth(); // 0 = Jan
+        if (idx < 0) return MONTH_ORDER[0];
+        if (idx >= MONTH_ORDER.length) return MONTH_ORDER[MONTH_ORDER.length - 1];
+        return MONTH_ORDER[idx];
+      }
+
+      // Which week-pill of a month contains today, or null if today isn't in it.
+      function currentWeekOfMonth(m) {
+        const labels = MONTH_WEEK_LABELS[m] || [];
+        for (let i = 1; i <= labels.length; i++) {
+          if (isTodayInWeek(getWeekStartISO(m, i))) return i;
+        }
+        return null;
+      }
 
       function getWeekStartISO(m, weekNum) {
         if (RECAP_WEEK_STARTS[m] && weekNum <= RECAP_WEEK_STARTS[m].length) {
@@ -3278,7 +3321,10 @@
         document.getElementById("schedule-status").innerHTML =
           MONTH_STATUS[m] || "";
 
-        const defaultWeek = MONTH_DEFAULT_WEEK[m] || 1;
+        // Prefer the week that actually contains today; fall back to the month's
+        // static default when today is outside this month.
+        const defaultWeek =
+          currentWeekOfMonth(m) || MONTH_DEFAULT_WEEK[m] || 1;
         renderWeek(defaultWeek, document.getElementById("wk" + defaultWeek));
       }
 
@@ -3295,9 +3341,10 @@
         tbody.innerHTML = block || "";
       }
 
-      // Init: opens on July 2026, week 4 — the week containing today (20-26 Jul 2026),
-      // which is the pill carrying the TODAY badge.
-      setScheduleMonth("JUL");
+      // Init: opens on the real current month, and inside it on the week that
+      // actually contains today (the pill carrying the TODAY badge). Both follow
+      // the device clock, so this moves forward on its own as the block progresses.
+      setScheduleMonth(currentMonthKey());
 
       // Re-centre once webfonts/layout have settled (pill widths shift on font swap).
       requestAnimationFrame(() => centerActiveMonth(false));
@@ -3311,6 +3358,24 @@
         .getElementById("month-strip")
         ?.addEventListener("scroll", updateStripFade, { passive: true });
       updateStripFade();
+
+      // Race-day countdown, recomputed from the live date on each load instead of
+      // being baked in, so it counts down on its own.
+      (function () {
+        const RACE_ISO = "2026-11-28";
+        const MS_PER_DAY = 86400000;
+        const today = new Date(TODAY_ISO + "T00:00:00");
+        const race = new Date(RACE_ISO + "T00:00:00");
+        const days = Math.round((race - today) / MS_PER_DAY);
+        let text;
+        if (days > 1) text = `~${days} days`;
+        else if (days === 1) text = "Tomorrow";
+        else if (days === 0) text = "Race day";
+        else text = `${Math.abs(days)} days ago`;
+        document.querySelectorAll("[data-race-countdown]").forEach((el) => {
+          el.textContent = text;
+        });
+      })();
     </script>
   </body>
 </html>
